@@ -46,4 +46,7 @@ public interface AuthUserRepository extends JpaRepository<AuthUser, UUID>, JpaSp
 
     @Query(value = "select count(au.id) from AuthUser au")
     int findAllSize();
+
+    @Query(value = "select au.active from AuthUser au where au.id=?1")
+    boolean isActive(UUID userId);
 }

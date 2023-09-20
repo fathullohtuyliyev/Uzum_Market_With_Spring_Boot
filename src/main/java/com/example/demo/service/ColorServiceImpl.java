@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -68,11 +69,10 @@ public class ColorServiceImpl implements ColorService {
     public Page<Map<Long, String>> colors(Pageable pageable) {
         try {
             Page<Color> all = colorRepository.findAll(pageable);
-            if (colorRepository.findAllSize()<all.getContent().size()) {
-                List<Map<Long, String>> list = all.stream()
-                        .map(color -> Map.of(color.getId(), color.getName()))
-                        .toList();
-                return new PageImpl<>(list,all.getPageable(),list.size());
+            int allSize = colorRepository.findAllSize();
+            if (allSize <all.getContent().size()) {
+                List<Color> colors = colorRepository.findAll();
+                all=new PageImpl<>(colors, PageRequest.of(0,allSize),allSize);
             }
             List<Map<Long, String>> list = all.getContent().stream()
                     .map(color -> Map.of(color.getId(), color.getName()))

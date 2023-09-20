@@ -90,17 +90,15 @@ public class AuthUserServiceImpl implements AuthUserService {
     public Page<AuthUserGetDto> users(Pageable pageable) {
         try {
             Page<AuthUser> all = authUserRepository.findAll(pageable);
+            int allSize = authUserRepository.findAllSize();
+            if (all.getContent().size()< allSize) {
+                all = new PageImpl<>(authUserRepository.findAll(),
+                        PageRequest.of(0,allSize),allSize);
+            }
             List<UUID> uuidList = all.getContent()
                     .stream()
                     .map(AuthUser::getId)
                     .toList();
-            if (pageable.getPageSize()<authUserRepository.findAllSize()) {
-                List<AuthUser> userList = authUserRepository.findAll();
-                Page<AuthUser> authUsers = new PageImpl<>(userList,
-                        PageRequest.of(0, userList.size()), userList.size());
-                log.info("{} gave users",uuidList);
-                return USER_MAPPER.toDto(authUsers);
-            }
             log.info("{} gave users",uuidList);
             return USER_MAPPER.toDto(all);
         }catch (Exception e){

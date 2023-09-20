@@ -38,7 +38,7 @@ public class AuthUserGetDto {
 
     public String imagePath;
 
-    public boolean blocked;
+    public boolean active;
 
     public String email;
 }

@@ -50,7 +50,7 @@ public class AuthUser {
     private String imagePath;
 
     @Builder.Default
-    private boolean blocked=true;
+    private boolean active=false;
 
     @Column(nullable = false,unique = true)
     private String email;
