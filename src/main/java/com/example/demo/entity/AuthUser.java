@@ -62,4 +62,12 @@ public class AuthUser {
     @ToString.Exclude
     @OneToMany(mappedBy = "authUser")
     private List<Order> orders;
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "authUser")
+    private List<ActivateCodes> activateCodes;
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "user")
+    private List<UserData> dataList;
 }

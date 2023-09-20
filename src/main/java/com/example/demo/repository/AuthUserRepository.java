@@ -15,11 +15,11 @@ import java.util.UUID;
 
 @Repository
 public interface AuthUserRepository extends JpaRepository<AuthUser, UUID>, JpaSpecificationExecutor<AuthUser> {
+    @Query(value = "from AuthUser u where u.email=:email and u.active=true")
     AuthUser findByEmailAndActiveTrue(String email);
-    AuthUser findAuthUserByIdAndActiveTrue(UUID id);
 
-    boolean existsAuthUserByEmail(String email);
-    boolean existsAuthUserByPhone(String phone);
+    @Query(value = "from AuthUser u where u.id=:id and u.active=true")
+    AuthUser findAuthUserByIdAndActiveTrue(UUID id);
 
     @Modifying
     @Transactional
@@ -31,7 +31,7 @@ public interface AuthUserRepository extends JpaRepository<AuthUser, UUID>, JpaSp
 
     @Transactional
     @Modifying
-    @Query(value = "update AuthUser set active=?1 where id=?2")
+    @Query(value = "update AuthUser set active=:blocked where id=:id")
     void updateAuthUserBlockedById(boolean blocked,UUID id);
 
     @Transactional
@@ -49,4 +49,7 @@ public interface AuthUserRepository extends JpaRepository<AuthUser, UUID>, JpaSp
 
     @Query(value = "select au.active from AuthUser au where au.id=?1")
     boolean isActive(UUID userId);
+
+    @Query(value = "select exists (select u.email, u.phone from AuthUser u where u.phone = :phone or u.email = :email)")
+    boolean existsAuthUserByPhoneAndEmail(String phone, String email);
 }
