@@ -39,7 +39,6 @@ public class AuthUser {
     private Gender gender;
 
     @ElementCollection
-    @Builder.Default
     @NotNull
     @Column(nullable = false)
     private List<String> roles;
