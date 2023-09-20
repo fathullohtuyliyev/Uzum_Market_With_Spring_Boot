@@ -25,7 +25,7 @@ public class GoodUpdateDto {
 
     @Positive
     @NotNull
-    public Color color_id;
+    public Long color_id;
 
     @NotNull
     @Positive
