@@ -21,7 +21,7 @@ public interface FavouritesRepository extends JpaRepository<Favourites, UUID>, J
 
     @Modifying
     @Transactional
-    @Query(nativeQuery = true,value = "delete from favourites f where f.user_id=?1,f.good_id=?2")
+    @Query(nativeQuery = true,value = "delete from favourites f where f.user_id=?1 and f.good_id=?2")
     void removeFromFavourites(UUID userId,UUID goodId);
 
     @Query(nativeQuery = true, value = "select * from favourites f where f.user_id=:userId")

@@ -15,8 +15,8 @@ import java.util.UUID;
 
 @Repository
 public interface AuthUserRepository extends JpaRepository<AuthUser, UUID>, JpaSpecificationExecutor<AuthUser> {
-    AuthUser findByEmailAndBlockedFalse(String email);
-    AuthUser findAuthUserByIdAndBlockedFalse(UUID id);
+    AuthUser findByEmailAndActiveTrue(String email);
+    AuthUser findAuthUserByIdAndActiveTrue(UUID id);
 
     boolean existsAuthUserByEmail(String email);
     boolean existsAuthUserByPhone(String phone);
@@ -31,7 +31,7 @@ public interface AuthUserRepository extends JpaRepository<AuthUser, UUID>, JpaSp
 
     @Transactional
     @Modifying
-    @Query(value = "update AuthUser set blocked=?1 where id=?2")
+    @Query(value = "update AuthUser set active=?1 where id=?2")
     void updateAuthUserBlockedById(boolean blocked,UUID id);
 
     @Transactional
