@@ -4,6 +4,7 @@ import com.example.demo.dto.order_dto.OrderCreateDto;
 import com.example.demo.dto.order_dto.OrderGetDto;
 import com.example.demo.dto.order_dto.OrderUpdateDto;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -13,5 +14,5 @@ public interface OrderService {
     OrderGetDto save(OrderCreateDto dto);
     OrderGetDto update(OrderUpdateDto dto);
     OrderGetDto get(UUID id);
-    Page<OrderGetDto> users(UUID userId);
+    Page<OrderGetDto> users(UUID userId, Pageable pageable);
 }

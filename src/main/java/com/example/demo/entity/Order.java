@@ -42,7 +42,7 @@ public class Order {
 
     @Builder.Default
     @Column(nullable = false,insertable = false)
-    private LocalDateTime time=LocalDateTime.now();
+    private LocalDateTime time;
 
     @ManyToOne(fetch = FetchType.LAZY,optional = false)
     @ToString.Exclude

@@ -18,6 +18,4 @@ public class PaymentGetDto {
 
     @Builder.Default
     public boolean active=true;
-
-    public List<OrderGetDto> orders;
 }

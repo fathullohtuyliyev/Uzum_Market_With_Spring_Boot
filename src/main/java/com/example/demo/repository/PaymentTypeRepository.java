@@ -15,5 +15,12 @@ public interface PaymentTypeRepository extends JpaRepository<PaymentType, Intege
     @Query(value = "update payment_type p set p.active=?1 where p.id=?2")
     @Modifying
     @Transactional
-    void updateActive(boolean active, UUID id);
+    void updateActive(boolean active, Integer id);
+
+    PaymentType findByName(String paymentType);
+
+    @Query(nativeQuery = true,value = "delete from payment_type p where p.id=?1")
+    @Modifying
+    @Transactional
+    void deleteWithId(Integer id);
 }

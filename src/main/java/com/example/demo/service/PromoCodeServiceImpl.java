@@ -6,6 +6,7 @@ import com.example.demo.dto.promo_code_dto.PromoCodeUpdateDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -35,7 +36,7 @@ public class PromoCodeServiceImpl implements PromoCodeService {
     }
 
     @Override
-    public Page<PromoCodeGetDto> users(UUID userId) {
+    public Page<PromoCodeGetDto> users(UUID goodId, Pageable pageable) {
         return null;
     }
 }

@@ -131,12 +131,7 @@ public class GoodServiceImpl implements GoodService {
         try {
             Page<Good> all = goodRepository.findAll(pageable);
             Page<GoodGetDto> dto = GOOD_MAPPER.toDto(all);
-            List<Good> content = all.getContent();
-            List<GoodGetDto> contentDto = dto.getContent();
-            for (int i = 0; i < contentDto.size(); i++) {
-                method2(contentDto.get(i),content.get(i),commentRepository);
-            }
-            return new PageImpl<>(contentDto,dto.getPageable(),contentDto.size());
+            return methodForList(all, dto, commentRepository);
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())

@@ -1,6 +1,7 @@
 package com.example.demo.dto.order_dto;
 
 import com.example.demo.dto.delivery_dto.DeliveryGetDto;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
@@ -30,13 +31,12 @@ public class OrderCreateDto {
     @PositiveOrZero
     public Double price;
 
+    @Builder.Default
     public LocalDateTime time=LocalDateTime.now();
 
     @NotNull
     public DeliveryGetDto deliveryGetDto;
 
-    @NotNull
-    public Map<Integer,String> status;
-
-    public LocalDateTime update;
+    @NotBlank
+    public String paymentType;
 }

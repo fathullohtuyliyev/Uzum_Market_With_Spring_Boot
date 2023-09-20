@@ -33,4 +33,6 @@ public class OrderGetDto {
     public Map<Integer,String> status;
 
     public LocalDateTime update;
+
+    public Map<String, Boolean> paymentType;
 }
