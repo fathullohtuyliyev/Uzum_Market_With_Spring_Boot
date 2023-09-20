@@ -50,11 +50,50 @@ public class FavouritesServiceImpl implements FavouritesService {
 
     @Override
     public Page<FavouritesGetDto> delete(UUID goodId, UUID userId) {
-        return null;
+        try {
+            favouritesRepository.removeFromFavourites(userId,goodId);
+            Page<Favourites> allByUserId = favouritesRepository.findAllByUserId(userId, PageRequest.of(0, 15));
+            int sizeByUserId = favouritesRepository.findSizeByUserId(userId);
+            if (allByUserId.getPageable().getPageSize()< sizeByUserId) {
+                allByUserId = new PageImpl<>(allByUserId.getContent(),
+                        allByUserId.getPageable(),sizeByUserId);
+            }
+            List<FavouritesGetDto> list = allByUserId.stream()
+                    .map(favourites -> FavouritesGetDto.builder()
+                            .userId(favourites.getUser().getId())
+                            .goodId(favourites.getGood().getId())
+                            .build())
+                    .toList();
+            return new PageImpl<>(list,allByUserId.getPageable(),list.size());
+        }catch (Exception e){
+            e.printStackTrace();
+            Arrays.stream(e.getStackTrace())
+                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
+            throw new RuntimeException();
+        }
     }
 
     @Override
     public Page<FavouritesGetDto> users(UUID userId, Pageable pageable) {
-        return null;
+        try {
+            Page<Favourites> allByUserId = favouritesRepository.findAllByUserId(userId, pageable);
+            int sizeByUserId = favouritesRepository.findSizeByUserId(userId);
+            if (allByUserId.getPageable().getPageSize()< sizeByUserId) {
+                allByUserId = new PageImpl<>(favouritesRepository.findAllByUserId(userId),
+                        PageRequest.of(0,15),sizeByUserId);
+            }
+            List<FavouritesGetDto> list = allByUserId.stream()
+                    .map(favourites -> FavouritesGetDto.builder()
+                            .userId(favourites.getUser().getId())
+                            .goodId(favourites.getGood().getId())
+                            .build())
+                    .toList();
+            return new PageImpl<>(list,allByUserId.getPageable(),list.size());
+        }catch (Exception e){
+            e.printStackTrace();
+            Arrays.stream(e.getStackTrace())
+                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
+            throw new RuntimeException();
+        }
     }
 }

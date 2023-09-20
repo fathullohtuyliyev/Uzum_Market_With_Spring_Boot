@@ -2,6 +2,8 @@ package com.example.demo.dto.good_dto;
 
 import com.example.demo.nosql.Comments;
 import lombok.*;
+import org.springframework.data.domain.Page;
+
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -32,7 +34,7 @@ public class GoodGetDto {
 
     public UUID images;
 
-    public Set<Comments> comments;
+    public Page<Comments> comments;
 
     public Integer ordersCount;
 }
