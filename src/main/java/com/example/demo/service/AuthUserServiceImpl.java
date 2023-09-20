@@ -59,7 +59,7 @@ public class AuthUserServiceImpl implements AuthUserService {
             }
             authUserRepository.updateAuthUser(dto.phone,dto.firstName,dto.lastName,
                     dto.imagePath,dto.gender,dto.birthdate,dto.id);
-            AuthUser authUser = authUserRepository.findAuthUserByIdAndBlockedFalse(dto.id);
+            AuthUser authUser = authUserRepository.findAuthUserByIdAndActiveTrue(dto.id);
             AuthUserGetDto dto1 = USER_MAPPER.toDto(authUser);
             log.info("{} updated",dto1);
             return dto1;
@@ -74,7 +74,7 @@ public class AuthUserServiceImpl implements AuthUserService {
     @Override
     public AuthUserGetDto get(UUID id) {
         try {
-            AuthUser authUser = authUserRepository.findAuthUserByIdAndBlockedFalse(id);
+            AuthUser authUser = authUserRepository.findAuthUserByIdAndActiveTrue(id);
             AuthUserGetDto dto = USER_MAPPER.toDto(authUser);
             log.info("{} gave",dto);
             return dto;
