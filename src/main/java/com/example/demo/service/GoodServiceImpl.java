@@ -4,9 +4,7 @@ import com.example.demo.dto.good_dto.GoodCreateDto;
 import com.example.demo.dto.good_dto.GoodCriteria;
 import com.example.demo.dto.good_dto.GoodGetDto;
 import com.example.demo.dto.good_dto.GoodUpdateDto;
-import com.example.demo.entity.Color;
 import com.example.demo.entity.Good;
-import com.example.demo.entity.PromoCode;
 import com.example.demo.entity.Type;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.nosql.Comments;
@@ -25,7 +23,6 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 import static com.example.demo.mapper.GoodMapper.GOOD_MAPPER;
-import static com.example.demo.mapper.PromoCodeMapper.PROMO_CODE_MAPPER;
 
 @Slf4j
 @Service
@@ -54,17 +51,6 @@ public class GoodServiceImpl implements GoodService {
     }
 
     private static void method1(GoodCreateDto dto,Good good,
-                                TypeRepository typeRepository,
-                                ColorRepository colorRepository){
-        Long typeId = dto.getType_id();
-        Type type = typeRepository.findById(typeId).orElseThrow(NotFoundException::new);
-        good.setType(type);
-        Long colorId = dto.getColor_id();
-        if (colorId !=null) {
-            colorRepository.findById(colorId).ifPresent(good::setColor);
-        }
-    }
-    private static void method1(GoodUpdateDto dto,Good good,
                                 TypeRepository typeRepository,
                                 ColorRepository colorRepository){
         Long typeId = dto.getType_id();
@@ -164,7 +150,7 @@ public class GoodServiceImpl implements GoodService {
         try {
             String[] split = name.split("\\s+");
             List<Double> doubles = Arrays.stream(split)
-                    .filter(s -> s.matches("[\\d]"))
+                    .filter(s -> s.matches("[0-9]"))
                     .map(Double::valueOf)
                     .toList();
             Page<Good> result;
@@ -173,19 +159,26 @@ public class GoodServiceImpl implements GoodService {
             }else {
                 result = goodRepository.findAllByName(Arrays.stream(split).toList(),doubles,pageable);
             }
-            Page<GoodGetDto> dto = GOOD_MAPPER.toDto(result);
-            List<GoodGetDto> contentDto = dto.getContent();
-            List<Good> content = result.getContent();
-            for (int i = 0; i < content.size(); i++) {
-                method2(contentDto.get(i),content.get(i),commentRepository);
+            if (pageable.getPageSize()>result.getContent().size()) {
+                result = new PageImpl<>(result.getContent(),PageRequest.of(0,result.getContent().size()),result.getContent().size());
             }
-            return new PageImpl<>(contentDto,dto.getPageable(),contentDto.size());
+            Page<GoodGetDto> dto = GOOD_MAPPER.toDto(result);
+
+            return methodForList(result, dto, commentRepository);
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
                     .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
             throw new RuntimeException();
         }
+    }
+    private static Page<GoodGetDto> methodForList(Page<Good> result,Page<GoodGetDto> dto,CommentRepository commentRepository){
+        List<GoodGetDto> contentDto = dto.getContent();
+        List<Good> content = result.getContent();
+        for (int i = 0; i < content.size(); i++) {
+            method2(contentDto.get(i),content.get(i),commentRepository);
+        }
+        return new PageImpl<>(contentDto,dto.getPageable(),contentDto.size());
     }
 
     @Override
@@ -198,12 +191,7 @@ public class GoodServiceImpl implements GoodService {
                 result = new PageImpl<>(result.getContent(),PageRequest.of(0,size),size);
             }
             Page<GoodGetDto> dto = GOOD_MAPPER.toDto(result);
-            List<GoodGetDto> dtoContent = dto.getContent();
-            List<Good> content = result.getContent();
-            for (int i = 0; i < content.size(); i++) {
-                method2(dtoContent.get(i),content.get(i),commentRepository);
-            }
-            return new PageImpl<>(dtoContent,dto.getPageable(),dtoContent.size());
+            return methodForList(result, dto, commentRepository);
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())

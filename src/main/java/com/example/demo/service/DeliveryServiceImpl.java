@@ -52,11 +52,6 @@ public class DeliveryServiceImpl implements DeliveryService {
         Double lng = dto.getDeliveryAddress().lng;
         deliveryPoint.setDeliveryAddress(new double[]{lat, lng});
     }
-    private static void method1(DeliveryPoint deliveryPoint, DeliveryGetDto dto){
-        Double lat = dto.getDeliveryAddress().lat;
-        Double lng = dto.getDeliveryAddress().lng;
-        deliveryPoint.setDeliveryAddress(new double[]{lat, lng});
-    }
     private static void method2(DeliveryGetDto dto,DeliveryPoint deliveryPoint) {
         double[] deliveryAddress = deliveryPoint.getDeliveryAddress();
         dto.setDeliveryAddress(DeliveryAddressDto.builder()

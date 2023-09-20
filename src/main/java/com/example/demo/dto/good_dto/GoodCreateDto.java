@@ -3,7 +3,6 @@ package com.example.demo.dto.good_dto;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
-import java.util.Map;
 import java.util.UUID;
 
 @AllArgsConstructor
