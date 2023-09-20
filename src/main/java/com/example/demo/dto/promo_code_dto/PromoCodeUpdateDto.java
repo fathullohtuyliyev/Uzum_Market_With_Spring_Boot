@@ -15,7 +15,7 @@ import java.util.UUID;
 @Setter
 @Builder
 @ToString
-public class PromoCodeUpdateDto {
+public class PromoCodeUpdateDto extends PromoCodeCreateDto{
     @NotNull
     public UUID id;
 
@@ -24,7 +24,7 @@ public class PromoCodeUpdateDto {
 
 
     @NotNull
-    public List<GoodGetDto> good;
+    public List<GoodGetDto> goods;
 
     @NotNull
     @Positive

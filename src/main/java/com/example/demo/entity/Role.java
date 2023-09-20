@@ -22,8 +22,4 @@ public class Role {
     @NotBlank
     @Column(nullable = false,unique = true)
     private String name;
-
-    @NotNull
-    @Column(nullable = false,name = "user_id")
-    private UUID userId;
 }

@@ -28,16 +28,16 @@ public class PromoCode {
     @ManyToMany(fetch = FetchType.LAZY)
     @ToString.Exclude
     @JoinTable(
-            name = "authuser_promocode",
-            joinColumns = @JoinColumn(name = "promocode_id"),
-            inverseJoinColumns = @JoinColumn(name = "authuser_id"))
+            name = "auth_user_promo_code",
+            joinColumns = @JoinColumn(name = "promo_code_id"),
+            inverseJoinColumns = @JoinColumn(name = "auth_user_id"))
     private List<AuthUser> authUsers;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @ToString.Exclude
     @JoinTable(
             name = "good_promocode",
-            joinColumns = @JoinColumn(name = "promocode_id"),
+            joinColumns = @JoinColumn(name = "promo_code_id"),
             inverseJoinColumns = @JoinColumn(name = "good_id"))
     private List<Good> goods;
 

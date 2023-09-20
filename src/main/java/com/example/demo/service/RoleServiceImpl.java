@@ -1,32 +1,87 @@
 package com.example.demo.service;
 
+import com.example.demo.entity.Role;
+import com.example.demo.exception.BadParamException;
+import com.example.demo.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
+    private final RoleRepository roleRepository;
+
     @Override
     public String save(String name) {
-        return null;
+        try {
+            if (roleRepository.existsRoleByName(name)) {
+                throw new BadParamException();
+            }
+            Role saved = roleRepository.save(Role.builder().name(name).build());
+            return saved.getName();
+        }catch (Exception e){
+            e.printStackTrace();
+            Arrays.stream(e.getStackTrace())
+                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
+            throw new RuntimeException();
+        }
     }
 
     @Override
     public String update(String oldName, String newName) {
-        return null;
+        try {
+            if (!roleRepository.existsRoleByName(oldName)) {
+                throw new BadParamException();
+            }
+            roleRepository.updateRole(newName, oldName);
+            return roleRepository.findByName(newName).getName();
+        }catch (Exception e){
+            e.printStackTrace();
+            Arrays.stream(e.getStackTrace())
+                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
+            throw new RuntimeException();
+        }
     }
 
     @Override
     public String get(String name) {
-        return null;
+        try {
+            Role role = roleRepository.findByName(name);
+            return role.getName();
+        }catch (Exception e){
+            e.printStackTrace();
+            Arrays.stream(e.getStackTrace())
+                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
+            throw new RuntimeException();
+        }
     }
 
     @Override
     public Page<String> roles(Pageable pageable) {
-        return null;
+        try {
+            Page<Role> all = roleRepository.findAll(pageable);
+            int size = roleRepository.allSize();
+            if (size <pageable.getPageSize()) {
+                all = new PageImpl<>(roleRepository.findAll(), PageRequest.of(0,size),size);
+            }
+            List<String> list = all.stream()
+                    .map(Role::getName)
+                    .toList();
+            return new PageImpl<>(list,all.getPageable(),list.size());
+        }catch (Exception e){
+            e.printStackTrace();
+            Arrays.stream(e.getStackTrace())
+                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
+            throw new RuntimeException();
+        }
     }
 }

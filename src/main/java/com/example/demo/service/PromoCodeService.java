@@ -20,4 +20,5 @@ public interface PromoCodeService {
     void delete(UUID id);
     PromoCodeGetDto get(UUID id);
     Page<PromoCodeGetDto> users(UUID goodId,Pageable pageable);
+    Page<PromoCodeGetDto> users(UUID goodId,String name , Pageable pageable);
 }

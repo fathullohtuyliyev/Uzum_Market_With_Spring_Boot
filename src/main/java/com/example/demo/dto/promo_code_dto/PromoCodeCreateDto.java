@@ -20,7 +20,7 @@ public class PromoCodeCreateDto {
     public String name;
 
     @NotNull
-    public List<GoodGetDto> good;
+    public List<GoodGetDto> goods;
 
     @NotNull
     @Positive

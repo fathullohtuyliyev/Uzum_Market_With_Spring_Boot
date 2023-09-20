@@ -149,10 +149,14 @@ public class GoodServiceImpl implements GoodService {
                     .map(Double::valueOf)
                     .toList();
             Page<Good> result;
+            List<String> list = Arrays.stream(split).toList();
+            list = list.stream()
+                    .map(String::toLowerCase)
+                    .toList();
             if (doubles.isEmpty()) {
-                result = goodRepository.findAllByName(Arrays.stream(split).toList(),pageable);
+                result = goodRepository.findAllByName(list,pageable);
             }else {
-                result = goodRepository.findAllByName(Arrays.stream(split).toList(),doubles,pageable);
+                result = goodRepository.findAllByName(list,doubles,pageable);
             }
             if (pageable.getPageSize()>result.getContent().size()) {
                 result = new PageImpl<>(result.getContent(),PageRequest.of(0,result.getContent().size()),result.getContent().size());
