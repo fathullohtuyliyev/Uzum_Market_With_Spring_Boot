@@ -15,6 +15,7 @@ import java.util.List;
 @Service
 public interface AuthUserService {
     AuthUserGetDto save(AuthUserCreateDto dto);
+    void logout(HttpServletRequest request, HttpServletResponse response);
     boolean checkAndSendPasswordToEmail(String email, HttpServletResponse response);
     AuthUserGetDto login(String password, HttpServletRequest request, HttpServletResponse response);
     AuthUserGetDto update(AuthUserUpdateDto dto);

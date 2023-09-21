@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity(name = "user_data")
@@ -20,10 +21,13 @@ public class UserData {
     private UUID id;
 
     @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY,optional = false)
+    @OneToOne(optional = false,mappedBy = "data")
     private AuthUser user;
 
     @NotNull
     @Column(nullable = false)
     private String data;
+
+    @Column(name = "expire_time",nullable = false)
+    private LocalDateTime expireTime;
 }

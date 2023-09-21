@@ -25,12 +25,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 import static com.example.demo.mapper.UserMapper.USER_MAPPER;
+import static com.example.demo.util.JwtTokenUtil.*;
 
 @Service
 @RequiredArgsConstructor
@@ -71,6 +69,16 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     @Override
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        String authorization = request.getHeader("Authorization");
+        if (authorization!=null && authorization.length()>30) {
+            expireToken(authorization);
+        }
+        String remoteAddr = request.getRemoteAddr();
+        userDataRepository.deleteByUserData(remoteAddr);
+    }
+
+    @Override
     public boolean checkAndSendPasswordToEmail(String email, HttpServletResponse response) {
         try {
             if (authUserRepository.existsAuthUserByEmail(email)) {
@@ -84,6 +92,8 @@ public class AuthUserServiceImpl implements AuthUserService {
                         <h6>hech kimga ushbu parolni bermasligingizni so'rab qolamiz !!!</h6>\s
                         """, temporaryPassword);
                 javaMailSenderService.send(email, text);
+                email = emailEncodeWithJwt(email);
+                System.out.println("Encoded email "+email);
                 response.setHeader("email",email);
                 return true;
             }
@@ -102,38 +112,33 @@ public class AuthUserServiceImpl implements AuthUserService {
                                 HttpServletResponse response) {
         try {
             String email = request.getHeader("email");
+            email = getEmail(email);
             if (email==null || email.isBlank()) {
                 throw new BadParamException();
             }
-            String userDate = request.getHeader("User-Agent");
+            String userDate = request.getRemoteAddr();
             String token = jwtTokenUtil.generateToken(email, password, userDate);
             if (token==null) {
                 throw new ForbiddenAccessException();
             }
                 AuthUser authUser = authUserRepository.findByEmailAndActiveTrue(email);
+            if (new HashSet<>(authUser.getRoles()).containsAll(List.of("ADMIN","SUPER_ADMIN"))) {
                 UserData userData = UserData.builder()
                         .user(authUser)
                         .data(userDate)
                         .build();
-                if (authUser.getRoles().contains("ADMIN")
-                   || authUser.getRoles().contains("SUPER_ADMIN")) {
-                    if (userDataRepository.count(authUser)==3) {
-                        throw new ForbiddenAccessException();
-                    }
-                }
                 userDataRepository.save(userData);
+            }
                 AuthUserGetDto dto = USER_MAPPER.toDto(authUser);
-                log.info("{} login with {}",dto,userDate);
+                log.info("{} login with {}",dto,request.getHeader("User-Agent"));
 
                 response.setHeader("Authorization","Bearer "+token);
 
                 String text = String.format("""
-                        Hurmatli foydalanuvchi
-                        Sizning hisobingizga
-                        %s qurilma %s da kirdi.
-                        Agar siz bo'lmasangiz,
-                        iltimos bizga murojat qiling !!!
-                        """, userDate, LocalDateTime.now());
+                        Hurmatli foydalanuvchi 
+                        Sizning hisobingizga %s qurilma %s da kirdi.
+                        Agar siz bo'lmasangiz, iltimos bizga murojat qiling !!!
+                        """, request.getHeader("User-Agent"), LocalDateTime.now());
                 javaMailSenderService.send(email,text);
 
                 authUserRepository.updatePassword(email,null);

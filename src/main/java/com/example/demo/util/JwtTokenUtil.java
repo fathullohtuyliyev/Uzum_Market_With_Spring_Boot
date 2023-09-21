@@ -1,5 +1,6 @@
 package com.example.demo.util;
 
+import com.example.demo.exception.BadParamException;
 import com.example.demo.service.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
 
@@ -28,6 +30,20 @@ public class JwtTokenUtil {
     private static final String key="MIICXAIBAAKBGQCSZFLVMALTGN2YUMXQNR0GKL8SQBW9HLBT7Z8IIDCQGBCJKQDMD61DOJR0KLJTTHBNUXI562VUT58EPPP7VXTSPDZ2N6UVLNQKUJTT61KDETJCMANXAKFMQ0NTEN9O3ZOU5LAUWMILJROFG64JSGIHTDIFHMEM4CXQIDAQABAOGADO3YEPCDLOUZWC6PZMC2CNZ0RDEHUNPHVBOVYR7YKMUXPX9GOBAN5BPW6KOF6JJKA0MUZN4QT79YZZYQMKHCJN10USQ8GRSSAEENQHTEBBQ6D26PYIO3DROUY2AHNEHZJMHIQCKZGC1BOJZJHZJFDYFDED3IEXBHBMGNH00AECQQD9AL1W1T9RKCWKZOPGCA8IX7DK9LIARN7FBGBEX6OV0PKMSSJ1R0EBA9JOHHW0PQ9HWI48REZKWCQW5CPFPFAKEALB9ZEQYEIP5OILO2L0I7CWU2BTCNGOBDGRJ2OKUIJZ9SVPIC6QPUG5OFAIKUANRULB6EVX2G25ERP01OQJBAPMO0QIQBX1QCOEKIM6T63ZQOEZORQCOLFONUXDWF4TS55YUN5MWFEOVOB9BQGTPISDZCWHXMQIUDZPATVFAM0CQB11ZPDWKIQKCP0GAM5WY7ZQCOABECV2O3KZ15SC8V6XM6ODZKGFWLZFOKDFOJEH3OB0IQQHY3NR3M16P6MLTECQBIPT51FS3Q2AYET9K3JFIVFDAHK1CHLEC4YZGBFDFUCAC7RB1IHYE1I2WHJ2HDF8QXKX9G26O8FPWNGFAS";
     public final CustomUserDetailsService customUserDetailsService;
     public final PasswordEncoder passwordEncoder;
+    public static String emailEncodeWithJwt(@NonNull String username){
+        Date expiration = new Date(System.currentTimeMillis()
+                + 1000 * 60 * 3);
+        String compact = Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(expiration)
+                .setIssuer("http://localhost:8080")
+                .signWith(key(), SignatureAlgorithm.HS256)
+                .compact();
+        System.out.println(compact);
+        return compact;
+    }
+
     public String generateToken(@NonNull String username, @NonNull String password, @NonNull String userDate){
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
@@ -35,7 +51,25 @@ public class JwtTokenUtil {
         if (userDate.contains("Chrome") || userDate.contains("Mozilla")) {
             expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
         }
+        byte[] decodeUsername = Base64.getDecoder().decode(username);
+        byte[] decodePassword = Base64.getDecoder().decode(password);
+        StringBuilder sb = new StringBuilder();
+        for (byte b : decodeUsername) {
+            sb.append((char)b);
+        }
+        username = sb.toString();
+
+        sb = new StringBuilder();
+        for (byte b : decodePassword) {
+            sb.append((char)b);
+        }
+        password = sb.toString();
+
+
+
         if (!passwordEncoder.matches(password,userDetails.getPassword())) {
+            throw new BadParamException();
+        }
             String compact = Jwts.builder()
                     .setSubject(username)
                     .setIssuedAt(new Date())
@@ -45,8 +79,6 @@ public class JwtTokenUtil {
                     .compact();
             System.out.println(compact);
             return compact;
-        }
-        return "";
     }
     private static Key key(){
         byte[] bytes = Decoders.BASE64.decode(key);
@@ -91,6 +123,20 @@ public class JwtTokenUtil {
                     .setSigningKey(key())
                     .build()
                     .parseClaimsJws(substring)
+                    .getBody();
+            System.out.println("claims = " + claims);
+            return claims.getSubject();
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+    public static String getEmail(String email){
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key())
+                    .build()
+                    .parseClaimsJws(email)
                     .getBody();
             System.out.println("claims = " + claims);
             return claims.getSubject();
