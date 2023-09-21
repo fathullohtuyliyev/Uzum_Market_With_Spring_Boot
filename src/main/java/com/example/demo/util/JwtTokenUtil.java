@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -21,25 +22,31 @@ import java.util.Date;
 import java.util.Optional;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class JwtTokenUtil {
     private static final String key="MIICXAIBAAKBGQCSZFLVMALTGN2YUMXQNR0GKL8SQBW9HLBT7Z8IIDCQGBCJKQDMD61DOJR0KLJTTHBNUXI562VUT58EPPP7VXTSPDZ2N6UVLNQKUJTT61KDETJCMANXAKFMQ0NTEN9O3ZOU5LAUWMILJROFG64JSGIHTDIFHMEM4CXQIDAQABAOGADO3YEPCDLOUZWC6PZMC2CNZ0RDEHUNPHVBOVYR7YKMUXPX9GOBAN5BPW6KOF6JJKA0MUZN4QT79YZZYQMKHCJN10USQ8GRSSAEENQHTEBBQ6D26PYIO3DROUY2AHNEHZJMHIQCKZGC1BOJZJHZJFDYFDED3IEXBHBMGNH00AECQQD9AL1W1T9RKCWKZOPGCA8IX7DK9LIARN7FBGBEX6OV0PKMSSJ1R0EBA9JOHHW0PQ9HWI48REZKWCQW5CPFPFAKEALB9ZEQYEIP5OILO2L0I7CWU2BTCNGOBDGRJ2OKUIJZ9SVPIC6QPUG5OFAIKUANRULB6EVX2G25ERP01OQJBAPMO0QIQBX1QCOEKIM6T63ZQOEZORQCOLFONUXDWF4TS55YUN5MWFEOVOB9BQGTPISDZCWHXMQIUDZPATVFAM0CQB11ZPDWKIQKCP0GAM5WY7ZQCOABECV2O3KZ15SC8V6XM6ODZKGFWLZFOKDFOJEH3OB0IQQHY3NR3M16P6MLTECQBIPT51FS3Q2AYET9K3JFIVFDAHK1CHLEC4YZGBFDFUCAC7RB1IHYE1I2WHJ2HDF8QXKX9G26O8FPWNGFAS";
     public final CustomUserDetailsService customUserDetailsService;
     public final PasswordEncoder passwordEncoder;
-    public String generateToken(@NonNull String username,@NonNull String password){
+    public String generateToken(@NonNull String username, @NonNull String password, @NonNull String userDate){
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-        if(!passwordEncoder.matches(password,userDetails.getPassword())){
-            throw new RuntimeException();
+
+        Date expiration = new Date(System.currentTimeMillis() + 1000L * 60L * 60L * 24L * 30L);
+        if (userDate.contains("Chrome") || userDate.contains("Mozilla")) {
+            expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
         }
-        String compact = Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
-                .setIssuer("http://localhost:8080")
-                .signWith(key(), SignatureAlgorithm.HS256)
-                .compact();
-        System.out.println(compact);
-        return compact;
+        if (!passwordEncoder.matches(password,userDetails.getPassword())) {
+            String compact = Jwts.builder()
+                    .setSubject(username)
+                    .setIssuedAt(new Date())
+                    .setExpiration(expiration)
+                    .setIssuer("http://localhost:8080")
+                    .signWith(key(), SignatureAlgorithm.HS256)
+                    .compact();
+            System.out.println(compact);
+            return compact;
+        }
+        return "";
     }
     private static Key key(){
         byte[] bytes = Decoders.BASE64.decode(key);

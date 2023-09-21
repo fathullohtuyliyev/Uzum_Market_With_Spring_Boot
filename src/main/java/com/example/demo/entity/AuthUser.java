@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-@Entity
+@Entity(name = "auth_user")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -70,4 +70,6 @@ public class AuthUser {
     @ToString.Exclude
     @OneToMany(mappedBy = "user")
     private List<UserData> dataList;
+
+    private String temporaryPassword;
 }

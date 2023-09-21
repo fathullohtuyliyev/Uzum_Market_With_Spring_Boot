@@ -22,10 +22,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         try {
-            AuthUser authUser = authUserRepository.findByEmailAndBlockedFalse(email);
+            AuthUser authUser = authUserRepository.findByEmailAndActiveTrue(email);
             return User.builder()
                     .username(authUser.getEmail())
-                    .accountLocked(authUser.isBlocked())
+                    .accountLocked(authUser.isActive())
+                    .password(authUser.getTemporaryPassword())
                     .roles(String.join(",", authUser.getRoles()))
                     .credentialsExpired(false)
                     .disabled(false)

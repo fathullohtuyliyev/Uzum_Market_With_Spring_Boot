@@ -6,6 +6,7 @@ import com.example.demo.dto.auth_user_dto.AuthUserUpdateDto;
 import com.example.demo.entity.ActivateCodes;
 import com.example.demo.entity.AuthUser;
 import com.example.demo.entity.UserData;
+import com.example.demo.exception.BadParamException;
 import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.AuthUserRepository;
@@ -20,11 +21,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import static com.example.demo.mapper.UserMapper.USER_MAPPER;
@@ -37,6 +40,7 @@ public class AuthUserServiceImpl implements AuthUserService {
     private final AuthUserRepository authUserRepository;
     private final JavaMailSenderService javaMailSenderService;
     private final JwtTokenUtil jwtTokenUtil;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public AuthUserGetDto save(AuthUserCreateDto dto) {
@@ -53,6 +57,7 @@ public class AuthUserServiceImpl implements AuthUserService {
                     Uni hech kimga bermang !!!
                     """, activateCodes.getCode());
             javaMailSenderService.send(activateCodes,text);
+            authUser.setActive(false);
             AuthUser save = authUserRepository.save(authUser);
             AuthUserGetDto dto1 = USER_MAPPER.toDto(save);
             log.info("{} saved",dto1);
@@ -66,13 +71,45 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     @Override
-    public AuthUserGetDto login(String email, String password,
+    public boolean checkAndSendPasswordToEmail(String email, HttpServletResponse response) {
+        try {
+            if (authUserRepository.existsAuthUserByEmail(email)) {
+                String temporaryPassword = String.valueOf(new Random().nextInt(100000,999999));
+                authUserRepository.updatePassword(email, passwordEncoder.encode(temporaryPassword));
+                String text = String.format("""
+                        <h1>%s</h1>
+                        <h6>Hurmatli foydalanuvchi bu sizning bir marotabalik parolingiz.</h6>
+                        <h6>Agar siz login qilishga urinmagan bo'lsangiz,</h6>
+                        <h6>ushbu xabarni o'chirib yuborishingizni va</h6>
+                        <h6>hech kimga ushbu parolni bermasligingizni so'rab qolamiz !!!</h6>\s
+                        """, temporaryPassword);
+                javaMailSenderService.send(email, text);
+                response.setHeader("email",email);
+                return true;
+            }
+            return false;
+        }catch (Exception e){
+            e.printStackTrace();
+            Arrays.stream(e.getStackTrace())
+                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public AuthUserGetDto login(String password,
                                 HttpServletRequest request,
                                 HttpServletResponse response) {
         try {
+            String email = request.getHeader("email");
+            if (email==null || email.isBlank()) {
+                throw new BadParamException();
+            }
             String userDate = request.getHeader("User-Agent");
-            String token = jwtTokenUtil.generateToken(email, password);
-            if (token!=null) {
+            String token = jwtTokenUtil.generateToken(email, password, userDate);
+            if (token==null) {
+                throw new ForbiddenAccessException();
+            }
                 AuthUser authUser = authUserRepository.findByEmailAndActiveTrue(email);
                 UserData userData = UserData.builder()
                         .user(authUser)
@@ -87,7 +124,9 @@ public class AuthUserServiceImpl implements AuthUserService {
                 userDataRepository.save(userData);
                 AuthUserGetDto dto = USER_MAPPER.toDto(authUser);
                 log.info("{} login with {}",dto,userDate);
+
                 response.setHeader("Authorization","Bearer "+token);
+
                 String text = String.format("""
                         Hurmatli foydalanuvchi
                         Sizning hisobingizga
@@ -96,9 +135,9 @@ public class AuthUserServiceImpl implements AuthUserService {
                         iltimos bizga murojat qiling !!!
                         """, userDate, LocalDateTime.now());
                 javaMailSenderService.send(email,text);
+
+                authUserRepository.updatePassword(email,null);
                 return dto;
-            }
-            throw new NotFoundException();
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
