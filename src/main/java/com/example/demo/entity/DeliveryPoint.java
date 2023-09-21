@@ -12,6 +12,7 @@ import java.util.List;
 @Builder
 @ToString
 @Entity(name = "delivery_point")
+@Table(name = "delivery_point")
 public class DeliveryPoint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

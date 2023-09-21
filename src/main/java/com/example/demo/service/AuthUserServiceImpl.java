@@ -78,7 +78,7 @@ public class AuthUserServiceImpl implements AuthUserService {
             }
             Integer code = Integer.valueOf(stringBuilder.toString());
             ActivateCodes activateCodes = activateCodesRepository.findByCode(code)
-                    .orElseThrow(NotFoundException::new);
+                    .orElseThrow(BadParamException::new);
             if (activateCodes.getCode().equals(code)) {
                 AuthUser authUser = activateCodes.getAuthUser();
                 authUser.setActive(true);
@@ -97,14 +97,28 @@ public class AuthUserServiceImpl implements AuthUserService {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response) {
-        String remoteAddr = request.getRemoteAddr();
-        userDataRepository.deleteByUserData(remoteAddr);
+        try {
+            String remoteAddr = request.getRemoteAddr();
+            userDataRepository.deleteByUserData(remoteAddr);
+        }catch (Exception e){
+            e.printStackTrace();
+            Arrays.stream(e.getStackTrace())
+                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
+            throw new RuntimeException();
+        }
     }
 
     @Override
     public boolean checkAndSendPasswordToEmail(String email, HttpServletResponse response) {
         try {
-            if (authUserRepository.existsAuthUserByEmail(email)) {
+            StringBuilder stringBuilder = new StringBuilder();
+            byte[] decode = Decoders.BASE64.decode(email);
+
+            for (byte b : decode) {
+                stringBuilder.append((char)b);
+            }
+            email = stringBuilder.toString();
+            if (authUserRepository.existsAuthUserByEmailAndActiveTrue(email)) {
                 String temporaryPassword = String.valueOf(new Random().nextInt(100000,999999));
                 authUserRepository.updatePassword(email, passwordEncoder.encode(temporaryPassword));
                 String text = String.format("""
@@ -115,6 +129,7 @@ public class AuthUserServiceImpl implements AuthUserService {
                         <h6>hech kimga ushbu parolni bermasligingizni so'rab qolamiz !!!</h6>\s
                         """, temporaryPassword);
                 javaMailSenderService.send(email, text);
+                System.out.println("email = " + email);
                 email = textEncodeWithJwt(email);
                 System.out.println("Encoded email " + email);
                 response.setHeader("email",email);
@@ -151,7 +166,7 @@ public class AuthUserServiceImpl implements AuthUserService {
                 AuthUser authUser = authUserRepository.findByEmailAndActiveTrue(email)
                         .orElseThrow(NotFoundException::new);
 
-            authUserRepository.updateAuthUserBlockedByEmail(true,email);
+            authUserRepository.updateAuthUserActiveByEmail(true,email);
 
             if (new HashSet<>(authUser.getRoles()).containsAll(List.of("ADMIN","SUPER_ADMIN"))) {
                 UserData userData = UserData.builder()
@@ -239,6 +254,54 @@ public class AuthUserServiceImpl implements AuthUserService {
                     .toList();
             log.info("{} gave users",uuidList);
             return USER_MAPPER.toDto(all);
+        }catch (Exception e){
+            e.printStackTrace();
+            Arrays.stream(e.getStackTrace())
+                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public void online(UUID userId) {
+        try {
+            authUserRepository.updateAuthUserOnlineTrueById(userId);
+        }catch (Exception e){
+            e.printStackTrace();
+            Arrays.stream(e.getStackTrace())
+                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public void offline(UUID userId) {
+        try {
+            authUserRepository.updateAuthUserOnlineFalseById(userId);
+        }catch (Exception e){
+            e.printStackTrace();
+            Arrays.stream(e.getStackTrace())
+                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public boolean existEmail(String email) {
+        try {
+            return authUserRepository.existsAuthUserByEmail(email);
+        }catch (Exception e){
+            e.printStackTrace();
+            Arrays.stream(e.getStackTrace())
+                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public boolean existPhone(String phone) {
+        try {
+            return authUserRepository.existsAuthUserByPhone(phone);
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())

@@ -16,6 +16,7 @@ import java.util.UUID;
 @Builder
 @ToString
 @Entity(name = "good")
+@Table(name = "good")
 public class Good {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

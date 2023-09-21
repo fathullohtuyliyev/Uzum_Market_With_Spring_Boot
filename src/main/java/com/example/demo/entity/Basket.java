@@ -12,6 +12,7 @@ import java.util.UUID;
 @Builder
 @ToString
 @Entity(name = "basket")
+@Table(name = "basket")
 public class Basket {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity(name = "user_data")
+@Table(name = "user_data")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

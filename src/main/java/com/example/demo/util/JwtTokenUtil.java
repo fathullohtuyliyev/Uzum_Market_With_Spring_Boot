@@ -150,7 +150,9 @@ public class JwtTokenUtil {
     }
     public static String getText(String encoded){
         try {
-
+            if (encoded==null) {
+                throw new BadParamException();
+            }
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(keyForCommon())
                     .build()

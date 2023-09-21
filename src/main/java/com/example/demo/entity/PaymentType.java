@@ -11,6 +11,7 @@ import java.util.List;
 @Builder
 @ToString
 @Entity(name = "payment_type")
+@Table(name = "payment_type")
 public class PaymentType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -22,4 +22,8 @@ public interface AuthUserService {
     AuthUserGetDto update(AuthUserUpdateDto dto);
     AuthUserGetDto get(UUID id, HttpServletRequest request);
     Page<AuthUserGetDto> users(Pageable pageable);
+    void online(UUID userId);
+    void offline(UUID userId);
+    boolean existEmail(String email);
+    boolean existPhone(String phone);
 }

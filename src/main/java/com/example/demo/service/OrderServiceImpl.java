@@ -146,6 +146,9 @@ public class OrderServiceImpl implements OrderService {
                         PageRequest.of(0,allByUserId),allByUserId);
             }
             Page<OrderGetDto> dto = ORDER_MAPPER.toDto(result);
+            if (dto.isEmpty()) {
+                return dto;
+            }
             for (int i = 0; i < dto.getContent().size(); i++) {
                 method2(dto.getContent().get(i),result.getContent().get(i));
             }

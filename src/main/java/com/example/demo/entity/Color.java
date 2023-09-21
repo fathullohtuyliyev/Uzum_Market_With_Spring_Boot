@@ -14,6 +14,7 @@ import java.util.List;
 @ToString
 @Builder
 @Entity(name = "color")
+@Table(name = "color")
 public class Color {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

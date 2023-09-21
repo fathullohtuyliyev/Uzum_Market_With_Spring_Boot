@@ -141,6 +141,9 @@ public class PromoCodeServiceImpl implements PromoCodeService {
     private static void methodList(Page<PromoCode> result, Page<PromoCodeGetDto> dto){
         List<PromoCodeGetDto> contentDto = dto.getContent();
         List<PromoCode> content = result.getContent();
+        if (contentDto.isEmpty()) {
+            return;
+        }
         for (int i = 0; i < content.size(); i++) {
             method2(contentDto.get(i),content.get(i));
         }

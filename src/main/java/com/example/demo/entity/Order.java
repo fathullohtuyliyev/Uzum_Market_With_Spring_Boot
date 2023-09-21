@@ -15,6 +15,7 @@ import java.util.UUID;
 @Builder
 @ToString
 @Entity(name = "order")
+@Table(name = "order")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -40,7 +41,6 @@ public class Order {
     @Column(nullable = false)
     private Double price;
 
-    @Builder.Default
     @Column(nullable = false,insertable = false)
     private LocalDateTime time;
 

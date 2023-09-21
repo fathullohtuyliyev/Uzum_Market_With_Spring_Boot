@@ -87,7 +87,8 @@ public class GoodServiceImpl implements GoodService {
             goodRepository.updateGood(good.getId(),good.getColor(),good.getName(),good.getType(),
                     good.getCount(),good.getCommentsId(),good.getDescription(),good.getImagesId(),
                     good.getPrice(),good.getOrdersCount(),good.getDiscountPrice());
-            Good updatedGood = goodRepository.findByIdAndBlockedFalse(good.getId());
+            Good updatedGood = goodRepository.findByIdAndBlockedFalse(good.getId())
+                    .orElseThrow(NotFoundException::new);
             GoodGetDto dto1 = GOOD_MAPPER.toDto(updatedGood);
             method2(dto1,updatedGood,commentRepository);
             return dto1;
@@ -117,7 +118,7 @@ public class GoodServiceImpl implements GoodService {
     @Override
     public void delete(UUID id) {
         try {
-            goodRepository.updateGoodBlockedTrueById(id);
+            goodRepository.updateGoodBlockedById(true,id);
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -129,7 +130,7 @@ public class GoodServiceImpl implements GoodService {
     @Override
     public Page<GoodGetDto> find(Pageable pageable) {
         try {
-            Page<Good> all = goodRepository.findAll(pageable);
+            Page<Good> all = goodRepository.findAllByBlockedFalse(pageable);
             Page<GoodGetDto> dto = GOOD_MAPPER.toDto(all);
             return methodForList(all, dto, commentRepository);
         }catch (Exception e){
@@ -174,8 +175,10 @@ public class GoodServiceImpl implements GoodService {
     private static Page<GoodGetDto> methodForList(Page<Good> result,Page<GoodGetDto> dto,CommentRepository commentRepository){
         List<GoodGetDto> contentDto = dto.getContent();
         List<Good> content = result.getContent();
-        for (int i = 0; i < content.size(); i++) {
-            method2(contentDto.get(i),content.get(i),commentRepository);
+        if (!contentDto.isEmpty()) {
+            for (int i = 0; i < content.size(); i++) {
+                method2(contentDto.get(i), content.get(i), commentRepository);
+            }
         }
         return new PageImpl<>(contentDto,dto.getPageable(),contentDto.size());
     }

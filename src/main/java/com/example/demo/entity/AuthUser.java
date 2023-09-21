@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity(name = "auth_user")
+@Table(name = "auth_user")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

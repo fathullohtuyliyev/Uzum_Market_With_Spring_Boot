@@ -14,6 +14,7 @@ import java.util.UUID;
 @Builder
 @ToString
 @Entity(name = "role")
+@Table(name = "role")
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

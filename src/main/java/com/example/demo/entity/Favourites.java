@@ -12,6 +12,7 @@ import java.util.UUID;
 @Builder
 @ToString
 @Entity(name = "favourites")
+@Table(name = "favourites")
 public class Favourites {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

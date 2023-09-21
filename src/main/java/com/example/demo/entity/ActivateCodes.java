@@ -9,13 +9,14 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.Random;
 
-@Entity(name = "activate_codes")
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
+@Entity(name = "activate_codes")
 @Table(name = "activate_codes")
 public class ActivateCodes {
     @Id
@@ -33,3 +34,4 @@ public class ActivateCodes {
     @Future
     private LocalDateTime valid = LocalDateTime.now().plusMinutes(10);
 }
+
