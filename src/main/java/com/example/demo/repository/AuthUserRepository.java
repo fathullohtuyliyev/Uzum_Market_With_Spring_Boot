@@ -16,10 +16,10 @@ import java.util.UUID;
 
 @Repository
 public interface AuthUserRepository extends JpaRepository<AuthUser, UUID>, JpaSpecificationExecutor<AuthUser> {
-    @Query(value = "from AuthUser u where u.email=:email and u.active=true")
+    @Query(value = "from auth_user u where u.email=:email and u.active=true")
     AuthUser findByEmailAndActiveTrue(String email);
 
-    @Query(value = "from AuthUser u where u.id=:id and u.active=true")
+    @Query(value = "from auth_user u where u.id=:id and u.active=true")
     AuthUser findAuthUserByIdAndActiveTrue(UUID id);
 
     @Modifying
