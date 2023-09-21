@@ -9,7 +9,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.Random;
 
-@Entity
+@Entity(name = "activate_codes")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,6 +27,7 @@ public class ActivateCodes {
     @ToString.Exclude
     @JoinColumn(name = "auth_user_id")
     private AuthUser authUser;
+
     @NotNull
     @Builder.Default
     @Future

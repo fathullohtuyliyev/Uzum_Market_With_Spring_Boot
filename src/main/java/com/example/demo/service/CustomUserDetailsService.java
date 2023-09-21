@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.AuthUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         try {
-            AuthUser authUser = authUserRepository.findByEmailAndActiveTrue(email);
+            AuthUser authUser = authUserRepository.findByEmailAndActiveTrue(email)
+                    .orElseThrow(NotFoundException::new);
             return User.builder()
                     .username(authUser.getEmail())
                     .accountLocked(authUser.isActive())

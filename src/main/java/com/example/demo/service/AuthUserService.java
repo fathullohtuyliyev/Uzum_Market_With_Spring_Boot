@@ -14,11 +14,12 @@ import java.util.List;
 
 @Service
 public interface AuthUserService {
-    AuthUserGetDto save(AuthUserCreateDto dto);
+    void save(AuthUserCreateDto dto);
+    void activate(String code);
     void logout(HttpServletRequest request, HttpServletResponse response);
     boolean checkAndSendPasswordToEmail(String email, HttpServletResponse response);
     AuthUserGetDto login(String password, HttpServletRequest request, HttpServletResponse response);
     AuthUserGetDto update(AuthUserUpdateDto dto);
-    AuthUserGetDto get(UUID id);
+    AuthUserGetDto get(UUID id, HttpServletRequest request);
     Page<AuthUserGetDto> users(Pageable pageable);
 }

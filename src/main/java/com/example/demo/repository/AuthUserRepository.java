@@ -11,15 +11,16 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface AuthUserRepository extends JpaRepository<AuthUser, UUID>, JpaSpecificationExecutor<AuthUser> {
     @Query(value = "from auth_user u where u.email=:email and u.active=true")
-    AuthUser findByEmailAndActiveTrue(String email);
+    Optional<AuthUser> findByEmailAndActiveTrue(String email);
 
     @Query(value = "from auth_user u where u.id=:id and u.active=true")
-    AuthUser findAuthUserByIdAndActiveTrue(UUID id);
+    Optional<AuthUser> findAuthUserByIdAndActiveTrue(UUID id);
 
     @Modifying
     @Transactional
@@ -36,13 +37,19 @@ public interface AuthUserRepository extends JpaRepository<AuthUser, UUID>, JpaSp
 
     @Transactional
     @Modifying
+    @Async
+    @Query(value = "update auth_user set active=:blocked where email=:email")
+    void updateAuthUserBlockedByEmail(boolean blocked, String email);
+
+    @Transactional
+    @Modifying
     @Query(value = "update auth_user set role=?1 where id=?2")
     void updateRole(Role role,UUID id);
 
     @Modifying
     @Transactional
-    @Query(value = "update auth_user set phone=:phone,firstName=:firstName,gender=:gender,lastName=:lastName,imagePath=:imagePath,birthdate=:birthdate where id=:id")
-    void updateAuthUser(String phone, String firstName, String lastName, String imagePath, Gender gender, LocalDate birthdate,UUID id);
+    @Query(value = "update auth_user set firstName=:firstName,gender=:gender,lastName=:lastName,imagePath=:imagePath,birthdate=:birthdate where id=:id")
+    void updateAuthUser(String firstName, String lastName, String imagePath, Gender gender, LocalDate birthdate,UUID id);
 
     @Query(value = "select count(au.id) from auth_user au")
     int findAllSize();
@@ -55,6 +62,9 @@ public interface AuthUserRepository extends JpaRepository<AuthUser, UUID>, JpaSp
 
     @Query(value = "select exists (select u.email from auth_user u where u.email=:email)")
     boolean existsAuthUserByEmail(String email);
+
+    @Query(value = "select exists (select u.phone from auth_user u where u.phone=:phone)")
+    boolean existsAuthUserByPhone(String phone);
 
     @Modifying
     @Transactional

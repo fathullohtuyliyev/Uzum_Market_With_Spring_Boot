@@ -9,12 +9,13 @@ import com.example.demo.entity.UserData;
 import com.example.demo.exception.BadParamException;
 import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
+import com.example.demo.repository.ActivateCodesRepository;
 import com.example.demo.repository.AuthUserRepository;
 import com.example.demo.repository.UserDataRepository;
 import com.example.demo.util.JwtTokenUtil;
+import io.jsonwebtoken.io.Decoders;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -23,10 +24,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.*;
-
 import static com.example.demo.mapper.UserMapper.USER_MAPPER;
 import static com.example.demo.util.JwtTokenUtil.*;
 
@@ -34,6 +33,7 @@ import static com.example.demo.util.JwtTokenUtil.*;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthUserServiceImpl implements AuthUserService {
+    private final ActivateCodesRepository activateCodesRepository;
     private final UserDataRepository userDataRepository;
     private final AuthUserRepository authUserRepository;
     private final JavaMailSenderService javaMailSenderService;
@@ -41,17 +41,18 @@ public class AuthUserServiceImpl implements AuthUserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public AuthUserGetDto save(AuthUserCreateDto dto) {
+    public void save(AuthUserCreateDto dto) {
         try {
             if (authUserRepository.existsAuthUserByPhoneAndEmail(dto.phone, dto.email)) {
-                throw new ValidationException();
+                throw new BadParamException();
             }
             AuthUser authUser = USER_MAPPER.toEntity(dto);
             ActivateCodes activateCodes = ActivateCodes.builder()
                     .authUser(authUser)
                     .build();
             String text = String.format("""
-                    %d ushbu kod akkauntingizni faollashtirish uchun tasdiqlash kodi.
+                    <h1>%d</h1>\s
+                    ushbu kod akkauntingizni faollashtirish uchun tasdiqlash kodi.
                     Uni hech kimga bermang !!!
                     """, activateCodes.getCode());
             javaMailSenderService.send(activateCodes,text);
@@ -59,7 +60,6 @@ public class AuthUserServiceImpl implements AuthUserService {
             AuthUser save = authUserRepository.save(authUser);
             AuthUserGetDto dto1 = USER_MAPPER.toDto(save);
             log.info("{} saved",dto1);
-            return dto1;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -69,11 +69,34 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
-        String authorization = request.getHeader("Authorization");
-        if (authorization!=null && authorization.length()>30) {
-            expireToken(authorization);
+    public void activate(String codeBase64) {
+        try {
+            byte[] decode = Decoders.BASE64.decode(codeBase64);
+            StringBuilder stringBuilder = new StringBuilder();
+            for (byte b : decode) {
+                stringBuilder.append((char)b);
+            }
+            Integer code = Integer.valueOf(stringBuilder.toString());
+            ActivateCodes activateCodes = activateCodesRepository.findByCode(code)
+                    .orElseThrow(NotFoundException::new);
+            if (activateCodes.getCode().equals(code)) {
+                AuthUser authUser = activateCodes.getAuthUser();
+                authUser.setActive(true);
+                authUserRepository.save(authUser);
+            }else {
+                throw new BadParamException();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            Arrays.stream(e.getStackTrace())
+                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
+            throw new RuntimeException();
         }
+    }
+
+
+    @Override
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
         String remoteAddr = request.getRemoteAddr();
         userDataRepository.deleteByUserData(remoteAddr);
     }
@@ -92,8 +115,8 @@ public class AuthUserServiceImpl implements AuthUserService {
                         <h6>hech kimga ushbu parolni bermasligingizni so'rab qolamiz !!!</h6>\s
                         """, temporaryPassword);
                 javaMailSenderService.send(email, text);
-                email = emailEncodeWithJwt(email);
-                System.out.println("Encoded email "+email);
+                email = textEncodeWithJwt(email);
+                System.out.println("Encoded email " + email);
                 response.setHeader("email",email);
                 return true;
             }
@@ -112,16 +135,24 @@ public class AuthUserServiceImpl implements AuthUserService {
                                 HttpServletResponse response) {
         try {
             String email = request.getHeader("email");
-            email = getEmail(email);
+            email = getText(email);
+
             if (email==null || email.isBlank()) {
                 throw new BadParamException();
             }
+
             String userDate = request.getRemoteAddr();
             String token = jwtTokenUtil.generateToken(email, password, userDate);
+
             if (token==null) {
                 throw new ForbiddenAccessException();
             }
-                AuthUser authUser = authUserRepository.findByEmailAndActiveTrue(email);
+
+                AuthUser authUser = authUserRepository.findByEmailAndActiveTrue(email)
+                        .orElseThrow(NotFoundException::new);
+
+            authUserRepository.updateAuthUserBlockedByEmail(true,email);
+
             if (new HashSet<>(authUser.getRoles()).containsAll(List.of("ADMIN","SUPER_ADMIN"))) {
                 UserData userData = UserData.builder()
                         .user(authUser)
@@ -129,13 +160,14 @@ public class AuthUserServiceImpl implements AuthUserService {
                         .build();
                 userDataRepository.save(userData);
             }
+
                 AuthUserGetDto dto = USER_MAPPER.toDto(authUser);
                 log.info("{} login with {}",dto,request.getHeader("User-Agent"));
 
                 response.setHeader("Authorization","Bearer "+token);
 
                 String text = String.format("""
-                        Hurmatli foydalanuvchi 
+                        Hurmatli foydalanuvchi\s
                         Sizning hisobingizga %s qurilma %s da kirdi.
                         Agar siz bo'lmasangiz, iltimos bizga murojat qiling !!!
                         """, request.getHeader("User-Agent"), LocalDateTime.now());
@@ -154,14 +186,15 @@ public class AuthUserServiceImpl implements AuthUserService {
     @Override
     public AuthUserGetDto update(AuthUserUpdateDto dto) {
         try {
-            if (authUserRepository.existsAuthUserByPhoneAndEmail(dto.phone, dto.email)) {
-                throw new ValidationException();
-            }
-            authUserRepository.updateAuthUser(dto.phone,dto.firstName,dto.lastName,
+
+            authUserRepository.updateAuthUser(dto.firstName,dto.lastName,
                     dto.imagePath,dto.gender,dto.birthdate,dto.id);
-            AuthUser authUser = authUserRepository.findAuthUserByIdAndActiveTrue(dto.id);
+            AuthUser authUser = authUserRepository.findAuthUserByIdAndActiveTrue(dto.id)
+                    .orElseThrow(NotFoundException::new);
             AuthUserGetDto dto1 = USER_MAPPER.toDto(authUser);
+
             log.info("{} updated",dto1);
+
             return dto1;
         }catch (Exception e){
             e.printStackTrace();
@@ -172,9 +205,14 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     @Override
-    public AuthUserGetDto get(UUID id) {
+    public AuthUserGetDto get(UUID id, HttpServletRequest request) {
         try {
-            AuthUser authUser = authUserRepository.findAuthUserByIdAndActiveTrue(id);
+            AuthUser authUser = authUserRepository.findAuthUserByIdAndActiveTrue(id)
+                    .orElseThrow(NotFoundException::new);
+            if (!Objects.requireNonNullElse(getEmail(request),"").
+                    equals(Objects.requireNonNullElse(authUser.getEmail(),""))) {
+                throw new ForbiddenAccessException();
+            }
             AuthUserGetDto dto = USER_MAPPER.toDto(authUser);
             log.info("{} gave",dto);
             return dto;

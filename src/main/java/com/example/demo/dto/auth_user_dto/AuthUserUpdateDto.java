@@ -25,10 +25,6 @@ public class AuthUserUpdateDto {
 
     public String fatherName;
 
-    @Pattern(regexp = "^\\+[0-9]{10,13}$")
-    @NotBlank
-    public String phone;
-
     @NotNull
     public Gender gender;
 
@@ -37,8 +33,4 @@ public class AuthUserUpdateDto {
     public LocalDate birthdate;
 
     public String imagePath;
-
-    @NotBlank
-    @Email
-    public String email;
 }
