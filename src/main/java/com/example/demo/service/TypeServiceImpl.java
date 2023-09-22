@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.good_dto.GoodGetDto;
 import com.example.demo.dto.type_dto.TypeCreateDto;
 import com.example.demo.dto.type_dto.TypeGetDto;
 import com.example.demo.dto.type_dto.TypeUpdateDto;
@@ -14,11 +13,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.util.Arrays;
-import java.util.List;
-
-import static com.example.demo.mapper.GoodMapper.GOOD_MAPPER;
 import static com.example.demo.mapper.TypeMapper.TYPE_MAPPER;
 
 @Slf4j
@@ -30,7 +25,7 @@ public class TypeServiceImpl implements TypeService {
     @Override
     public TypeGetDto save(TypeCreateDto dto) {
         try {
-            Type type = TYPE_MAPPER.toEntity(dto);
+            Type type = TYPE_MAPPER.toEntity(dto,typeRepository);
             Type saved = typeRepository.save(type);
             TypeGetDto dto1 = TYPE_MAPPER.toDto(saved);
             log.info("{} created",dto1);
@@ -46,11 +41,11 @@ public class TypeServiceImpl implements TypeService {
     @Override
     public TypeGetDto update(TypeUpdateDto dto) {
         try {
-            Type type = TYPE_MAPPER.toEntity(dto);
-            typeRepository.updateType(type.getName(), type.getId(), type.getSub(), type.getRoot());
+            Type type = TYPE_MAPPER.toEntity(dto,typeRepository);
+            typeRepository.updateType(type.getName(), type.getId(), type.getSub(), type.getRoots());
             Type found = typeRepository.findById(type.getId()).orElseThrow(NotFoundException::new);
             TypeGetDto dto1 = TYPE_MAPPER.toDto(found);
-            method(found,dto1);
+            log.info("{} updated", dto1);
             return dto1;
         }catch (Exception e){
             e.printStackTrace();
@@ -60,20 +55,13 @@ public class TypeServiceImpl implements TypeService {
         }
     }
 
-    private static void method(Type found, TypeGetDto dto) {
-        List<GoodGetDto> list = found.getGoods()
-                .stream()
-                .map(GOOD_MAPPER::toDto)
-                .toList();
-        dto.setGoods(list);
-    }
 
     @Override
     public TypeGetDto get(Long id) {
         try {
             Type type = typeRepository.findById(id).orElseThrow(NotFoundException::new);
             TypeGetDto dto = TYPE_MAPPER.toDto(type);
-            method(type,dto);
+            log.info("{} gave",dto);
             return dto;
         }catch (Exception e){
             e.printStackTrace();
@@ -91,14 +79,7 @@ public class TypeServiceImpl implements TypeService {
             if (size<pageable.getPageSize()) {
                 all = new PageImpl<>(typeRepository.findAll(), PageRequest.of(0,size),size);
             }
-            List<TypeGetDto> list = all.stream()
-                    .map(TYPE_MAPPER::toDto)
-                    .toList();
-            List<Type> content = all.getContent();
-            for (int i = 0; i < list.size(); i++) {
-                method(content.get(i),list.get(i));
-            }
-            return new PageImpl<>(list,all.getPageable(),list.size());
+            return TYPE_MAPPER.toDto(all);
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())

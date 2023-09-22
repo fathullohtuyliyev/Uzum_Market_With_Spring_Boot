@@ -1,10 +1,8 @@
 package com.example.demo.mapper;
 
-import com.example.demo.dto.auth_user_dto.AuthUserGetDto;
 import com.example.demo.dto.good_dto.GoodCreateDto;
 import com.example.demo.dto.good_dto.GoodGetDto;
 import com.example.demo.dto.good_dto.GoodUpdateDto;
-import com.example.demo.entity.AuthUser;
 import com.example.demo.entity.Good;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

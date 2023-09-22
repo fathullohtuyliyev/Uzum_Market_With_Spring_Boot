@@ -16,11 +16,5 @@ public class TypeCreateDto extends TypeUpdateDto{
     @NotBlank
     public String name;
 
-    @NotNull
-    @Positive
     public Long subId;
-
-    @NotNull
-    @Positive
-    public Set<Long> rootsId;
 }

@@ -22,7 +22,6 @@ public interface PaymentMapper {
     @Mapping(target = "orders",ignore = true)
     PaymentType toEntity(PaymentUpdateDto dto);
 
-    @Mapping(target = "orders",ignore = true)
     PaymentGetDto toDto(PaymentType paymentType);
 
     default Page<PaymentGetDto> toDto(Page<PaymentType> all){
