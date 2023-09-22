@@ -7,7 +7,7 @@ import com.example.demo.dto.good_dto.GoodUpdateDto;
 import com.example.demo.entity.Good;
 import com.example.demo.entity.Type;
 import com.example.demo.exception.NotFoundException;
-import com.example.demo.nosql.Comments;
+import com.example.demo.nosql.Comment;
 import com.example.demo.repository.ColorRepository;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.GoodRepository;
@@ -65,10 +65,10 @@ public class GoodServiceImpl implements GoodService {
         dto.setColor(Map.of(good.getColor().getId(),good.getColor().getName()));
         dto.setType(Map.of(good.getType().getId(), good.getName()));
         Pageable pageable = PageRequest.of(0, 15);
-        Page<Comments> commentsPage = commentRepository.findByGoodId(dto.id, pageable);
+        Page<Comment> commentsPage = commentRepository.findByGoodId(dto.id, pageable);
         int allSizeByGoodId = commentRepository.findAllSizeByGoodId(dto.id);
         if (pageable.getPageSize()< allSizeByGoodId) {
-            List<Comments> allByGoodId = commentRepository.findAllByGoodId(dto.id);
+            List<Comment> allByGoodId = commentRepository.findAllByGoodId(dto.id);
             commentsPage = new PageImpl<>(allByGoodId,
                     PageRequest.of(0,allSizeByGoodId),allSizeByGoodId);
         }

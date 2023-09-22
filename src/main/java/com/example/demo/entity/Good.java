@@ -54,8 +54,8 @@ public class Good {
     @Column(nullable = false,name = "images_id")
     private UUID imagesId;
 
-    @Column(name = "comments_id")
-    private UUID commentsId;
+    @Column(name = "video_name")
+    private String videoPath;
 
     @OneToMany(mappedBy = "good")
     @ToString.Exclude

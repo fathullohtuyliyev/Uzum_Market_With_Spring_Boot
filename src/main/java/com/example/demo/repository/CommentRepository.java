@@ -1,8 +1,7 @@
 package com.example.demo.repository;
 
-import com.example.demo.entity.Good;
 import java.util.List;
-import com.example.demo.nosql.Comments;
+import com.example.demo.nosql.Comment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -11,16 +10,16 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface CommentRepository extends MongoRepository<Comments, UUID> {
+public interface CommentRepository extends MongoRepository<Comment, UUID> {
     @Query
-    Page<Comments> findByGoodId(UUID goodId, Pageable pageable);
+    Page<Comment> findByGoodId(UUID goodId, Pageable pageable);
 
     @Query
     int findAllSizeByGoodId(UUID id);
 
     @Query(value = "{goodId: ?1}")
-    Page<Comments> findAllByCommentId(UUID goodId, Pageable pageable);
+    Page<Comment> findAllByCommentId(UUID goodId, Pageable pageable);
 
     @Query(value = "{goodId: ?1}")
-    List<Comments> findAllByGoodId(UUID goodId);
+    List<Comment> findAllByGoodId(UUID goodId);
 }

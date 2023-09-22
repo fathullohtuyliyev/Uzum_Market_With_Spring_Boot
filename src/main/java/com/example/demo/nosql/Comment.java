@@ -4,12 +4,12 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -18,16 +18,16 @@ import java.util.UUID;
 @Setter
 @Builder
 @Document
-public class Comments {
+public class Comment {
     @Id
     private UUID id;
 
     @NotNull
     private UUID goodId;
 
-    private Images images;
+    private List<String> images;
 
-    private boolean spam;
+    private Set<UUID> spammedUsers;
 
     @Min(1)
     @NotNull
@@ -40,9 +40,7 @@ public class Comments {
     @NotNull
     private UUID userId;
 
-    @NotNull
-    @Builder.Default
-    private LocalDateTime commentDate=LocalDateTime.now();
+    private LocalDateTime commentDate;
 
     private String response;
 
