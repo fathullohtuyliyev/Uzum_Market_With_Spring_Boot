@@ -25,6 +25,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.*;
 import static com.example.demo.mapper.UserMapper.USER_MAPPER;
 import static com.example.demo.util.JwtTokenUtil.*;
@@ -41,7 +43,7 @@ public class AuthUserServiceImpl implements AuthUserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void save(AuthUserCreateDto dto) {
+    public void save(AuthUserCreateDto dto, HttpServletResponse response) {
         try {
             if (authUserRepository.existsAuthUserByPhoneAndEmail(dto.phone, dto.email)) {
                 throw new BadParamException();
@@ -60,6 +62,8 @@ public class AuthUserServiceImpl implements AuthUserService {
             AuthUser save = authUserRepository.save(authUser);
             AuthUserGetDto dto1 = USER_MAPPER.toDto(save);
             log.info("{} saved",dto1);
+            String encodedEmail = textEncodeWithJwt(dto1.email);
+            response.setHeader("email",encodedEmail);
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -69,9 +73,11 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     @Override
-    public void activate(String codeBase64) {
+    public void activate(String codeBase64, HttpServletRequest request) {
         try {
             byte[] decode = Decoders.BASE64.decode(codeBase64);
+            String encodedEmail = request.getHeader("email");
+            String email = getText(encodedEmail);
             StringBuilder stringBuilder = new StringBuilder();
             for (byte b : decode) {
                 stringBuilder.append((char)b);
@@ -79,10 +85,10 @@ public class AuthUserServiceImpl implements AuthUserService {
             Integer code = Integer.valueOf(stringBuilder.toString());
             ActivateCodes activateCodes = activateCodesRepository.findByCode(code)
                     .orElseThrow(BadParamException::new);
-            if (activateCodes.getCode().equals(code)) {
-                AuthUser authUser = activateCodes.getAuthUser();
+            AuthUser authUser = activateCodes.getAuthUser();
+            if (authUser.getEmail().equals(email)) {
                 authUser.setActive(true);
-                authUserRepository.save(authUser);
+                authUserRepository.updateAuthUserActiveById(authUser.getId(),true);
             }else {
                 throw new BadParamException();
             }
@@ -149,6 +155,7 @@ public class AuthUserServiceImpl implements AuthUserService {
                                 HttpServletRequest request,
                                 HttpServletResponse response) {
         try {
+
             String email = request.getHeader("email");
             email = getText(email);
 
@@ -166,9 +173,11 @@ public class AuthUserServiceImpl implements AuthUserService {
                 AuthUser authUser = authUserRepository.findByEmailAndActiveTrue(email)
                         .orElseThrow(NotFoundException::new);
 
-            authUserRepository.updateAuthUserActiveByEmail(true,email);
 
             if (new HashSet<>(authUser.getRoles()).containsAll(List.of("ADMIN","SUPER_ADMIN"))) {
+                if (!request.getHeader("User-Agent").contains("Windows")) {
+                    throw new ForbiddenAccessException();
+                }
                 UserData userData = UserData.builder()
                         .user(authUser)
                         .data(userDate)

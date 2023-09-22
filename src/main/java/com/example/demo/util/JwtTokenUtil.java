@@ -46,11 +46,7 @@ public class JwtTokenUtil {
 
     public String generateToken(@NonNull String username, @NonNull String password, @NonNull String userDate){
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-
         Date expiration = new Date(System.currentTimeMillis() + 1000L * 60L * 60L * 24L * 30L);
-        if (userDate.contains("Chrome") || userDate.contains("Mozilla")) {
-            expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
-        }
 
         if (!passwordEncoder.matches(password,userDetails.getPassword())) {
             throw new BadParamException();

@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.AuthUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 
 @Service
@@ -25,6 +28,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         try {
             AuthUser authUser = authUserRepository.findByEmailAndActiveTrue(email)
                     .orElseThrow(NotFoundException::new);
+            if (authUser.getRoles().contains("SUPER_ADMIN")
+                    || authUser.getRoles().contains("ADMIN")) {
+                LocalTime now = LocalTime.now(ZoneId.of("Asia/Tashkent"));
+                if (9>now.getHour() || 18< now.getHour()) {
+                    throw new ForbiddenAccessException();
+                }
+            }
             return User.builder()
                     .username(authUser.getEmail())
                     .accountLocked(authUser.isActive())
