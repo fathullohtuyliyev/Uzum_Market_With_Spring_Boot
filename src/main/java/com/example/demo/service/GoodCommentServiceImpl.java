@@ -27,8 +27,8 @@ public class GoodCommentServiceImpl implements GoodCommentService {
         try {
             return commentRepository.findByGoodId(goodId, pageable);
         }catch (Exception e){
-            log.error("Error processing spam method", e);
-            throw new RuntimeException("Error processing spam method", e);
+            log.error("Error processing get method", e);
+            throw new RuntimeException("Error processing get method", e);
         }
     }
 
@@ -45,8 +45,8 @@ public class GoodCommentServiceImpl implements GoodCommentService {
                     .build();
             return commentRepository.save(comment);
         }catch (Exception e){
-            log.error("Error processing spam method", e);
-            throw new RuntimeException("Error processing spam method", e);
+            log.error("Error processing add method", e);
+            throw new RuntimeException("Error processing add method", e);
         }
     }
 
@@ -58,8 +58,8 @@ public class GoodCommentServiceImpl implements GoodCommentService {
             comment.setResponse(response);
             return commentRepository.save(comment);
         }catch (Exception e){
-            log.error("Error processing spam method", e);
-            throw new RuntimeException("Error processing spam method", e);
+            log.error("Error processing response method", e);
+            throw new RuntimeException("Error processing response method", e);
         }
     }
 
