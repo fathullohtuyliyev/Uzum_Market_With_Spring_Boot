@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,15 +12,15 @@ import lombok.*;
 @Setter
 @ToString
 @Builder
-public class TypeCreateDto {
+public class TypeCreateDto extends TypeUpdateDto{
     @NotBlank
     public String name;
 
     @NotNull
     @Positive
-    public Long root;
+    public Long subId;
 
     @NotNull
     @Positive
-    public Long sub;
+    public Set<Long> rootsId;
 }

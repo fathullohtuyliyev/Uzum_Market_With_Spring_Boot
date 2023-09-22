@@ -1,15 +1,10 @@
 package com.example.demo.dto.type_dto;
 
-import com.example.demo.dto.good_dto.GoodGetDto;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
-
-import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,7 +12,7 @@ import java.util.List;
 @Setter
 @ToString
 @Builder
-public class TypeUpdateDto {
+public class TypeUpdateDto{
     @Positive
     @NotNull
     public Long id;
@@ -27,9 +22,9 @@ public class TypeUpdateDto {
 
     @NotNull
     @Positive
-    public Long root;
+    public Long subId;
 
     @NotNull
     @Positive
-    public Long sub;
+    public Set<Long> rootsId;
 }

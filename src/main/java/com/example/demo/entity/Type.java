@@ -22,11 +22,11 @@ public class Type {
     @Column(nullable = false,unique = true)
     private String name;
 
-    private Long root;
-
-    private Long sub;
+    @ManyToOne
+    @ToString.Exclude
+    private Type sub;
 
     @ToString.Exclude
     @OneToMany(fetch = FetchType.LAZY)
-    private List<Good> goods;
+    private List<Type> roots;
 }
