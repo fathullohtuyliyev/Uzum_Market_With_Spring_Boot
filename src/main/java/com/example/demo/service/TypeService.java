@@ -1,9 +1,8 @@
 package com.example.demo.service;
 
 
-import com.example.demo.dto.delivery_dto.DeliveryCreateDto;
-import com.example.demo.dto.delivery_dto.DeliveryGetDto;
-import com.example.demo.dto.delivery_dto.DeliveryUpdateDto;
+import java.util.Collection;
+import java.util.List;
 import com.example.demo.dto.type_dto.TypeCreateDto;
 import com.example.demo.dto.type_dto.TypeGetDto;
 import com.example.demo.dto.type_dto.TypeUpdateDto;
@@ -18,5 +17,6 @@ public interface TypeService {
     TypeGetDto save(TypeCreateDto dto);
     TypeGetDto update(TypeUpdateDto dto);
     TypeGetDto get(Long id);
+    List<TypeGetDto> getAllByIds(Collection<Long> ids);
     Page<TypeGetDto> types(Pageable pageable);
 }

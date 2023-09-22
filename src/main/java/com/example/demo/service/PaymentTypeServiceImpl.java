@@ -44,7 +44,7 @@ public class PaymentTypeServiceImpl implements PaymentTypeService {
     public PaymentGetDto update(PaymentUpdateDto dto) {
         try {
             PaymentType paymentType = PAYMENT_MAPPER.toEntity(dto);
-            paymentTypeRepository.updateActive(paymentType.isActive(),paymentType.getId());
+            paymentTypeRepository.updateActive(paymentType.isActive(),paymentType.getName() , paymentType.getId());
             PaymentType found = paymentTypeRepository.findById(paymentType.getId()).orElseThrow(NotFoundException::new);
             PaymentGetDto dto1 = PAYMENT_MAPPER.toDto(found);
             log.info("{} updated",dto1);

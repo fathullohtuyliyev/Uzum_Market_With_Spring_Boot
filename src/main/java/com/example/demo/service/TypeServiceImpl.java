@@ -14,6 +14,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import static com.example.demo.mapper.TypeMapper.TYPE_MAPPER;
 
 @Slf4j
@@ -63,6 +66,21 @@ public class TypeServiceImpl implements TypeService {
             TypeGetDto dto = TYPE_MAPPER.toDto(type);
             log.info("{} gave",dto);
             return dto;
+        }catch (Exception e){
+            e.printStackTrace();
+            Arrays.stream(e.getStackTrace())
+                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public List<TypeGetDto> getAllByIds(Collection<Long> ids) {
+        try {
+            return typeRepository.findAllById(ids)
+                    .stream()
+                    .map(TYPE_MAPPER::toDto)
+                    .toList();
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
