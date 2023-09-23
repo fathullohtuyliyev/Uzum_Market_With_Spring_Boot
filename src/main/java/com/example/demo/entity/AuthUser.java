@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity(name = "auth_user")
@@ -39,10 +40,14 @@ public class AuthUser {
     @Enumerated(value = EnumType.STRING)
     private Gender gender;
 
-    @ElementCollection
-    @NotNull
-    @Column(nullable = false)
-    private List<String> roles;
+    @ToString.Exclude
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "auth_user_role",
+            joinColumns = @JoinColumn(name = "authuser_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;
 
 
     private boolean online;

@@ -5,12 +5,14 @@ import com.example.demo.dto.auth_user_dto.AuthUserGetDto;
 import com.example.demo.dto.auth_user_dto.AuthUserUpdateDto;
 import com.example.demo.entity.ActivateCodes;
 import com.example.demo.entity.AuthUser;
+import com.example.demo.entity.Role;
 import com.example.demo.entity.UserData;
 import com.example.demo.exception.BadParamException;
 import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.ActivateCodesRepository;
 import com.example.demo.repository.AuthUserRepository;
+import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserDataRepository;
 import com.example.demo.util.JwtTokenUtil;
 import io.jsonwebtoken.io.Decoders;
@@ -26,6 +28,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import static com.example.demo.mapper.UserMapper.USER_MAPPER;
 import static com.example.demo.util.JwtTokenUtil.*;
 
@@ -33,6 +37,7 @@ import static com.example.demo.util.JwtTokenUtil.*;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthUserServiceImpl implements AuthUserService {
+    private final RoleRepository roleRepository;
     private final ActivateCodesRepository activateCodesRepository;
     private final UserDataRepository userDataRepository;
     private final AuthUserRepository authUserRepository;
@@ -46,7 +51,10 @@ public class AuthUserServiceImpl implements AuthUserService {
             if (authUserRepository.existsAuthUserByPhoneAndEmail(dto.phone, dto.email)) {
                 throw new BadParamException();
             }
+            Role role = roleRepository.findByName("CUSTOMER")
+                    .orElseThrow(NotFoundException::new);
             AuthUser authUser = USER_MAPPER.toEntity(dto);
+            authUser.setRoles(Set.of(role));
             ActivateCodes activateCodes = ActivateCodes.builder()
                     .authUser(authUser)
                     .build();
@@ -156,8 +164,12 @@ public class AuthUserServiceImpl implements AuthUserService {
                 AuthUser authUser = authUserRepository.findByEmailAndActiveTrue(email)
                         .orElseThrow(NotFoundException::new);
 
+            Set<String> collect = authUser.getRoles()
+                    .stream()
+                    .map(Role::getName)
+                    .collect(Collectors.toSet());
 
-            if (new HashSet<>(authUser.getRoles()).containsAll(List.of("ADMIN","SUPER_ADMIN"))) {
+            if (collect.containsAll(List.of("ADMIN","SUPER_ADMIN"))) {
                 if (!request.getHeader("User-Agent").contains("Windows")) {
                     throw new ForbiddenAccessException();
                 }
@@ -170,7 +182,11 @@ public class AuthUserServiceImpl implements AuthUserService {
 
                 AuthUserGetDto dto = USER_MAPPER.toDto(authUser);
                 log.info("{} login with {}",dto,request.getHeader("User-Agent"));
-
+            List<String> roles = authUser.getRoles()
+                    .stream()
+                    .map(Role::getName)
+                    .toList();
+            dto.setRoles(roles);
                 response.setHeader("Authorization","Bearer "+token);
 
                 String text = String.format("""
@@ -212,7 +228,7 @@ public class AuthUserServiceImpl implements AuthUserService {
             AuthUser authUser = authUserRepository.findAuthUserByIdAndActiveTrue(dto.id)
                     .orElseThrow(NotFoundException::new);
             AuthUserGetDto dto1 = USER_MAPPER.toDto(authUser);
-
+            method2(dto1, authUser);
             log.info("{} updated",dto1);
 
             return dto1;
@@ -234,6 +250,7 @@ public class AuthUserServiceImpl implements AuthUserService {
                 throw new ForbiddenAccessException();
             }
             AuthUserGetDto dto = USER_MAPPER.toDto(authUser);
+            method2(dto, authUser);
             log.info("{} gave",dto);
             return dto;
         }catch (Exception e){
@@ -242,6 +259,14 @@ public class AuthUserServiceImpl implements AuthUserService {
                     .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
             throw new RuntimeException();
         }
+    }
+
+    private static void method2(AuthUserGetDto dto, AuthUser authUser){
+        List<String> roles = authUser.getRoles()
+                .stream()
+                .map(Role::getName)
+                .toList();
+        dto.setRoles(roles);
     }
 
     @Override
@@ -258,7 +283,16 @@ public class AuthUserServiceImpl implements AuthUserService {
                     .map(AuthUser::getId)
                     .toList();
             log.info("{} gave users",uuidList);
-            return USER_MAPPER.toDto(all);
+            Page<AuthUserGetDto> dto = USER_MAPPER.toDto(all);
+            if (dto!=null && !dto.isEmpty()) {
+                List<AuthUser> content = all.getContent();
+                List<AuthUserGetDto> dtoContent = dto.getContent();
+                for (int i = 0; i < dtoContent.size(); i++) {
+                    method2(dtoContent.get(i),content.get(i));
+                }
+                dto = new PageImpl<>(dtoContent,dto.getPageable(),dtoContent.size());
+            }
+            return dto;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())

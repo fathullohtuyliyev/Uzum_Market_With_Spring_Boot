@@ -19,17 +19,20 @@ public interface UserMapper {
     @Mapping(target = "promoCodes",ignore = true)
     @Mapping(target = "orders",ignore = true)
     @Mapping(target = "data",ignore = true)
+    @Mapping(target = "roles",ignore = true)
     AuthUser toEntity(AuthUserGetDto dto);
 
     @Mapping(target = "promoCodes",ignore = true)
     @Mapping(target = "orders",ignore = true)
     @Mapping(target = "id",ignore = true)
     @Mapping(target = "data",ignore = true)
+    @Mapping(target = "roles",ignore = true)
     AuthUser toEntity(AuthUserCreateDto dto);
 
     @Mapping(target = "promoCodes",ignore = true)
     @Mapping(target = "orders",ignore = true)
     @Mapping(target = "data",ignore = true)
+    @Mapping(target = "roles",ignore = true)
     AuthUser toEntity(AuthUserUpdateDto dto);
 
     AuthUserGetDto toDto(AuthUser authUser);

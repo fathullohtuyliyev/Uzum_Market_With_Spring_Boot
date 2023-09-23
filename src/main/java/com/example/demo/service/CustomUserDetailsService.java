@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.entity.Role;
 import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.AuthUserRepository;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -28,8 +31,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         try {
             AuthUser authUser = authUserRepository.findByEmailAndActiveTrue(email)
                     .orElseThrow(NotFoundException::new);
-            if (authUser.getRoles().contains("SUPER_ADMIN")
-                    || authUser.getRoles().contains("ADMIN")) {
+            Set<String> collected = authUser.getRoles()
+                    .stream()
+                    .map(Role::getName)
+                    .collect(Collectors.toSet());
+            if (collected.contains("SUPER_ADMIN")
+                    || collected.contains("ADMIN")) {
                 LocalTime now = LocalTime.now(ZoneId.of("Asia/Tashkent"));
                 if (9>now.getHour() || 18< now.getHour()) {
                     throw new ForbiddenAccessException();
@@ -39,7 +46,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                     .username(authUser.getEmail())
                     .accountLocked(authUser.isActive())
                     .password(authUser.getTemporaryPassword())
-                    .roles(String.join(",", authUser.getRoles()))
+                    .roles(String.join(",", collected))
                     .credentialsExpired(false)
                     .disabled(false)
                     .build();

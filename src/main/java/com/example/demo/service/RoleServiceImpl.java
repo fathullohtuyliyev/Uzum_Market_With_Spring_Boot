@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.entity.Role;
 import com.example.demo.exception.BadParamException;
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +44,7 @@ public class RoleServiceImpl implements RoleService {
                 throw new BadParamException();
             }
             roleRepository.updateRole(newName.toUpperCase(), oldName.toUpperCase());
-            return roleRepository.findByName(newName.toUpperCase()).getName();
+            return roleRepository.findByName(newName.toUpperCase()).orElseThrow(NotFoundException::new).getName();
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())

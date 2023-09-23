@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.AuthUser;
+import com.example.demo.entity.Role;
 import com.example.demo.exception.BadParamException;
 import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
@@ -9,9 +10,8 @@ import com.example.demo.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -45,10 +45,11 @@ public class AdminServiceImpl implements AdminService {
              if (!roleRepository.existsRoleByName(role)) {
                  throw new NotFoundException();
              }
+             Role foundedRole = roleRepository.findByName(role).orElseThrow(NotFoundException::new);
              AuthUser authUser = authUserRepository.findAuthUserByIdAndActiveTrue(userId)
                      .orElseThrow(NotFoundException::new);
-             List<String> roles = authUser.getRoles();
-             roles.add(role);
+             Set<Role> roles = authUser.getRoles();
+             roles.add(foundedRole);
              authUser.setRoles(roles);
              authUserRepository.save(authUser);
          }catch (Exception e){
