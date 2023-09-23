@@ -13,6 +13,7 @@ import java.util.UUID;
 public interface OrderService {
     OrderGetDto save(OrderCreateDto dto);
     OrderGetDto update(OrderUpdateDto dto);
+    OrderGetDto updateStatus(UUID id, String statusName);
     OrderGetDto get(UUID id);
     Page<OrderGetDto> users(UUID userId, Pageable pageable);
 }

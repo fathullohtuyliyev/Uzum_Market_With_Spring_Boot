@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Repository
 public interface StatusRepository extends JpaRepository<Status, Integer>, JpaSpecificationExecutor<Status> {
     @Modifying
@@ -17,7 +19,7 @@ public interface StatusRepository extends JpaRepository<Status, Integer>, JpaSpe
     void updateByName(String newName, String oldName);
 
     @Query(value = "from status s where s.name=:name")
-    Status findByName(String name);
+    Optional<Status> findByName(String name);
 
     @Query(value = "select count (s.id) from status s")
     int size();

@@ -23,10 +23,10 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public String save(String name) {
         try {
-            if (roleRepository.existsRoleByName(name)) {
+            if (roleRepository.existsRoleByName(name.toUpperCase())) {
                 throw new BadParamException();
             }
-            Role saved = roleRepository.save(Role.builder().name(name).build());
+            Role saved = roleRepository.save(Role.builder().name(name.toUpperCase()).build());
             return saved.getName();
         }catch (Exception e){
             e.printStackTrace();
@@ -39,11 +39,11 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public String update(String oldName, String newName) {
         try {
-            if (!roleRepository.existsRoleByName(oldName)) {
+            if (!roleRepository.existsRoleByName(oldName.toUpperCase())) {
                 throw new BadParamException();
             }
-            roleRepository.updateRole(newName, oldName);
-            return roleRepository.findByName(newName).getName();
+            roleRepository.updateRole(newName.toUpperCase(), oldName.toUpperCase());
+            return roleRepository.findByName(newName.toUpperCase()).getName();
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -55,7 +55,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public String get(String name) {
         try {
-            Role role = roleRepository.findByName(name);
+            Role role = roleRepository.findByName(name.toUpperCase());
             return role.getName();
         }catch (Exception e){
             e.printStackTrace();

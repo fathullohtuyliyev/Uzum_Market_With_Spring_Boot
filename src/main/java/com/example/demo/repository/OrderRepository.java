@@ -19,8 +19,8 @@ import java.util.UUID;
 public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecificationExecutor<Order> {
     @Transactional
     @Modifying
-    @Query(value = "update order o set o.update=:update, o.deliveryPoint=:deliveryPoind, o.paymentType=:paymentType,o.status=:status where o.id=:id")
-    void updateOrder(LocalDateTime update, DeliveryPoint deliveryPoint, PaymentType paymentType, Status status, UUID id);
+    @Query(value = "update order o set o.update=:update, o.deliveryPoint=:deliveryPoind, o.paymentType=:paymentType where o.id=:id")
+    void updateOrder(LocalDateTime update, DeliveryPoint deliveryPoint, PaymentType paymentType, UUID id);
 
     @Query(nativeQuery = true, value = "select * from order o where o.auth_user_id=?1")
     Page<Order> findAllByUserId(UUID userId, Pageable pageable);
@@ -30,4 +30,9 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
 
     @Query(nativeQuery = true, value = "select * from order o where o.auth_user_id=?1")
     List<Order> findAllByUserId(UUID userId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "update order o set o.update=:update,o.status=:status where o.id=:id")
+    void updateOrder(LocalDateTime update, Status status, UUID id);
 }

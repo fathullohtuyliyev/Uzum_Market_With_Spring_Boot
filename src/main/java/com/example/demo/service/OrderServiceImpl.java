@@ -100,12 +100,9 @@ public class OrderServiceImpl implements OrderService {
 
             PaymentType paymentType = paymentTypeRepository.findByName(dto.paymentType);
 
-            Integer statusId = dto.status.keySet().stream().findFirst().orElseThrow();
-            Status status = statusRepository.findById(statusId).orElseThrow(NotFoundException::new);
-
             UUID id = dto.id;
 
-            orderRepository.updateOrder(update,deliveryPoint,paymentType,status,id);
+            orderRepository.updateOrder(update,deliveryPoint,paymentType,id);
 
             Order order = orderRepository.findById(id).orElseThrow(NotFoundException::new);
             OrderGetDto dto1 = ORDER_MAPPER.toDto(order);
@@ -115,6 +112,25 @@ public class OrderServiceImpl implements OrderService {
             return dto1;
         }catch (Exception e){
             e.printStackTrace();
+            Arrays.stream(e.getStackTrace())
+                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public OrderGetDto updateStatus(UUID id, String statusName) {
+        try {
+            Status status = statusRepository.findByName(statusName)
+                    .orElseThrow(NotFoundException::new);
+            orderRepository.updateOrder(LocalDateTime.now(),status,id);
+            Order order = orderRepository.findById(id)
+                    .orElseThrow(NotFoundException::new);
+            OrderGetDto dto = ORDER_MAPPER.toDto(order);
+            log.info("{} updated",dto);
+            method2(dto,order);
+            return dto;
+        }catch (Exception e){
             Arrays.stream(e.getStackTrace())
                     .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
             throw new RuntimeException();
