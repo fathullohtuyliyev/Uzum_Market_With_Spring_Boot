@@ -9,6 +9,5 @@ import org.springframework.stereotype.Service;
 public interface StatusService {
     String save(String name);
     String update(String oldName,String newName);
-    String get(String name);
-    Page<String> roles(Pageable pageable);
+    Page<String> statuses(Pageable pageable);
 }

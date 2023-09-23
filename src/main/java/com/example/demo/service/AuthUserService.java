@@ -8,17 +8,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.util.UUID;
-import java.util.List;
 
 @Service
 public interface AuthUserService {
     void save(AuthUserCreateDto dto, HttpServletResponse response);
     void activate(String code, HttpServletRequest request);
-    void logout(HttpServletRequest request, HttpServletResponse response);
-    boolean checkAndSendPasswordToEmail(String email, HttpServletResponse response);
+    void checkAndSendPasswordToEmail(String email, HttpServletResponse response);
     AuthUserGetDto login(String password, HttpServletRequest request, HttpServletResponse response);
+    void logout(HttpServletRequest request, HttpServletResponse response);
     AuthUserGetDto update(AuthUserUpdateDto dto);
     AuthUserGetDto get(UUID id, HttpServletRequest request);
     Page<AuthUserGetDto> users(Pageable pageable);

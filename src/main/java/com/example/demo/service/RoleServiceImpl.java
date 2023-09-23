@@ -53,19 +53,6 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public String get(String name) {
-        try {
-            Role role = roleRepository.findByName(name.toUpperCase());
-            return role.getName();
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
-    }
-
-    @Override
     public Page<String> roles(Pageable pageable) {
         try {
             Page<Role> all = roleRepository.findAll(pageable);

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 @Repository
 public interface PromoCodeRepository extends JpaRepository<PromoCode, UUID>, JpaSpecificationExecutor<PromoCode> {
@@ -33,12 +34,6 @@ public interface PromoCodeRepository extends JpaRepository<PromoCode, UUID>, Jpa
     @Query(nativeQuery = true, value = "select count(pc.id) from promo_code pc where pc.good_id=:goodId")
     int findAllByGoodIdSize(UUID goodId);
 
-    @Query(nativeQuery = true, value = "select * from promo_code pc where pc.good_id=:goodId and lower(pc.name) like lower('%:name%')")
-    Page<PromoCode> findAllByGoodId(UUID goodId, String name, Pageable pageable);
-
-    @Query(nativeQuery = true, value = "select count(pc.id) from promo_code pc where pc.good_id=:goodId and lower(pc.name) like lower('%:name%')")
-    int findAllByGoodIdSize(UUID goodId, String name);
-
-    @Query(nativeQuery = true, value = "select * from promo_code pc where pc.good_id=:goodId and lower(pc.name) like lower('%:name%')")
-    List<PromoCode> findAllByGoodId(UUID goodId, String name);
+    @Query(nativeQuery = true, value = "select * from promo_code pc where lower(pc.name) = lower(:name)")
+    Optional<PromoCode> findByName(String name);
 }

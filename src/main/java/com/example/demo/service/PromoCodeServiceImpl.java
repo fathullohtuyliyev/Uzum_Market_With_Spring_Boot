@@ -120,7 +120,7 @@ public class PromoCodeServiceImpl implements PromoCodeService {
     }
 
     @Override
-    public Page<PromoCodeGetDto> users(UUID goodId, Pageable pageable) {
+    public Page<PromoCodeGetDto> promoCodes(UUID goodId, Pageable pageable) {
         try {
             Page<PromoCode> result = promoCodeRepository.findAllByGoodId(goodId,pageable);
             int size = promoCodeRepository.findAllByGoodIdSize(goodId);
@@ -149,16 +149,11 @@ public class PromoCodeServiceImpl implements PromoCodeService {
         }
     }
     @Override
-    public Page<PromoCodeGetDto> users(UUID goodId, String name, Pageable pageable) {
+    public PromoCodeGetDto getByName(String name) {
         try {
-            Page<PromoCode> result = promoCodeRepository.findAllByGoodId(goodId,name,pageable);
-            int size = promoCodeRepository.findAllByGoodIdSize(goodId,name);
-            if (size<pageable.getPageSize()) {
-                List<PromoCode> allByGoodId = promoCodeRepository.findAllByGoodId(goodId,name);
-                result = new PageImpl<>(allByGoodId, PageRequest.of(0,size),size);
-            }
-            Page<PromoCodeGetDto> dto = PROMO_CODE_MAPPER.toDto(result);
-            methodList(result, dto);
+            PromoCode promoCode = promoCodeRepository.findByName(name).orElseThrow(NotFoundException::new);
+            PromoCodeGetDto dto = PROMO_CODE_MAPPER.toDto(promoCode);
+            method2(dto,promoCode);
             return dto;
         }catch (Exception e){
             e.printStackTrace();

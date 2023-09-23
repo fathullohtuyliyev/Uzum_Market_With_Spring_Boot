@@ -14,6 +14,5 @@ import java.util.UUID;
 public interface RoleService {
     String save(String name);
     String update(String oldName,String newName);
-    String get(String name);
     Page<String> roles(Pageable pageable);
 }

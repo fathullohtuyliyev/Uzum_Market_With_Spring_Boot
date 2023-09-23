@@ -85,7 +85,7 @@ public class PaymentTypeServiceImpl implements PaymentTypeService {
     }
 
     @Override
-    public Page<PaymentGetDto> users(Pageable pageable) {
+    public Page<PaymentGetDto> paymentTypes(Pageable pageable) {
         try {
             Page<PaymentType> all = paymentTypeRepository.findAll(pageable);
             List<Integer> list = all.stream()

@@ -47,20 +47,7 @@ public class StatusServiceImpl implements StatusService {
     }
 
     @Override
-    public String get(String name) {
-        try {
-            return statusRepository.findByName(name.toUpperCase())
-                    .orElseThrow(NotFoundException::new).getName();
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
-    }
-
-    @Override
-    public Page<String> roles(Pageable pageable) {
+    public Page<String> statuses(Pageable pageable) {
         try {
             Page<Status> all = statusRepository.findAll(pageable);
             int size = statusRepository.size();

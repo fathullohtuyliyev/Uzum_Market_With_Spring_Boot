@@ -100,20 +100,7 @@ public class AuthUserServiceImpl implements AuthUserService {
 
 
     @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            String remoteAddr = request.getRemoteAddr();
-            userDataRepository.deleteByUserData(remoteAddr);
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
-    }
-
-    @Override
-    public boolean checkAndSendPasswordToEmail(String email, HttpServletResponse response) {
+    public void checkAndSendPasswordToEmail(String email, HttpServletResponse response) {
         try {
             StringBuilder stringBuilder = new StringBuilder();
             byte[] decode = Decoders.BASE64.decode(email);
@@ -137,9 +124,7 @@ public class AuthUserServiceImpl implements AuthUserService {
                 email = textEncodeWithJwt(email);
                 System.out.println("Encoded email " + email);
                 response.setHeader("email",email);
-                return true;
             }
-            return false;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -197,6 +182,19 @@ public class AuthUserServiceImpl implements AuthUserService {
 
                 authUserRepository.updatePassword(email,null);
                 return dto;
+        }catch (Exception e){
+            e.printStackTrace();
+            Arrays.stream(e.getStackTrace())
+                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String remoteAddr = request.getRemoteAddr();
+            userDataRepository.deleteByUserData(remoteAddr);
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
