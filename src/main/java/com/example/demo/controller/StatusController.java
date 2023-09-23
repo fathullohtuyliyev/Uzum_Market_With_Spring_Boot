@@ -30,7 +30,11 @@ public class StatusController {
     @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN','SELLER')")
     public ResponseEntity<Page<String>> getAll(@RequestParam String page,
                                                @RequestParam String size){
-        return ResponseEntity.ok(statusService.statuses
-                (PageRequest.of(Integer.parseInt(page),Integer.parseInt(size))));
+        try {
+            return ResponseEntity.ok(statusService.statuses
+                    (PageRequest.of(Integer.parseInt(page), Integer.parseInt(size))));
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

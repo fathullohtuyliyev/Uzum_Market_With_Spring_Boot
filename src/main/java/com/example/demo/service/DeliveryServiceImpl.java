@@ -97,7 +97,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
-    public Page<DeliveryGetDto> users(Pageable pageable) {
+    public Page<DeliveryGetDto> deliveryPoints(Pageable pageable) {
         try {
             Page<DeliveryPoint> all = deliveryPointRepository.findAll(pageable);
             int allSize = deliveryPointRepository.findAllSize();

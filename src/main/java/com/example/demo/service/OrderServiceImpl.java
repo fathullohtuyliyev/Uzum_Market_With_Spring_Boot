@@ -153,7 +153,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<OrderGetDto> users(UUID userId, Pageable pageable) {
+    public Page<OrderGetDto> orders(UUID userId, Pageable pageable) {
         try {
             Page<Order> result = orderRepository.findAllByUserId(userId,pageable);
             int allByUserId = orderRepository.sizeAllByUserId(userId);

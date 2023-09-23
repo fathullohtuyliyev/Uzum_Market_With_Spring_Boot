@@ -31,12 +31,20 @@ public class PromoCodeController {
     }
     @GetMapping("/get")
     public ResponseEntity<PromoCodeGetDto> get(@RequestParam String id){
-        return ResponseEntity.ok(promoCodeService.get(UUID.fromString(id)));
+        try {
+            return ResponseEntity.ok(promoCodeService.get(UUID.fromString(id)));
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().build();
+        }
     }
     @DeleteMapping("/delete")
     public ResponseEntity<Void> delete(@RequestParam String id){
-        promoCodeService.delete(UUID.fromString(id));
-        return ResponseEntity.noContent().build();
+        try {
+            promoCodeService.delete(UUID.fromString(id));
+            return ResponseEntity.noContent().build();
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().build();
+        }
     }
     @GetMapping("/get-all-by-good")
     public ResponseEntity<Page<PromoCodeGetDto>> getByGood(@RequestParam Map<String, String> param){
@@ -46,13 +54,13 @@ public class PromoCodeController {
             int size = Integer.parseInt(param.get("size"));
             Page<PromoCodeGetDto> promoCodeGetDtoList = promoCodeService.promoCodes(goodId, PageRequest.of(page, size));
             return ResponseEntity.ok(promoCodeGetDtoList);
-        }catch (Exception e){
+        }catch (IllegalArgumentException e){
             return ResponseEntity.badRequest().build();
         }
     }
     @GetMapping("/get-by-name/{name}")
     public ResponseEntity<PromoCodeGetDto> getByName(@PathVariable String name){
-        PromoCodeGetDto byName = promoCodeService.getByName(name);
-        return ResponseEntity.ok(byName);
+            PromoCodeGetDto byName = promoCodeService.getByName(name);
+            return ResponseEntity.ok(byName);
     }
 }

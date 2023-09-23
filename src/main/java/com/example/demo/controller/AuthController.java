@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.auth_user_dto.AuthUserCreateDto;
 import com.example.demo.dto.auth_user_dto.AuthUserGetDto;
 import com.example.demo.dto.auth_user_dto.AuthUserUpdateDto;
+import com.example.demo.exception.BadParamException;
 import com.example.demo.service.AuthUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -52,24 +53,40 @@ public class AuthController {
     }
     @GetMapping("/get-self-data")
     public ResponseEntity<AuthUserGetDto> get(@RequestParam String id, HttpServletRequest request){
-        AuthUserGetDto getDto = authUserService.get(UUID.fromString(id), request);
-        return ResponseEntity.ok(getDto);
+        try {
+            AuthUserGetDto getDto = authUserService.get(UUID.fromString(id), request);
+            return ResponseEntity.ok(getDto);
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().build();
+        }
     }
     @GetMapping("/get-all-users-data")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<Page<AuthUserGetDto>> getUsers(@RequestParam String page,
                                                          @RequestParam String size){
-        Page<AuthUserGetDto> users = authUserService
-                .users(PageRequest.of(Integer.parseInt(page), Integer.parseInt(size)));
-        return ResponseEntity.ok(users);
+        try {
+            Page<AuthUserGetDto> users = authUserService
+                    .users(PageRequest.of(Integer.parseInt(page), Integer.parseInt(size)));
+            return ResponseEntity.ok(users);
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().build();
+        }
     }
     @PutMapping("/online")
     public void online(@RequestParam String id){
-        authUserService.online(UUID.fromString(id));
+        try {
+            authUserService.online(UUID.fromString(id));
+        }catch (IllegalArgumentException e){
+            throw new BadParamException();
+        }
     }
     @PutMapping("/offline")
     public void offline(@RequestParam String id){
-        authUserService.offline(UUID.fromString(id));
+        try {
+            authUserService.offline(UUID.fromString(id));
+        }catch (IllegalArgumentException e){
+            throw new BadParamException();
+        }
     }
     @GetMapping("/exist-email/{email}")
     public ResponseEntity<Boolean> existEmail(@PathVariable String email){

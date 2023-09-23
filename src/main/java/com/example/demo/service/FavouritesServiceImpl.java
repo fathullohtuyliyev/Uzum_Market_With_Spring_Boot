@@ -74,7 +74,7 @@ public class FavouritesServiceImpl implements FavouritesService {
     }
 
     @Override
-    public Page<FavouritesGetDto> users(UUID userId, Pageable pageable) {
+    public Page<FavouritesGetDto> favourites(UUID userId, Pageable pageable) {
         try {
             Page<Favourites> allByUserId = favouritesRepository.findAllByUserId(userId, pageable);
             int sizeByUserId = favouritesRepository.findSizeByUserId(userId);

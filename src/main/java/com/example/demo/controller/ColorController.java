@@ -33,8 +33,12 @@ public class ColorController {
     @GetMapping("/get")
     public ResponseEntity<Page<Map<Long, String>>> getAll(@RequestParam String page,
                                                           @RequestParam String size){
-        Page<Map<Long, String>> colors = colorService.colors
-                (PageRequest.of(Integer.parseInt(page), Integer.parseInt(size)));
-        return ResponseEntity.ok(colors);
+        try {
+            Page<Map<Long, String>> colors = colorService.colors
+                    (PageRequest.of(Integer.parseInt(page), Integer.parseInt(size)));
+            return ResponseEntity.ok(colors);
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

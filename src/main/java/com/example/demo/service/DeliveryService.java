@@ -17,5 +17,5 @@ public interface DeliveryService {
     DeliveryGetDto save(DeliveryCreateDto dto);
     DeliveryGetDto update(DeliveryUpdateDto dto);
     DeliveryGetDto get(Long id);
-    Page<DeliveryGetDto> users(Pageable pageable);
+    Page<DeliveryGetDto> deliveryPoints(Pageable pageable);
 }

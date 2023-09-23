@@ -38,7 +38,11 @@ public class PaymentTypeController {
     @GetMapping("/get-all")
     public ResponseEntity<Page<PaymentGetDto>> getAll(@RequestParam String page,
                                                       @RequestParam String size){
-        return ResponseEntity.ok(paymentTypeService
-                .paymentTypes(PageRequest.of(Integer.parseInt(page),Integer.parseInt(size))));
+        try {
+            return ResponseEntity.ok(paymentTypeService
+                    .paymentTypes(PageRequest.of(Integer.parseInt(page), Integer.parseInt(size))));
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

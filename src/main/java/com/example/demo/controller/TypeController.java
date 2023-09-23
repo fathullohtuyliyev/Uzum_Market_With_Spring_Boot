@@ -45,8 +45,13 @@ public class TypeController {
     @GetMapping("/get-all-types")
     public ResponseEntity<Page<TypeGetDto>> getAllTypes(@RequestParam String page,
                                                         @RequestParam String size){
-        Page<TypeGetDto> types = typeService.types(PageRequest.of(Integer.parseInt(page), Integer.parseInt(size)));
-        return ResponseEntity.ok(types);
+        try {
+            Page<TypeGetDto> types = typeService.types
+                    (PageRequest.of(Integer.parseInt(page), Integer.parseInt(size)));
+            return ResponseEntity.ok(types);
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 }
