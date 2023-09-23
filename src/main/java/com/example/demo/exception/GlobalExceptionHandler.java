@@ -9,18 +9,18 @@ import org.springframework.http.HttpStatus;
 public class GlobalExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<Object> handleException(Exception e) {
-        return new ResponseEntity<>("Istisno ro'y berdi: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>("Exception has appeared: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @ExceptionHandler(value = BadParamException.class)
     public ResponseEntity<Object> handleException(BadParamException e) {
-        return new ResponseEntity<>("Istisno ro'y berdi: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("Bad Request: " + e.getMessage(), HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(value = ForbiddenAccessException.class)
     public ResponseEntity<Object> handleException(ForbiddenAccessException e) {
-        return new ResponseEntity<>("Istisno ro'y berdi: " + e.getMessage(), HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>("Forbidden Access: " + e.getMessage(), HttpStatus.FORBIDDEN);
     }
     @ExceptionHandler(value = NotFoundException.class)
     public ResponseEntity<Object> handleException(NotFoundException e) {
-        return new ResponseEntity<>("Istisno ro'y berdi: " + e.getMessage(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("Not Found: " + e.getMessage(), HttpStatus.NOT_FOUND);
     }
 }
