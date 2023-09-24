@@ -28,7 +28,7 @@ public interface FavouritesRepository extends JpaRepository<Favourites, UUID>, J
     Page<Favourites> findAllByUserId(UUID userId, Pageable of);
 
     @Query(nativeQuery = true,value = "select count (f.id) from favourites f where f.user_id=?1")
-    int findSizeByUserId(UUID userId);
+    Integer findSizeByUserId(UUID userId);
 
     @Query(nativeQuery = true,value = "select * from favourites f where f.user_id=:userId")
     List<Favourites> findAllByUserId(UUID userId);

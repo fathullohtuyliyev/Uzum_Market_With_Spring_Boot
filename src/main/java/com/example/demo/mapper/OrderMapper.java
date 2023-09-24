@@ -21,25 +21,33 @@ public interface OrderMapper {
     @Mapping(target = "good",ignore = true)
     @Mapping(target = "deliveryPoint",ignore = true)
     @Mapping(target = "status",ignore = true)
+    @Mapping(target = "paymentType",ignore = true)
     Order toEntity(OrderGetDto dto);
 
     @Mapping(target = "authUser",ignore = true)
     @Mapping(target = "good",ignore = true)
     @Mapping(target = "deliveryPoint",ignore = true)
     @Mapping(target = "status",ignore = true)
+    @Mapping(target = "count",ignore = true)
+    @Mapping(target = "price",ignore = true)
+    @Mapping(target = "time",ignore = true)
+    @Mapping(target = "paymentType",ignore = true)
     Order toEntity(OrderUpdateDto dto);
 
     @Mapping(target = "authUser",ignore = true)
     @Mapping(target = "good",ignore = true)
     @Mapping(target = "deliveryPoint",ignore = true)
     @Mapping(target = "status",ignore = true)
+    @Mapping(target = "update",ignore = true)
     @Mapping(target = "id",ignore = true)
+    @Mapping(target = "paymentType",ignore = true)
     Order toEntity(OrderCreateDto dto);
 
     @Mapping(target = "authUser",ignore = true)
     @Mapping(target = "good",ignore = true)
     @Mapping(target = "deliveryGetDto",ignore = true)
     @Mapping(target = "status",ignore = true)
+    @Mapping(target = "paymentType",ignore = true)
     OrderGetDto toDto(Order order);
 
     default Page<OrderGetDto> toDto(Page<Order> all){

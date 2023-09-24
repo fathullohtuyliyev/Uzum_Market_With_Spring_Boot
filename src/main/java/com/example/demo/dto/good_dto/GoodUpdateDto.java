@@ -15,7 +15,7 @@ import java.util.UUID;
 @Setter
 @Builder
 @ToString
-public class GoodUpdateDto extends GoodCreateDto{
+public class GoodUpdateDto{
     public UUID id;
 
     @Positive
@@ -28,6 +28,8 @@ public class GoodUpdateDto extends GoodCreateDto{
 
     @NotBlank
     public String name;
+
+    public String videoPath;
 
     @NotBlank
     public String description;
@@ -48,8 +50,7 @@ public class GoodUpdateDto extends GoodCreateDto{
     public Double discountPrice=0d;
 
     @NotNull
-    public UUID imagesId;
+    public String images;
 
-    @Column(name = "comments_id")
-    public UUID commentsId;
+    public Integer ordersCount;
 }

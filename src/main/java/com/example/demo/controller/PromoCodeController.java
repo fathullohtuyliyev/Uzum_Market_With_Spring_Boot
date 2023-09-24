@@ -4,6 +4,7 @@ import com.example.demo.dto.promo_code_dto.PromoCodeCreateDto;
 import com.example.demo.dto.promo_code_dto.PromoCodeGetDto;
 import com.example.demo.dto.promo_code_dto.PromoCodeUpdateDto;
 import com.example.demo.service.PromoCodeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,11 +23,11 @@ import java.util.UUID;
 public class PromoCodeController {
     private final PromoCodeService promoCodeService;
     @PostMapping("/save")
-    public ResponseEntity<PromoCodeGetDto> save(@RequestBody PromoCodeCreateDto dto){
+    public ResponseEntity<PromoCodeGetDto> save(@RequestBody @Valid PromoCodeCreateDto dto){
         return new ResponseEntity<>(promoCodeService.save(dto), HttpStatus.CREATED);
     }
     @PutMapping("/update")
-    public ResponseEntity<PromoCodeGetDto> update(@RequestBody PromoCodeUpdateDto dto){
+    public ResponseEntity<PromoCodeGetDto> update(@RequestBody @Valid PromoCodeUpdateDto dto){
         return new ResponseEntity<>(promoCodeService.update(dto),HttpStatus.NO_CONTENT);
     }
     @GetMapping("/get")

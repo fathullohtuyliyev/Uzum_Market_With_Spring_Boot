@@ -19,6 +19,10 @@ public interface UserMapper {
     @Mapping(target = "promoCodes",ignore = true)
     @Mapping(target = "orders",ignore = true)
     @Mapping(target = "data",ignore = true)
+    @Mapping(target = "online",ignore = true)
+    @Mapping(target = "active",ignore = true)
+    @Mapping(target = "activateCodes",ignore = true)
+    @Mapping(target = "temporaryPassword",ignore = true)
     @Mapping(target = "roles",ignore = true)
     AuthUser toEntity(AuthUserGetDto dto);
 
@@ -26,15 +30,26 @@ public interface UserMapper {
     @Mapping(target = "orders",ignore = true)
     @Mapping(target = "id",ignore = true)
     @Mapping(target = "data",ignore = true)
+    @Mapping(target = "online",ignore = true)
+    @Mapping(target = "active",ignore = true)
+    @Mapping(target = "activateCodes",ignore = true)
+    @Mapping(target = "temporaryPassword",ignore = true)
     @Mapping(target = "roles",ignore = true)
     AuthUser toEntity(AuthUserCreateDto dto);
 
     @Mapping(target = "promoCodes",ignore = true)
     @Mapping(target = "orders",ignore = true)
     @Mapping(target = "data",ignore = true)
+    @Mapping(target = "online",ignore = true)
+    @Mapping(target = "active",ignore = true)
+    @Mapping(target = "phone",ignore = true)
+    @Mapping(target = "email",ignore = true)
+    @Mapping(target = "activateCodes",ignore = true)
+    @Mapping(target = "temporaryPassword",ignore = true)
     @Mapping(target = "roles",ignore = true)
     AuthUser toEntity(AuthUserUpdateDto dto);
 
+    @Mapping(target = "roles",ignore = true)
     AuthUserGetDto toDto(AuthUser authUser);
 
     default Page<AuthUserGetDto> toDto(Page<AuthUser> all){

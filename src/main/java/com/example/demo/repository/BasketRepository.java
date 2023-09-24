@@ -31,10 +31,10 @@ public interface BasketRepository extends JpaRepository<Basket, UUID>, JpaSpecif
     void deleteByGoodIdAndUserId(UUID goodId, UUID userId);
 
     @Query(value = "select count (b.id) from basket b")
-    int findAllSize();
+    Integer findAllSize();
 
     @Query(nativeQuery = true,value = "select count (b.id) from basket b where b.user_id=:userId")
-    int findAllSize(UUID userId);
+    Integer findAllSize(UUID userId);
 
     @Query(nativeQuery = true,value = "select * from basket b where b.user_id=:userId")
     List<Basket> findAllByUserId(UUID userId);

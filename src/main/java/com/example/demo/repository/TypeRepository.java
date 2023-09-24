@@ -17,7 +17,7 @@ public interface TypeRepository extends JpaRepository<Type, Long>, JpaSpecificat
     void updateType(String name, Long id, Type sub, List<Type> roots);
 
     @Query(value = "select count (t.id) from type t")
-    int size();
+    Integer size();
 
     @Query(value = "from type t where t.sub is null")
     List<Type> allSubTypes();

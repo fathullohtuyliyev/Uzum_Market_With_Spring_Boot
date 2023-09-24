@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DeliveryPointRepository extends JpaRepository<DeliveryPoint, Long>, JpaSpecificationExecutor<DeliveryPoint> {
     @Query(value = "select count (d.id) from delivery_point d")
-    int findAllSize();
+    Integer findAllSize();
 }

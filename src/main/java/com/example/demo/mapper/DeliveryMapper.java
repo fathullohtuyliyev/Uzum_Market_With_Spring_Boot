@@ -19,6 +19,7 @@ public interface DeliveryMapper {
     DeliveryMapper DELIVERY_MAPPER = Mappers.getMapper(DeliveryMapper.class);
     @Mapping(target = "orders",ignore = true)
     @Mapping(target = "id",ignore = true)
+    @Mapping(target = "dressingRoom",ignore = true)
     @Mapping(target = "deliveryAddress",ignore = true)
     DeliveryPoint toEntity(DeliveryCreateDto dto);
 

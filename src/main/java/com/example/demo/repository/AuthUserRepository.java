@@ -46,19 +46,19 @@ public interface AuthUserRepository extends JpaRepository<AuthUser, UUID>, JpaSp
     void updateAuthUser(String firstName, String lastName, String imagePath, Gender gender, LocalDate birthdate,UUID id);
 
     @Query(value = "select count(au.id) from auth_user au")
-    int findAllSize();
+    Integer findAllSize();
 
     @Query(value = "select au.active from auth_user au where au.id=?1")
-    boolean isActive(UUID userId);
+    Boolean isActive(UUID userId);
 
     @Query(value = "select exists (select u.email, u.phone from auth_user u where u.phone = :phone or u.email = :email)")
-    boolean existsAuthUserByPhoneAndEmail(String phone, String email);
+    Boolean existsAuthUserByPhoneAndEmail(String phone, String email);
 
     @Query(value = "select exists (select u.email from auth_user u where u.email=:email)")
-    boolean existsAuthUserByEmail(String email);
+    Boolean existsAuthUserByEmail(String email);
 
     @Query(value = "select exists (select u.phone from auth_user u where u.phone=:phone)")
-    boolean existsAuthUserByPhone(String phone);
+    Boolean existsAuthUserByPhone(String phone);
 
     @Modifying
     @Transactional
@@ -67,10 +67,10 @@ public interface AuthUserRepository extends JpaRepository<AuthUser, UUID>, JpaSp
     void updatePassword(String email, String temporaryPassword);
 
     @Query(value = "select exists (select u.email from auth_user u where u.email=:email and u.active=true)")
-    boolean existsAuthUserByEmailAndActiveTrue(String email);
+    Boolean existsAuthUserByEmailAndActiveTrue(String email);
 
     @Query(value = "select exists (select u.email from auth_user u join u.roles r where u.email=?1 and u.active=true and 'SUPER_ADMIN' in r)")
-    boolean isAdmin(String adminEmail);
+    Boolean isAdmin(String adminEmail);
 
     @Modifying
     @Transactional

@@ -4,6 +4,7 @@ import com.example.demo.dto.type_dto.TypeCreateDto;
 import com.example.demo.dto.type_dto.TypeGetDto;
 import com.example.demo.dto.type_dto.TypeUpdateDto;
 import com.example.demo.service.TypeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,12 +22,12 @@ import java.util.List;
 public class TypeController {
     private final TypeService typeService;
     @PostMapping("/save")
-    public ResponseEntity<TypeGetDto> save(@RequestBody  TypeCreateDto dto){
+    public ResponseEntity<TypeGetDto> save(@RequestBody @Valid TypeCreateDto dto){
         TypeGetDto saved = typeService.save(dto);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
     @PutMapping("/update")
-    public ResponseEntity<TypeGetDto> update(@RequestBody TypeUpdateDto dto){
+    public ResponseEntity<TypeGetDto> update(@RequestBody @Valid TypeUpdateDto dto){
         TypeGetDto updated = typeService.update(dto);
         return new ResponseEntity<>(updated,HttpStatus.NO_CONTENT);
     }

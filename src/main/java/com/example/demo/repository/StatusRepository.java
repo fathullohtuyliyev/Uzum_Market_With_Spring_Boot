@@ -21,5 +21,5 @@ public interface StatusRepository extends JpaRepository<Status, Integer>, JpaSpe
     Optional<Status> findByName(String name);
 
     @Query(value = "select count (s.id) from status s")
-    int size();
+    Integer size();
 }

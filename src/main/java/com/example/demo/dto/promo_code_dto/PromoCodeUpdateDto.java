@@ -15,7 +15,7 @@ import java.util.UUID;
 @Setter
 @Builder
 @ToString
-public class PromoCodeUpdateDto extends PromoCodeCreateDto{
+public class PromoCodeUpdateDto{
     @NotNull
     public UUID id;
 

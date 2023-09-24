@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -27,7 +29,12 @@ public class AuthUserCreateDto {
     public String phone;
 
     @NotNull
+    public LocalDate birthdate;
+
+    @NotNull
     public Gender gender;
+
+    public String images;
 
     @NotBlank
     @Email

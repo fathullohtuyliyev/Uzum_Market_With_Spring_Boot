@@ -32,7 +32,7 @@ public interface PromoCodeRepository extends JpaRepository<PromoCode, UUID>, Jpa
     @Query(nativeQuery = true, value = "select * from promo_code pc where pc.good_id=:goodId")
     List<PromoCode> findAllByGoodId(UUID goodId);
     @Query(nativeQuery = true, value = "select count(pc.id) from promo_code pc where pc.good_id=:goodId")
-    int findAllByGoodIdSize(UUID goodId);
+    Integer findAllByGoodIdSize(UUID goodId);
 
     @Query(nativeQuery = true, value = "select * from promo_code pc where lower(pc.name) = lower(:name)")
     Optional<PromoCode> findByName(String name);

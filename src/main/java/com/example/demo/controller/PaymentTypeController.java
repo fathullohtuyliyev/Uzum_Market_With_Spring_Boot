@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.payment_dto.PaymentGetDto;
 import com.example.demo.dto.payment_dto.PaymentUpdateDto;
 import com.example.demo.service.PaymentTypeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +23,7 @@ public class PaymentTypeController {
         return new ResponseEntity<>(paymentTypeService.save(name), HttpStatus.CREATED);
     }
     @PutMapping("/update")
-    public ResponseEntity<PaymentGetDto> update(@RequestBody PaymentUpdateDto dto){
+    public ResponseEntity<PaymentGetDto> update(@RequestBody @Valid PaymentUpdateDto dto){
         return new ResponseEntity<>(paymentTypeService.update(dto),HttpStatus.NO_CONTENT);
     }
     @DeleteMapping("/delete/{id}")

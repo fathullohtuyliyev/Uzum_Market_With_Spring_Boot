@@ -4,6 +4,7 @@ import com.example.demo.dto.order_dto.OrderCreateDto;
 import com.example.demo.dto.order_dto.OrderGetDto;
 import com.example.demo.dto.order_dto.OrderUpdateDto;
 import com.example.demo.service.OrderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,12 +24,12 @@ public class OrderController {
     private final OrderService orderService;
     @PostMapping("/save")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<OrderGetDto> save(@RequestBody OrderCreateDto dto){
+    public ResponseEntity<OrderGetDto> save(@RequestBody @Valid OrderCreateDto dto){
         return new ResponseEntity<>(orderService.save(dto), HttpStatus.CREATED);
     }
     @PutMapping("/update")
     @PreAuthorize("hasAnyRole('SELLER','ADMIN','SUPER_ADMIN')")
-    public ResponseEntity<OrderGetDto> update(@RequestBody OrderUpdateDto dto){
+    public ResponseEntity<OrderGetDto> update(@RequestBody @Valid OrderUpdateDto dto){
         return new ResponseEntity<>(orderService.update(dto),HttpStatus.NO_CONTENT);
     }
     @PutMapping("/update-status")

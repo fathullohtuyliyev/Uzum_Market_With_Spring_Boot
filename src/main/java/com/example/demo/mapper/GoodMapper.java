@@ -18,16 +18,15 @@ public interface GoodMapper {
 
     @Mapping(target = "color",ignore = true)
     @Mapping(target = "type",ignore = true)
-    @Mapping(target = "commentsId",ignore = true)
     @Mapping(target = "orderList",ignore = true)
     @Mapping(target = "blocked",ignore = true)
     @Mapping(target = "promoCodes",ignore = true)
     @Mapping(target = "id",ignore = true)
+    @Mapping(target = "ordersCount",ignore = true)
     Good toEntity(GoodCreateDto dto);
 
     @Mapping(target = "color",ignore = true)
     @Mapping(target = "type",ignore = true)
-    @Mapping(target = "commentsId",ignore = true)
     @Mapping(target = "orderList",ignore = true)
     @Mapping(target = "blocked",ignore = true)
     @Mapping(target = "promoCodes",ignore = true)
@@ -35,7 +34,6 @@ public interface GoodMapper {
 
     @Mapping(target = "color",ignore = true)
     @Mapping(target = "type",ignore = true)
-    @Mapping(target = "commentsId",ignore = true)
     @Mapping(target = "orderList",ignore = true)
     @Mapping(target = "blocked",ignore = true)
     @Mapping(target = "promoCodes",ignore = true)
@@ -43,7 +41,6 @@ public interface GoodMapper {
 
     @Mapping(target = "color",ignore = true)
     @Mapping(target = "type",ignore = true)
-    @Mapping(target = "comments",ignore = true)
     GoodGetDto toDto(Good good);
 
     default Page<GoodGetDto> toDto(Page<Good> all){

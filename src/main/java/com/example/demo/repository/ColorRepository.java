@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ColorRepository extends JpaRepository<Color, Long>, JpaSpecificationExecutor<Color> {
     @Query(value = "select count(c.id) from color c")
-    int findAllSize();
+    Integer findAllSize();
 
 }

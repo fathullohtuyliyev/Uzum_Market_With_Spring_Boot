@@ -36,7 +36,7 @@ public class AuthUserGetDto {
 
     public boolean online;
 
-    public String imagePath;
+    public String images;
 
     public boolean active;
 

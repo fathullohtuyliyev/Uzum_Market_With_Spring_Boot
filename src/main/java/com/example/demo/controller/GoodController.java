@@ -26,11 +26,11 @@ import java.util.UUID;
 public class GoodController {
     private final GoodService goodService;
     @PostMapping("/save")
-    public ResponseEntity<GoodGetDto> save(@RequestBody GoodCreateDto dto){
+    public ResponseEntity<GoodGetDto> save(@RequestBody @Valid GoodCreateDto dto){
         return new ResponseEntity<>(goodService.save(dto), HttpStatus.CREATED);
     }
     @PutMapping("/update")
-    public ResponseEntity<GoodGetDto> update(@RequestBody GoodUpdateDto dto){
+    public ResponseEntity<GoodGetDto> update(@RequestBody @Valid GoodUpdateDto dto){
         return new ResponseEntity<>(goodService.update(dto),HttpStatus.NO_CONTENT);
     }
     @GetMapping("/get")

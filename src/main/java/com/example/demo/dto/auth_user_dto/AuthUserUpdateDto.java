@@ -32,5 +32,5 @@ public class AuthUserUpdateDto {
     @Past
     public LocalDate birthdate;
 
-    public String imagePath;
+    public String images;
 }

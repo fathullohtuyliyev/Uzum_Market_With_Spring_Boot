@@ -42,13 +42,8 @@ public interface TypeMapper {
     default void method1(Type type, TypeCreateDto dto ,
                          TypeRepository typeRepository){
         Long subId = dto.subId;
-        Set<Long> rootsId = dto.rootsId;
         if (subId!=null) {
             typeRepository.findById(subId).ifPresent(type::setSub);
-        }
-        if (rootsId!=null && !rootsId.isEmpty()) {
-            List<Type> allById = typeRepository.findAllById(rootsId);
-            type.setRoots(allById);
         }
     }
 

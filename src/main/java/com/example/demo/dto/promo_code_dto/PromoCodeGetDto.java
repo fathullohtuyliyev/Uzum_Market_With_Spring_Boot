@@ -23,5 +23,6 @@ public class PromoCodeGetDto {
 
     public Double discount;
 
+    @Builder.Default
     public boolean active=true;
 }

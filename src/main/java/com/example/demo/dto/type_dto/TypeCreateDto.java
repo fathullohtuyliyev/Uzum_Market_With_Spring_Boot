@@ -12,7 +12,7 @@ import java.util.Set;
 @Setter
 @ToString
 @Builder
-public class TypeCreateDto extends TypeUpdateDto{
+public class TypeCreateDto{
     @NotBlank
     public String name;
 

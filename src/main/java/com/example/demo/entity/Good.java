@@ -52,7 +52,7 @@ public class Good {
 
     @NotNull
     @Column(nullable = false,name = "images_id")
-    private UUID imagesId;
+    private String images;
 
     @Column(name = "video_name")
     private String videoPath;

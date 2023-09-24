@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.basket_dto.BasketCreateDto;
 import com.example.demo.dto.basket_dto.BasketGetDto;
 import com.example.demo.service.BasketService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +21,7 @@ import java.util.UUID;
 public class BasketController {
     private final BasketService basketService;
     @PostMapping("/save")
-    public ResponseEntity<Page<BasketGetDto>> save(@RequestBody BasketCreateDto dto){
+    public ResponseEntity<Page<BasketGetDto>> save(@RequestBody @Valid BasketCreateDto dto){
         return new ResponseEntity<>(basketService.save(dto), HttpStatus.CREATED);
     }
     @DeleteMapping("/delete")

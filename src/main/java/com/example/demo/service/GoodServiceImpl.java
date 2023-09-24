@@ -7,9 +7,7 @@ import com.example.demo.dto.good_dto.GoodUpdateDto;
 import com.example.demo.entity.Good;
 import com.example.demo.entity.Type;
 import com.example.demo.exception.NotFoundException;
-import com.example.demo.nosql.Comment;
 import com.example.demo.repository.ColorRepository;
-import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.GoodRepository;
 import com.example.demo.repository.TypeRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +26,6 @@ import static com.example.demo.mapper.GoodMapper.GOOD_MAPPER;
 @Service
 @RequiredArgsConstructor
 public class GoodServiceImpl implements GoodService {
-    private final CommentRepository commentRepository;
     private final ColorRepository colorRepository;
     private final TypeRepository typeRepository;
     private final GoodRepository goodRepository;
@@ -40,7 +37,7 @@ public class GoodServiceImpl implements GoodService {
             method1(dto,good,typeRepository,colorRepository);
             Good saved = goodRepository.save(good);
             GoodGetDto dto1 = GOOD_MAPPER.toDto(saved);
-            method2(dto1,good,commentRepository);
+            method2(dto1,good);
             return dto1;
         }catch (Exception e){
             e.printStackTrace();
@@ -61,18 +58,20 @@ public class GoodServiceImpl implements GoodService {
             colorRepository.findById(colorId).ifPresent(good::setColor);
         }
     }
-    private static void method2(GoodGetDto dto,Good good,CommentRepository commentRepository){
+    private static void method1(GoodUpdateDto dto,Good good,
+                                TypeRepository typeRepository,
+                                ColorRepository colorRepository){
+        Long typeId = dto.getType_id();
+        Type type = typeRepository.findById(typeId).orElseThrow(NotFoundException::new);
+        good.setType(type);
+        Long colorId = dto.getColor_id();
+        if (colorId !=null) {
+            colorRepository.findById(colorId).ifPresent(good::setColor);
+        }
+    }
+    private static void method2(GoodGetDto dto,Good good){
         dto.setColor(Map.of(good.getColor().getId(),good.getColor().getName()));
         dto.setType(Map.of(good.getType().getId(), good.getName()));
-        Pageable pageable = PageRequest.of(0, 15);
-        Page<Comment> commentsPage = commentRepository.findByGoodId(dto.id, pageable);
-        int allSizeByGoodId = commentRepository.findAllSizeByGoodId(dto.id);
-        if (pageable.getPageSize()< allSizeByGoodId) {
-            List<Comment> allByGoodId = commentRepository.findAllByGoodId(dto.id);
-            commentsPage = new PageImpl<>(allByGoodId,
-                    PageRequest.of(0,allSizeByGoodId),allSizeByGoodId);
-        }
-        dto.setComments(commentsPage);
         dto.setColor(Objects.requireNonNullElse(
                 Map.of(good.getColor().getId()
                         ,good.getColor().getName())
@@ -85,12 +84,12 @@ public class GoodServiceImpl implements GoodService {
             Good good = GOOD_MAPPER.toEntity(dto);
             method1(dto,good,typeRepository,colorRepository);
             goodRepository.updateGood(good.getId(),good.getColor(),good.getName(),good.getType(),
-                    good.getCount(),good.getDescription(),good.getImagesId(),
+                    good.getCount(),good.getDescription(),UUID.fromString(good.getImages()),
                     good.getPrice(),good.getOrdersCount(),good.getDiscountPrice());
             Good updatedGood = goodRepository.findByIdAndBlockedFalse(good.getId())
                     .orElseThrow(NotFoundException::new);
             GoodGetDto dto1 = GOOD_MAPPER.toDto(updatedGood);
-            method2(dto1,updatedGood,commentRepository);
+            method2(dto1,updatedGood);
             return dto1;
         }catch (Exception e){
             e.printStackTrace();
@@ -105,7 +104,7 @@ public class GoodServiceImpl implements GoodService {
         try {
             Good good = goodRepository.findById(id).orElseThrow(NotFoundException::new);
             GoodGetDto dto = GOOD_MAPPER.toDto(good);
-            method2(dto,good,commentRepository);
+            method2(dto,good);
             return dto;
         }catch (Exception e){
             e.printStackTrace();
@@ -132,7 +131,7 @@ public class GoodServiceImpl implements GoodService {
         try {
             Page<Good> all = goodRepository.findAllByBlockedFalse(pageable);
             Page<GoodGetDto> dto = GOOD_MAPPER.toDto(all);
-            return methodForList(all, dto, commentRepository);
+            return methodForList(all, dto);
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -162,7 +161,7 @@ public class GoodServiceImpl implements GoodService {
             }
             Page<GoodGetDto> dto = GOOD_MAPPER.toDto(result);
 
-            return methodForList(result, dto, commentRepository);
+            return methodForList(result, dto);
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -170,12 +169,12 @@ public class GoodServiceImpl implements GoodService {
             throw new RuntimeException();
         }
     }
-    private static Page<GoodGetDto> methodForList(Page<Good> result,Page<GoodGetDto> dto,CommentRepository commentRepository){
+    private static Page<GoodGetDto> methodForList(Page<Good> result,Page<GoodGetDto> dto){
         List<GoodGetDto> contentDto = dto.getContent();
         List<Good> content = result.getContent();
         if (!contentDto.isEmpty()) {
             for (int i = 0; i < content.size(); i++) {
-                method2(contentDto.get(i), content.get(i), commentRepository);
+                method2(contentDto.get(i), content.get(i));
             }
         }
         return new PageImpl<>(contentDto,dto.getPageable(),contentDto.size());
@@ -191,7 +190,7 @@ public class GoodServiceImpl implements GoodService {
                 result = new PageImpl<>(result.getContent(),PageRequest.of(0,size),size);
             }
             Page<GoodGetDto> dto = GOOD_MAPPER.toDto(result);
-            return methodForList(result, dto, commentRepository);
+            return methodForList(result, dto);
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())

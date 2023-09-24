@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.favourites_dto.FavouritesCreateDto;
 import com.example.demo.dto.favourites_dto.FavouritesGetDto;
 import com.example.demo.service.FavouritesService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +22,7 @@ import java.util.UUID;
 public class FavouritesController {
     private final FavouritesService favouritesService;
     @PostMapping("/save")
-    public ResponseEntity<Page<FavouritesGetDto>> save(@RequestBody FavouritesCreateDto dto){
+    public ResponseEntity<Page<FavouritesGetDto>> save(@RequestBody @Valid FavouritesCreateDto dto){
         return new ResponseEntity<>(favouritesService.save(dto), HttpStatus.CREATED);
     }
     @DeleteMapping("/delete")

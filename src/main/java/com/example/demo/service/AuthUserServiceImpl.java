@@ -232,7 +232,7 @@ public class AuthUserServiceImpl implements AuthUserService {
         try {
 
             authUserRepository.updateAuthUser(dto.firstName,dto.lastName,
-                    dto.imagePath,dto.gender,dto.birthdate,dto.id);
+                    dto.images,dto.gender,dto.birthdate,dto.id);
             AuthUser authUser = authUserRepository.findAuthUserByIdAndActiveTrue(dto.id)
                     .orElseThrow(NotFoundException::new);
             AuthUserGetDto dto1 = USER_MAPPER.toDto(authUser);

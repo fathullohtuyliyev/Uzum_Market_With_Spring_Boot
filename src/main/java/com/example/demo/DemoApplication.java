@@ -42,15 +42,15 @@ public class DemoApplication {
 
 	private final ActivateCodesRepository activateCodesRepository;
 	private final RoleRepository roleRepository;
-    private static ConfigurableApplicationContext context;
+
 	public static void main(String[] args) {
-		context = SpringApplication.run(DemoApplication.class, args);
+		SpringApplication.run(DemoApplication.class, args);
 	}
 	public static void stop(){
 		System.out.println("Application Failed");
-        context.stop();
+        System.exit(2);
 	}
-	@Bean
+//	@Bean
 	public MongoTransactionManager transactionManager(MongoDatabaseFactory dbFactory) {
 		return new MongoTransactionManager(dbFactory);
 	}
@@ -69,6 +69,7 @@ public class DemoApplication {
 								.orElseThrow(RuntimeException::new).getId();
 					}catch (Exception ex){
 						stop();
+						return;
 					}
 				}
 				Role seller = Role.builder()
@@ -82,6 +83,7 @@ public class DemoApplication {
 								.orElseThrow(RuntimeException::new).getId();
 					}catch (Exception ex){
 						stop();
+						return;
 					}
 			    }
 				Role admin = Role.builder()
@@ -95,6 +97,7 @@ public class DemoApplication {
 								.orElseThrow(RuntimeException::new).getId();
 					}catch (Exception ex){
 						stop();
+						return;
 					}
 			    }
 				Role superAdmin = Role.builder()
@@ -108,13 +111,13 @@ public class DemoApplication {
 								.orElseThrow(RuntimeException::new).getId();
 					}catch (Exception ex){
 						stop();
+						return;
 					}
 			    }
 			//status creating process
 			try {
-				Status status = statusRepository.save
-						(Status.builder().name("ORDER IS PREPARING").build());
-				statusId = status.getId();
+				Status status = Status.builder().name("ORDER IS PREPARING").build();
+				statusId=statusRepository.save(status).getId();
 			}catch (Exception e){
 				try {
 					statusId = statusRepository.findByName("ORDER IS PREPARING")
@@ -122,6 +125,7 @@ public class DemoApplication {
 				}catch (Exception ex){
 					System.out.println("System error");
 					stop();
+					return;
 				}
 			}
 			List<Long> idList = List.of(

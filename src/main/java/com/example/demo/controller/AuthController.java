@@ -7,6 +7,7 @@ import com.example.demo.exception.BadParamException;
 import com.example.demo.service.AuthUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +24,7 @@ import java.util.UUID;
 public class AuthController {
     private final AuthUserService authUserService;
     @PostMapping("/register")
-    public void register(@RequestBody AuthUserCreateDto dto, HttpServletResponse response){
+    public void register(@RequestBody @Valid AuthUserCreateDto dto, HttpServletResponse response){
         authUserService.save(dto, response);
     }
     @PutMapping("/activation")
@@ -47,7 +48,7 @@ public class AuthController {
         authUserService.logout(request, response);
     }
     @PutMapping("/update")
-    public ResponseEntity<AuthUserGetDto> update(@RequestBody AuthUserUpdateDto dto){
+    public ResponseEntity<AuthUserGetDto> update(@RequestBody @Valid AuthUserUpdateDto dto){
         AuthUserGetDto update = authUserService.update(dto);
         return new ResponseEntity<>(update, HttpStatus.NO_CONTENT);
     }

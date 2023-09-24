@@ -30,9 +30,9 @@ public class GoodGetDto {
     @Builder.Default
     public Double discountPrice=0d;
 
-    public UUID images;
+    public String images;
 
-    public Page<Comment> comments;
+    public String videoPath;
 
     public Integer ordersCount;
 }

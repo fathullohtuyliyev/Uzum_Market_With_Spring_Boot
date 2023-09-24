@@ -18,7 +18,7 @@ public interface RoleRepository extends JpaRepository<Role, Long>, JpaSpecificat
     void updateRole(String newName, String oldName);
 
     @Query(value = "select exists(select r.name from role r where r.name=:name)")
-    boolean existsRoleByName(String name);
+    Boolean existsRoleByName(String name);
 
     @Query(value = "from role r where r.name=:name")
     Optional<Role> findByName(String name);

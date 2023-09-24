@@ -21,7 +21,7 @@ public interface GoodRepository extends JpaRepository<Good, UUID>, JpaSpecificat
 
     @Modifying
     @Transactional
-    @Query(value = "update good g set g.count=:count,g.color=:color,g.type=:type,g.name=:name,g.description=:description,g.imagesId=:imagesId,g.ordersCount=:ordersCount,g.discountPrice=:discountPrice,g.price=:price where g.id=:id")
+    @Query(value = "update good g set g.count=:count,g.color=:color,g.type=:type,g.name=:name,g.description=:description,g.images=:images,g.ordersCount=:ordersCount,g.discountPrice=:discountPrice,g.price=:price where g.id=:id")
     void updateGood(UUID id, Color color, String name, Type type, Integer count, String description, UUID imagesId, Double price, Integer ordersCount, Double discountPrice);
 
     @Modifying

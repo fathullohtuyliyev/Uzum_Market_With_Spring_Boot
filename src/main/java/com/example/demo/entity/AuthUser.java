@@ -53,7 +53,7 @@ public class AuthUser {
     private boolean online;
 
 
-    private String imagePath;
+    private String images;
 
     @Builder.Default
     private boolean active=false;

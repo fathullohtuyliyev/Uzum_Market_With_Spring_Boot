@@ -72,6 +72,13 @@ public class PromoCodeServiceImpl implements PromoCodeService {
                 .toList();
         promoCode.setGoods(list);
     }
+    private static void method1(PromoCodeUpdateDto dto, PromoCode promoCode) {
+        List<Good> list = dto.getGoods()
+                .stream()
+                .map(GOOD_MAPPER::toEntity)
+                .toList();
+        promoCode.setGoods(list);
+    }
 
     @Override
     public PromoCodeGetDto update(PromoCodeUpdateDto dto) {

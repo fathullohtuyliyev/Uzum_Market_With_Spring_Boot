@@ -26,7 +26,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
     Page<Order> findAllByUserId(UUID userId, Pageable pageable);
 
     @Query(nativeQuery = true,value = "select count (o.id) from order o where o.auth_user_id=?1")
-    int sizeAllByUserId(UUID userId);
+    Integer sizeAllByUserId(UUID userId);
 
     @Query(nativeQuery = true, value = "select * from order o where o.auth_user_id=?1")
     List<Order> findAllByUserId(UUID userId);

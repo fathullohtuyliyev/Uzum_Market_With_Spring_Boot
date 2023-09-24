@@ -30,12 +30,14 @@ public class GoodCreateDto {
     @NotNull
     public Double price;
 
+    @NotNull
+    public String images;
+
+    public String videoPath;
+
     @PositiveOrZero
     public Integer count;
 
     @Builder.Default
     public Double discountPrice=0d;
-
-    @NotNull
-    public UUID images;
 }

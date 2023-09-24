@@ -15,7 +15,7 @@ public interface CommentRepository extends MongoRepository<Comment, UUID> {
     Page<Comment> findByGoodId(UUID goodId, Pageable pageable);
 
     @Query
-    int findAllSizeByGoodId(UUID id);
+    Integer findAllSizeByGoodId(UUID id);
 
     @Query(value = "{goodId: ?1}")
     Page<Comment> findAllByCommentId(UUID goodId, Pageable pageable);

@@ -4,6 +4,7 @@ import com.example.demo.dto.delivery_dto.DeliveryCreateDto;
 import com.example.demo.dto.delivery_dto.DeliveryGetDto;
 import com.example.demo.dto.delivery_dto.DeliveryUpdateDto;
 import com.example.demo.service.DeliveryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,11 +20,11 @@ import org.springframework.web.bind.annotation.*;
 public class DeliveryController {
     private final DeliveryService deliveryService;
     @PostMapping("/save")
-    public ResponseEntity<DeliveryGetDto> save(@RequestBody DeliveryCreateDto dto){
+    public ResponseEntity<DeliveryGetDto> save(@RequestBody @Valid DeliveryCreateDto dto){
         return new ResponseEntity<>(deliveryService.save(dto), HttpStatus.CREATED);
     }
     @PutMapping("/update")
-    public ResponseEntity<DeliveryGetDto> update(@RequestBody DeliveryUpdateDto dto){
+    public ResponseEntity<DeliveryGetDto> update(@RequestBody @Valid DeliveryUpdateDto dto){
         return new ResponseEntity<>(deliveryService.update(dto),HttpStatus.NO_CONTENT);
     }
     @GetMapping("/get/{id}")

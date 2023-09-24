@@ -26,6 +26,7 @@ public class OrderGetDto {
 
     public Double price;
 
+    @Builder.Default
     public LocalDateTime time=LocalDateTime.now();
 
     public DeliveryGetDto deliveryGetDto;
