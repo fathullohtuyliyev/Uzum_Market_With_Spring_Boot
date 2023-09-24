@@ -16,8 +16,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.DoubleSupplier;
+import java.util.stream.DoubleStream;
+
 import static com.example.demo.mapper.DeliveryMapper.DELIVERY_MAPPER;
 import static com.example.demo.mapper.GoodMapper.GOOD_MAPPER;
 import static com.example.demo.mapper.OrderMapper.ORDER_MAPPER;
@@ -26,6 +30,7 @@ import static com.example.demo.mapper.OrderMapper.ORDER_MAPPER;
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+    private final PromoCodeRepository promoCodeRepository;
     private final StatusRepository statusRepository;
     private final PaymentTypeRepository paymentTypeRepository;
     private final DeliveryPointRepository deliveryPointRepository;
@@ -54,6 +59,29 @@ public class OrderServiceImpl implements OrderService {
                 return null;
             }
             order.setStatus(startStatus);
+            List<PromoCode> promoCodes = order.getGoods()
+                    .stream()
+                    .flatMap(good -> good.getPromoCodes().stream())
+                    .toList();
+            double sum = order.getGoods()
+                    .stream()
+                    .mapToDouble(value -> value.getPrice() - value.getDiscountPrice())
+                    .sum();
+            order.setPrice(sum);
+            String promoCode = order.getPromoCode();
+            List<String> list = promoCodes
+                    .stream()
+                    .map(PromoCode::getName)
+                    .toList();
+
+            if (!promoCodes.isEmpty() && promoCode !=null
+                && !promoCode.isBlank() && list.contains(promoCode)) {
+                PromoCode founded = promoCodeRepository.findByName(promoCode)
+                        .orElseThrow(NotFoundException::new);
+                Double discount = founded.getDiscount() * (order.getPrice() / 100);
+                double summed = DoubleStream.of(order.getPrice(), discount).sum();
+                order.setPrice(summed);
+            }
             Order saved = orderRepository.save(order);
             OrderGetDto dto1 = ORDER_MAPPER.toDto(saved);
 

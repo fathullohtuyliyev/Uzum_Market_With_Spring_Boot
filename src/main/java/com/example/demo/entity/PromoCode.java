@@ -44,7 +44,7 @@ public class PromoCode {
 
     @NotNull
     @Positive
-    private Double discount;
+    private Short discount;
 
     @Builder.Default
     private boolean active=true;

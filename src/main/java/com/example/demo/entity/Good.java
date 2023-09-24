@@ -7,6 +7,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import java.util.List;
 
+import java.util.Set;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -39,6 +40,7 @@ public class Good {
     private String description;
 
     @Column(nullable = false)
+    @PositiveOrZero
     private Double price;
 
     @Column(nullable = false)
@@ -48,6 +50,7 @@ public class Good {
     private Integer ordersCount;
 
     @Builder.Default
+    @PositiveOrZero
     private Double discountPrice=0d;
 
     @NotNull
@@ -57,9 +60,8 @@ public class Good {
     @Column(name = "video_name")
     private String videoPath;
 
-    @OneToMany(mappedBy = "good")
-    @ToString.Exclude
-    private List<Order> orderList;
+    @ManyToMany(mappedBy = "goods")
+    private Set<Order> orders;
 
     @Builder.Default
     private boolean blocked=false;

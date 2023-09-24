@@ -6,6 +6,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -26,10 +27,9 @@ public class Order {
     @JoinColumn(name = "auth_user_id")
     private AuthUser authUser;
 
-    @ManyToOne(fetch = FetchType.LAZY,optional = false)
-    @ToString.Exclude
-    @JoinColumn(name = "good_id")
-    private Good good;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "order_good", joinColumns = @JoinColumn(name = "order_id"), inverseJoinColumns = @JoinColumn(name = "good_id"))
+    private Set<Good> goods;
 
     @NotNull
     @PositiveOrZero
@@ -53,6 +53,8 @@ public class Order {
     @ToString.Exclude
     @JoinColumn(name = "status_id")
     private Status status;
+
+    private String promoCode;
 
     @ManyToOne(fetch = FetchType.LAZY,optional = false)
     @ToString.Exclude

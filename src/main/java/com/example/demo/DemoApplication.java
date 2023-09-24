@@ -4,10 +4,7 @@ import com.example.demo.entity.AuthUser;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.Status;
 import com.example.demo.enums.Gender;
-import com.example.demo.repository.ActivateCodesRepository;
-import com.example.demo.repository.AuthUserRepository;
-import com.example.demo.repository.RoleRepository;
-import com.example.demo.repository.StatusRepository;
+import com.example.demo.repository.*;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
@@ -15,6 +12,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.models.GroupedOpenApi;
@@ -23,20 +21,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.mongodb.MongoDatabaseFactory;
-import org.springframework.data.mongodb.MongoTransactionManager;
+import org.springframework.context.annotation.Bean;;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.time.LocalDate;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @EnableScheduling
@@ -45,10 +35,16 @@ import java.util.concurrent.TimeUnit;
 @SpringBootApplication
 @RequiredArgsConstructor
 public class DemoApplication {
-    private final CacheManager cacheManager;
+	private final UserDataRepository userDataRepository;
+	private final CacheManager cacheManager;
 	private final ActivateCodesRepository activateCodesRepository;
 	private final RoleRepository roleRepository;
 
+	@PostConstruct
+	public void init(){
+		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Tashkent"));   // It will set UTC timezone
+		System.out.println("Spring boot application running in UTC timezone :"+new Date());   // It will print UTC timezone
+	}
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
 	}
@@ -107,18 +103,49 @@ public class DemoApplication {
 				}catch (Exception ignore){}
 		};
 	}
-	@Scheduled(fixedDelay = 5,initialDelay = 5,timeUnit = TimeUnit.MINUTES)
-	public void deleteCaches(){
+	@Scheduled(cron = "0 0 12 * * 1-6")
+	public void deleteUserData(){
 		try {
-			cacheManager.getCacheNames()
-					.forEach(s -> Objects.requireNonNull(cacheManager.
-							getCache(Objects.requireNonNullElse(s, ""))).clear());
+			userDataRepository.deleteExpireData();
+			log.info("deleted old user infos");
 		}catch (Exception e){
 			log.error("Error while deleting caches",e);
 			throw new RuntimeException();
 		}
 	}
-	@Scheduled(fixedDelay = 1, initialDelay = 1,timeUnit = TimeUnit.DAYS)
+	@Scheduled(cron = "0 0 16 * * 1-6")
+	public void deleteUserData2(){
+		try {
+			userDataRepository.deleteExpireData();
+			log.info("deleted old user infos");
+		}catch (Exception e){
+			log.error("Error while deleting caches",e);
+			throw new RuntimeException();
+		}
+	}
+	@Scheduled(cron = "0 0 19 * * 1-6")
+	public void deleteUserData3(){
+		try {
+			userDataRepository.deleteExpireData();
+			log.info("deleted old user infos");
+		}catch (Exception e){
+			log.error("Error while deleting caches",e);
+			throw new RuntimeException();
+		}
+	}
+	@Scheduled(cron = "0 0,5,10,15,20,25,30,35,40,45,50,55 * * * *")
+	public void deleteCaches(){
+		try {
+			cacheManager.getCacheNames()
+					.forEach(s -> Objects.requireNonNull(cacheManager.
+							getCache(Objects.requireNonNullElse(s, ""))).clear());
+			log.info("deleted all caches");
+		}catch (Exception e){
+			log.error("Error while deleting caches",e);
+			throw new RuntimeException();
+		}
+	}
+	@Scheduled(cron = "0 0 23 * * *")
 	public void dailyCycle(){
 		try {
 			activateCodesRepository.deleteOldCodes();

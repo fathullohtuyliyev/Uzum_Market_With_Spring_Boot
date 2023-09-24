@@ -1,6 +1,7 @@
 package com.example.demo.dto.order_dto;
 
 import com.example.demo.dto.delivery_dto.DeliveryGetDto;
+import com.example.demo.entity.PromoCode;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -30,6 +31,8 @@ public class OrderCreateDto {
     @NotNull
     @PositiveOrZero
     public Double price;
+
+    private PromoCode promoCode;
 
     @Builder.Default
     public LocalDateTime time=LocalDateTime.now();
