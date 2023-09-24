@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.DemoApplication;
 import com.example.demo.dto.order_dto.OrderCreateDto;
 import com.example.demo.dto.order_dto.OrderGetDto;
 import com.example.demo.dto.order_dto.OrderUpdateDto;
@@ -13,12 +14,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
-
 import static com.example.demo.mapper.DeliveryMapper.DELIVERY_MAPPER;
 import static com.example.demo.mapper.GoodMapper.GOOD_MAPPER;
 import static com.example.demo.mapper.OrderMapper.ORDER_MAPPER;
@@ -45,7 +44,16 @@ public class OrderServiceImpl implements OrderService {
                     paymentTypeRepository,
                     goodRepository,
                     dto);
-
+            Status startStatus=null;
+            try {
+                startStatus = statusRepository.findById(DemoApplication.statusId)
+                        .orElseThrow(RuntimeException::new);
+            }catch (Exception e){
+                e.printStackTrace();
+                DemoApplication.stop();
+                return null;
+            }
+            order.setStatus(startStatus);
             Order saved = orderRepository.save(order);
             OrderGetDto dto1 = ORDER_MAPPER.toDto(saved);
 

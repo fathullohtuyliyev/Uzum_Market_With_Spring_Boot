@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.DemoApplication;
 import com.example.demo.dto.auth_user_dto.AuthUserCreateDto;
 import com.example.demo.dto.auth_user_dto.AuthUserGetDto;
 import com.example.demo.dto.auth_user_dto.AuthUserUpdateDto;
@@ -51,8 +52,15 @@ public class AuthUserServiceImpl implements AuthUserService {
             if (authUserRepository.existsAuthUserByPhoneAndEmail(dto.phone, dto.email)) {
                 throw new BadParamException();
             }
-            Role role = roleRepository.findByName("CUSTOMER")
-                    .orElseThrow(NotFoundException::new);
+            Role role=null;
+            try {
+                role = roleRepository.findById(DemoApplication.customerId)
+                        .orElseThrow(NotFoundException::new);
+            }catch (Exception e){
+                e.printStackTrace();
+                DemoApplication.stop();
+                return;
+            }
             AuthUser authUser = USER_MAPPER.toEntity(dto);
             authUser.setRoles(Set.of(role));
             ActivateCodes activateCodes = ActivateCodes.builder()
