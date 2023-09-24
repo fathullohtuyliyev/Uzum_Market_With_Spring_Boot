@@ -27,6 +27,10 @@ public class Type {
     private Type sub;
 
     @ToString.Exclude
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "root",fetch = FetchType.LAZY)
     private List<Type> roots;
+
+    @ManyToOne
+    @ToString.Exclude
+    private Type root;
 }

@@ -11,14 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface PaymentTypeRepository extends JpaRepository<PaymentType, Integer>, JpaSpecificationExecutor<PaymentType> {
-    @Query(value = "update payment_type p set p.active=?1, p.name=:name where p.id=?2")
+    @Query(value = "update payment_type p set p.active=?1, p.name=?2 where p.id=?3")
     @Modifying
     @Transactional
     void updateActive(boolean active, @NotBlank String name, Integer id);
 
     PaymentType findByName(String paymentType);
 
-    @Query(nativeQuery = true,value = "delete from payment_type p where p.id=?1")
+    @Query(nativeQuery = true,value = "delete from public.payment_type p where p.id=?1")
     @Modifying
     @Transactional
     void deleteWithId(Integer id);

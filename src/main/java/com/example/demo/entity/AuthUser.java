@@ -2,7 +2,6 @@ package com.example.demo.entity;
 
 import com.example.demo.enums.Gender;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -41,7 +40,7 @@ public class AuthUser {
     private Gender gender;
 
     @ToString.Exclude
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(
             name = "auth_user_role",
             joinColumns = @JoinColumn(name = "authuser_id"),

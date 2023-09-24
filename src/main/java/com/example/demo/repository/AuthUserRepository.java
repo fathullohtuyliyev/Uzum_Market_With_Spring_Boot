@@ -42,8 +42,8 @@ public interface AuthUserRepository extends JpaRepository<AuthUser, UUID>, JpaSp
 
     @Modifying
     @Transactional
-    @Query(value = "update auth_user set firstName=:firstName,gender=:gender,lastName=:lastName,imagePath=:imagePath,birthdate=:birthdate where id=:id")
-    void updateAuthUser(String firstName, String lastName, String imagePath, Gender gender, LocalDate birthdate,UUID id);
+    @Query(value = "update auth_user set firstName=:firstName,gender=:gender,lastName=:lastName,images=:images,birthdate=:birthdate where id=:id")
+    void updateAuthUser(String firstName, String lastName, String images, Gender gender, LocalDate birthdate,UUID id);
 
     @Query(value = "select count(au.id) from auth_user au")
     Integer findAllSize();
@@ -69,8 +69,8 @@ public interface AuthUserRepository extends JpaRepository<AuthUser, UUID>, JpaSp
     @Query(value = "select exists (select u.email from auth_user u where u.email=:email and u.active=true)")
     Boolean existsAuthUserByEmailAndActiveTrue(String email);
 
-    @Query(value = "select exists (select u.email from auth_user u join u.roles r where u.email=?1 and u.active=true and 'SUPER_ADMIN' in r)")
-    Boolean isAdmin(String adminEmail);
+    /*@Query(value = "select exists (select u.email from auth_user u join u.roles r where u.email=?1 and u.active=true and 'SUPER_ADMIN' in r.name)")
+    Boolean isAdmin(String adminEmail);*/
 
     @Modifying
     @Transactional

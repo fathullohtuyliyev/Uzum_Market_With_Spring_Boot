@@ -49,7 +49,7 @@ public class Order {
     @JoinColumn(name = "delivery_point_id")
     private DeliveryPoint deliveryPoint;
 
-    @ManyToOne(fetch = FetchType.LAZY,optional = false)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL,optional = false)
     @ToString.Exclude
     @JoinColumn(name = "status_id")
     private Status status;

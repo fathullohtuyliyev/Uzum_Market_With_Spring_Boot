@@ -3,7 +3,6 @@ package com.example.demo.service;
 import com.example.demo.entity.AuthUser;
 import com.example.demo.entity.Role;
 import com.example.demo.exception.BadParamException;
-import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.AuthUserRepository;
 import com.example.demo.repository.RoleRepository;
@@ -24,9 +23,9 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void updateEmail(String adminEmail, String oldEmail, String newEmail) {
         try {
-            if(!authUserRepository.isAdmin(adminEmail)){
+            /*if(!authUserRepository.isAdmin(adminEmail)){
                 throw new ForbiddenAccessException();
-            }
+            }*/
             if (!authUserRepository.existsAuthUserByEmail(oldEmail)) {
                 throw new BadParamException();
             }

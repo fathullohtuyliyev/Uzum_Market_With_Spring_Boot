@@ -16,7 +16,7 @@ import java.util.UUID;
 public interface FavouritesRepository extends JpaRepository<Favourites, UUID>, JpaSpecificationExecutor<Favourites> {
     @Modifying
     @Transactional
-    @Query(nativeQuery = true,value = "insert into favourites(user_id,good_id) values (?1,?2)")
+    @Query(nativeQuery = true,value = "insert into favourites(id,user_id,good_id) values(default,?1,?2)")
     void saveToFavourites(UUID userId,UUID goodId);
 
     @Modifying

@@ -46,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
                     dto);
             Status startStatus;
             try {
-                startStatus = statusRepository.findById(DemoApplication.statusId)
+                startStatus = statusRepository.findByName("ORDER IS PREPARING")
                         .orElseThrow(RuntimeException::new);
             }catch (Exception e){
                 e.printStackTrace();

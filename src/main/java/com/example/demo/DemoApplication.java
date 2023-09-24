@@ -25,6 +25,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import java.util.HashSet;
 import java.util.List;
 import java.time.LocalDate;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -34,11 +35,6 @@ import java.util.concurrent.TimeUnit;
 @SpringBootApplication
 @RequiredArgsConstructor
 public class DemoApplication {
-	public static Integer statusId;
-	public static Long customerId;
-	public static Long sellerId;
-	public static Long adminId;
-	public static Long superAdminId;
 
 	private final ActivateCodesRepository activateCodesRepository;
 	private final RoleRepository roleRepository;
@@ -48,107 +44,57 @@ public class DemoApplication {
 	}
 	public static void stop(){
 		System.out.println("Application Failed");
-        System.exit(2);
 	}
-//	@Bean
-	public MongoTransactionManager transactionManager(MongoDatabaseFactory dbFactory) {
-		return new MongoTransactionManager(dbFactory);
+	@Bean
+	public CommandLineRunner runner1(){
+		return args -> {
+			try {
+			Role customer = Role.builder()
+					.name("CUSTOMER")
+					.build();
+			roleRepository.save(customer);
+
+			Role seller = Role.builder()
+					.name("SELLER")
+					.build();
+			roleRepository.save(seller);
+
+			Role admin = Role.builder()
+					.name("ADMIN")
+					.build();
+			roleRepository.save(admin);
+
+			Role superAdmin = Role.builder()
+					.name("SUPER_ADMIN")
+					.build();
+			roleRepository.save(superAdmin);
+			}catch (Exception ignore){}
+		};
 	}
 	@Bean
 	public CommandLineRunner runner(StatusRepository statusRepository,
 									AuthUserRepository authUserRepository){
 		return args -> {
-				Role customer = Role.builder()
-						.name("CUSTOMER")
-						.build();
-				try {
-					customerId=roleRepository.save(customer).getId();
-				}catch (Exception e){
-					try {
-						customerId=roleRepository.findByName(customer.getName())
-								.orElseThrow(RuntimeException::new).getId();
-					}catch (Exception ex){
-						stop();
-						return;
-					}
-				}
-				Role seller = Role.builder()
-						.name("SELLER")
-						.build();
-			    try {
-                    sellerId=roleRepository.save(seller).getId();
-		    	}catch (Exception e){
-                    try {
-						sellerId=roleRepository.findByName(seller.getName())
-								.orElseThrow(RuntimeException::new).getId();
-					}catch (Exception ex){
-						stop();
-						return;
-					}
-			    }
-				Role admin = Role.builder()
-						.name("ADMIN")
-						.build();
-		    	try {
-					adminId=roleRepository.save(admin).getId();
-			    }catch (Exception e){
-                    try {
-						adminId=roleRepository.findByName(admin.getName())
-								.orElseThrow(RuntimeException::new).getId();
-					}catch (Exception ex){
-						stop();
-						return;
-					}
-			    }
-				Role superAdmin = Role.builder()
-						.name("SUPER_ADMIN")
-						.build();
-			    try {
-                    superAdminId=roleRepository.save(superAdmin).getId();
-			    }catch (Exception e){
-                    try {
-						superAdminId=roleRepository.findByName(superAdmin.getName())
-								.orElseThrow(RuntimeException::new).getId();
-					}catch (Exception ex){
-						stop();
-						return;
-					}
-			    }
+
 			//status creating process
-			try {
-				Status status = Status.builder().name("ORDER IS PREPARING").build();
-				statusId=statusRepository.save(status).getId();
-			}catch (Exception e){
-				try {
-					statusId = statusRepository.findByName("ORDER IS PREPARING")
-							.orElseThrow(RuntimeException::new).getId();
-				}catch (Exception ex){
-					System.out.println("System error");
-					stop();
-					return;
-				}
-			}
-			List<Long> idList = List.of(
-					adminId,
-					superAdminId,
-					customerId
-			);
-			List<Role> roles = roleRepository.findAllById(idList);
-			AuthUser adminUser = AuthUser.builder()
-					.email("admin123@mail.com")
-					.active(true)
-					.birthdate(LocalDate.of(
-							2000, 5, 6
-					))
-					.gender(Gender.MALE)
-					.firstName("Admin")
-					.lastName("Root")
-					.phone("+998999067760")
-					.roles(new HashSet<>(roles))
-					.build();
-			try {
-				authUserRepository.save(adminUser);
-			}catch (Exception ignore){}
+                try {
+					Status status = Status.builder().name("ORDER IS PREPARING").build();
+					statusRepository.save(status);
+					HashSet<Role> roles = new HashSet<>(roleRepository.findAll());
+					AuthUser adminUser = AuthUser.builder()
+							.email("admin123@mail.com")
+							.active(true)
+							.birthdate(LocalDate.of(
+									2000, 5, 6
+							))
+							.gender(Gender.MALE)
+							.firstName("Admin")
+							.lastName("Root")
+							.phone("+998999067760")
+							.roles(roles)
+							.build();
+					authUserRepository.save(adminUser);
+				}catch (Exception ignore){}
 		};
 	}
 	@Scheduled(fixedDelay = 1, initialDelay = 1,timeUnit = TimeUnit.DAYS)

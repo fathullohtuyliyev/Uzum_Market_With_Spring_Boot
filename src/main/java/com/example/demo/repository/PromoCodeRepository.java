@@ -23,17 +23,17 @@ public interface PromoCodeRepository extends JpaRepository<PromoCode, UUID>, Jpa
 
     @Modifying
     @Transactional
-    @Query(nativeQuery = true,value = "delete from promo_code pc where pc.id=:id")
+    @Query(nativeQuery = true,value = "delete from public.promo_code pc where pc.id=:id")
     void deleteWithId(UUID id);
 
-    @Query(nativeQuery = true, value = "select * from promo_code pc where pc.good_id=:goodId")
+    @Query(value = "from promo_code pc inner join pc.goods g where g.id=:goodId")
     Page<PromoCode> findAllByGoodId(UUID goodId, Pageable pageable);
 
-    @Query(nativeQuery = true, value = "select * from promo_code pc where pc.good_id=:goodId")
+    @Query(value = "from promo_code pc inner join pc.goods g where g.id=?1")
     List<PromoCode> findAllByGoodId(UUID goodId);
-    @Query(nativeQuery = true, value = "select count(pc.id) from promo_code pc where pc.good_id=:goodId")
+    @Query(value = "select count(pc.id) from promo_code pc inner join pc.goods g where g.id=?1")
     Integer findAllByGoodIdSize(UUID goodId);
 
-    @Query(nativeQuery = true, value = "select * from promo_code pc where lower(pc.name) = lower(:name)")
+    @Query(value = "from promo_code pc where lower(pc.name) = lower(:name)")
     Optional<PromoCode> findByName(String name);
 }

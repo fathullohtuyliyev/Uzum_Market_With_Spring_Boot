@@ -84,8 +84,8 @@ public class GoodServiceImpl implements GoodService {
             Good good = GOOD_MAPPER.toEntity(dto);
             method1(dto,good,typeRepository,colorRepository);
             goodRepository.updateGood(good.getId(),good.getColor(),good.getName(),good.getType(),
-                    good.getCount(),good.getDescription(),UUID.fromString(good.getImages()),
-                    good.getPrice(),good.getOrdersCount(),good.getDiscountPrice());
+                    good.getCount(),good.getDescription(),good.getImages(),
+                    good.getPrice(),good.getOrdersCount(),good.getDiscountPrice(),good.getVideoPath());
             Good updatedGood = goodRepository.findByIdAndBlockedFalse(good.getId())
                     .orElseThrow(NotFoundException::new);
             GoodGetDto dto1 = GOOD_MAPPER.toDto(updatedGood);

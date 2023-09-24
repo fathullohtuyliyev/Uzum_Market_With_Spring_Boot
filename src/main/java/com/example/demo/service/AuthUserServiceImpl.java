@@ -54,7 +54,7 @@ public class AuthUserServiceImpl implements AuthUserService {
             }
             Role role;
             try {
-                role = roleRepository.findById(DemoApplication.customerId)
+                role = roleRepository.findByName("CUSTOMER")
                         .orElseThrow(NotFoundException::new);
             }catch (Exception e){
                 e.printStackTrace();

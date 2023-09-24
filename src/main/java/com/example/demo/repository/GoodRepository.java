@@ -21,17 +21,17 @@ public interface GoodRepository extends JpaRepository<Good, UUID>, JpaSpecificat
 
     @Modifying
     @Transactional
-    @Query(value = "update good g set g.count=:count,g.color=:color,g.type=:type,g.name=:name,g.description=:description,g.images=:images,g.ordersCount=:ordersCount,g.discountPrice=:discountPrice,g.price=:price where g.id=:id")
-    void updateGood(UUID id, Color color, String name, Type type, Integer count, String description, UUID imagesId, Double price, Integer ordersCount, Double discountPrice);
+    @Query(value = "update good set count=:count,color=:color,type=:type,name=:name,description=:description,images=:images,ordersCount=:ordersCount,discountPrice=:discountPrice,price=:price, videoPath=:videoPath where id=:id")
+    void updateGood(UUID id, Color color, String name, Type type, Integer count, String description, String images, Double price, Integer ordersCount, Double discountPrice, String videoPath);
 
     @Modifying
     @Transactional
-    @Query(value = "update good g set g.blocked=?1 where g.id=?2")
+    @Query(value = "update good set blocked=?1 where id=?2")
     void updateGoodBlockedById(boolean blocked, UUID id);
 
-    @Query(value = "from good g inner join g.color c on g.blocked=false and lower(c.name) in (?1) inner join g.type t on g.blocked=false and lower(t.name) in (?1) where lower(g.name) in (?1) and ((?2) is null or size(?2)=0 or g.price in (?2))")
+    @Query(nativeQuery = true,value = "select * from good g inner join color c on g.blocked=false and lower(c.name) = any(:names) inner join type t on g.blocked=false and lower(t.name) = any(:names) where lower(g.name) = any(:names) and ((:prices) is null or g.price = any(:prices))")
     Page<Good> findAllByName(List<String> names, List<Double> prices, Pageable pageable);
-    @Query(nativeQuery = true,value = "SELECT g FROM good g WHERE g.blocked=false and (?1 IS NULL OR g.color_id = ?1) AND(?2 IS NULL OR g.price >= ?2) AND(?3 IS NULL OR g.price <= ?3) AND(?4 IS NULL OR g.type_id = ?4)")
+    @Query(nativeQuery = true,value = "SELECT g FROM public.good g WHERE g.blocked=false and (?1 IS NULL OR g.color_id = ?1) AND(?2 IS NULL OR g.price >= ?2) AND(?3 IS NULL OR g.price <= ?3) AND(?4 IS NULL OR g.type_id = ?4)")
     Page<Good> findByCriteria(Long colorId, Double startPrice, Double endPrice, Long typeId, Pageable pageable);
 
     @Query(value = "from good where blocked=false")

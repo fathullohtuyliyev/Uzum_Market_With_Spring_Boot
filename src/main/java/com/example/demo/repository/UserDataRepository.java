@@ -14,19 +14,19 @@ import java.util.UUID;
 
 @Repository
 public interface UserDataRepository extends JpaRepository<UserData, UUID>, JpaSpecificationExecutor<UserData> {
-   @Query(value = "select count (d.id) from user_data d join d.user.roles r where d.user=:user and d.expireTime<now() and d.user.active=true and r in ('ADMIN') or r in ('SUPER_ADMIN')")
+   @Query(value = "select count (d.id) from user_data d join d.user.roles r where d.user=:user and d.expireTime<now() and d.user.active=true and r.name = ('ADMIN') or r.name = ('SUPER_ADMIN')")
    Integer count(AuthUser user);
 
    @Modifying
    @Transactional
    @Async
-   @Query(value = "delete from user_data d where d.expireTime<=now()")
+   @Query(nativeQuery = true, value = "delete from user_data d where d.expire_time<=now()")
    void deleteExpireData();
 
    @Modifying
    @Transactional
    @Async
-   @Query(value = "delete from user_data d where d.data=:data")
+   @Query(nativeQuery = true,value = "delete from user_data d where d.data=:data")
    void deleteByUserData(String data);
 
 }
