@@ -8,7 +8,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.*;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -22,17 +22,11 @@ public class OrderCreateDto {
     public UUID authUserId;
 
     @NotNull
-    public UUID goodId;
+    public List<UUID> goodsId;
 
-    @NotNull
-    @PositiveOrZero
     public Integer count;
 
-    @NotNull
-    @PositiveOrZero
-    public Double price;
-
-    private PromoCode promoCode;
+    private String promoCode;
 
     @Builder.Default
     public LocalDateTime time=LocalDateTime.now();

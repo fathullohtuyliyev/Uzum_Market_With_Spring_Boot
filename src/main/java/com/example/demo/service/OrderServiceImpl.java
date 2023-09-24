@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.DemoApplication;
+import com.example.demo.dto.good_dto.GoodGetDto;
 import com.example.demo.dto.order_dto.OrderCreateDto;
 import com.example.demo.dto.order_dto.OrderGetDto;
 import com.example.demo.dto.order_dto.OrderUpdateDto;
@@ -19,7 +20,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.DoubleSupplier;
 import java.util.stream.DoubleStream;
 
 import static com.example.demo.mapper.DeliveryMapper.DELIVERY_MAPPER;
@@ -97,7 +97,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private static void method2(OrderGetDto dto, Order order) {
-        dto.setGood(GOOD_MAPPER.toDto(order.getGood()));
+        List<GoodGetDto> list = order.getGoods()
+                .stream()
+                .map(GOOD_MAPPER::toDto)
+                .toList();
+        dto.setGoods(list);
 
         PaymentType paymentType = order.getPaymentType();
         dto.setPaymentType(Map.of(paymentType.getName(),paymentType.isActive()));
@@ -115,8 +119,8 @@ public class OrderServiceImpl implements OrderService {
         AuthUser authUser = authUserRepository.findById(dto.authUserId).orElseThrow(NotFoundException::new);
         order.setAuthUser(authUser);
 
-        Good good = goodRepository.findById(dto.goodId).orElseThrow(NotFoundException::new);
-        order.setGood(good);
+        List<Good> goods = goodRepository.findAllById(dto.goodsId);
+        order.setGoods(goods);
 
         DeliveryPoint deliveryPoint = deliveryPointRepository.findById(dto.deliveryGetDto.id).orElseThrow(NotFoundException::new);
         order.setDeliveryPoint(deliveryPoint);

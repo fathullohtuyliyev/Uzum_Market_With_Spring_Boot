@@ -4,7 +4,7 @@ import com.example.demo.dto.auth_user_dto.AuthUserGetDto;
 import com.example.demo.dto.delivery_dto.DeliveryGetDto;
 import com.example.demo.dto.good_dto.GoodGetDto;
 import lombok.*;
-
+import java.util.List;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -20,7 +20,7 @@ public class OrderGetDto {
 
     public AuthUserGetDto authUser;
 
-    public GoodGetDto good;
+    public List<GoodGetDto> goods;
 
     public Integer count;
 

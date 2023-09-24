@@ -18,24 +18,27 @@ import java.util.List;
 public interface OrderMapper {
     OrderMapper ORDER_MAPPER = Mappers.getMapper(OrderMapper.class);
     @Mapping(target = "authUser",ignore = true)
-    @Mapping(target = "good",ignore = true)
+    @Mapping(target = "goods",ignore = true)
     @Mapping(target = "deliveryPoint",ignore = true)
     @Mapping(target = "status",ignore = true)
+    @Mapping(target = "promoCode",ignore = true)
     @Mapping(target = "paymentType",ignore = true)
     Order toEntity(OrderGetDto dto);
 
     @Mapping(target = "authUser",ignore = true)
-    @Mapping(target = "good",ignore = true)
+    @Mapping(target = "goods",ignore = true)
     @Mapping(target = "deliveryPoint",ignore = true)
     @Mapping(target = "status",ignore = true)
     @Mapping(target = "count",ignore = true)
     @Mapping(target = "price",ignore = true)
     @Mapping(target = "time",ignore = true)
+    @Mapping(target = "promoCode",ignore = true)
     @Mapping(target = "paymentType",ignore = true)
     Order toEntity(OrderUpdateDto dto);
 
     @Mapping(target = "authUser",ignore = true)
-    @Mapping(target = "good",ignore = true)
+    @Mapping(target = "goods",ignore = true)
+    @Mapping(target = "price",ignore = true)
     @Mapping(target = "deliveryPoint",ignore = true)
     @Mapping(target = "status",ignore = true)
     @Mapping(target = "update",ignore = true)
@@ -44,7 +47,7 @@ public interface OrderMapper {
     Order toEntity(OrderCreateDto dto);
 
     @Mapping(target = "authUser",ignore = true)
-    @Mapping(target = "good",ignore = true)
+    @Mapping(target = "goods",ignore = true)
     @Mapping(target = "deliveryGetDto",ignore = true)
     @Mapping(target = "status",ignore = true)
     @Mapping(target = "paymentType",ignore = true)

@@ -18,7 +18,7 @@ public interface GoodMapper {
 
     @Mapping(target = "color",ignore = true)
     @Mapping(target = "type",ignore = true)
-    @Mapping(target = "orderList",ignore = true)
+    @Mapping(target = "orders",ignore = true)
     @Mapping(target = "blocked",ignore = true)
     @Mapping(target = "promoCodes",ignore = true)
     @Mapping(target = "id",ignore = true)
@@ -27,14 +27,14 @@ public interface GoodMapper {
 
     @Mapping(target = "color",ignore = true)
     @Mapping(target = "type",ignore = true)
-    @Mapping(target = "orderList",ignore = true)
+    @Mapping(target = "orders",ignore = true)
     @Mapping(target = "blocked",ignore = true)
     @Mapping(target = "promoCodes",ignore = true)
     Good toEntity(GoodUpdateDto dto);
 
     @Mapping(target = "color",ignore = true)
     @Mapping(target = "type",ignore = true)
-    @Mapping(target = "orderList",ignore = true)
+    @Mapping(target = "orders",ignore = true)
     @Mapping(target = "blocked",ignore = true)
     @Mapping(target = "promoCodes",ignore = true)
     Good toEntity(GoodGetDto dto);
