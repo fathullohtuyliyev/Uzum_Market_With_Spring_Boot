@@ -1,14 +1,16 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.auth_user_dto.AuthUserGetDto;
 import com.example.demo.exception.BadParamException;
 import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.service.AdminService;
+import com.example.demo.service.AuthUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.UUID;
@@ -19,6 +21,7 @@ import java.util.UUID;
 @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
 public class AdminController {
     private final AdminService adminService;
+    private final AuthUserService authUserService;
     @PutMapping("/update-email")
     public void updateEmail(@RequestParam Map<String, String> param){
         String adminEmail = param.get("admin");
@@ -36,6 +39,18 @@ public class AdminController {
             adminService.updateRole(UUID.fromString(userId),role);
         }catch (IllegalArgumentException e){
             throw new BadParamException();
+        }
+    }
+    @GetMapping("/get-all-users-data")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<Page<AuthUserGetDto>> getUsers(@RequestParam String page,
+                                                         @RequestParam String size){
+        try {
+            Page<AuthUserGetDto> users = authUserService
+                    .users(PageRequest.of(Integer.parseInt(page), Integer.parseInt(size)));
+            return ResponseEntity.ok(users);
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().build();
         }
     }
     @PreAuthorize("hasRole('SUPER_ADMIN')")

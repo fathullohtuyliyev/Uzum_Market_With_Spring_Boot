@@ -61,18 +61,6 @@ public class AuthController {
             return ResponseEntity.badRequest().build();
         }
     }
-    @GetMapping("/get-all-users-data")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public ResponseEntity<Page<AuthUserGetDto>> getUsers(@RequestParam String page,
-                                                         @RequestParam String size){
-        try {
-            Page<AuthUserGetDto> users = authUserService
-                    .users(PageRequest.of(Integer.parseInt(page), Integer.parseInt(size)));
-            return ResponseEntity.ok(users);
-        }catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().build();
-        }
-    }
     @PutMapping("/online")
     public void online(@RequestParam String id){
         try {

@@ -8,8 +8,16 @@ import com.example.demo.repository.ActivateCodesRepository;
 import com.example.demo.repository.AuthUserRepository;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.StatusRepository;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -107,6 +115,76 @@ public class DemoApplication {
 			log.error(message, e);
 			throw new RuntimeException(message, e);
 		}
+	}
+	@Bean
+	public SecurityScheme createAPIKeyScheme() {
+		return new SecurityScheme().type(SecurityScheme.Type.HTTP)
+				.bearerFormat("JWT")
+				.scheme("bearer");
+	}
+
+	@Bean
+	public OpenAPI openAPI() {
+		return new OpenAPI().addSecurityItem(new SecurityRequirement()
+						.addList("Bearer Authentication"))
+				.components(new Components().addSecuritySchemes(
+						"Bearer Authentication", createAPIKeyScheme()))
+				.info(new Info().title("My REST API")
+						.description("Some custom description of API.")
+						.version("1.0").contact(new Contact().name("Soliyev Boburjon")
+								.email("http://localhost:8080").url("soliyevboburjon95@@gmail.com"))
+						.license(new License().name("License of API")
+								.url("API license URL")));
+	}
+
+
+	@Bean
+	public GroupedOpenApi admin() {
+		return GroupedOpenApi.builder()
+				.group("admin")
+				.pathsToMatch("/**")
+				.build();
+	}
+	@Bean
+	public GroupedOpenApi seller() {
+		return GroupedOpenApi.builder()
+				.group("seller")
+				.pathsToMatch("/api.auth/**",
+						"/api.good/**",
+						"/api.delivery/get/**",
+						"/api.comment/**",
+						"/api.color/**",
+						"/api.basket/**",
+						"/api.basket/**",
+						"/api.favourites/**",
+						"/api.basket/**",
+						"/api.order/**",
+						"/api.payment.type/get/**",
+						"/api.promo-code/**",
+						"/api.role/get/**",
+						"/api.status/get/**",
+						"/api.type/get/**")
+				.build();
+	}
+	@Bean
+	public GroupedOpenApi customer() {
+		return GroupedOpenApi.builder()
+				.group("customer")
+				.pathsToMatch("/api.auth/**",
+						"/api.good/get/**",
+						"/api.delivery/get/**",
+						"/api.comment/**",
+						"/api.color/get/**",
+						"/api.basket/**",
+						"/api.favourites/**",
+						"/api.order/save/**",
+						"/api.order/get/**",
+						"/api.payment.type/get/**",
+						"/api.promo-code/get/**",
+						"/api.role/get/**",
+						"/api.status/get/**",
+						"/api.type/get/**")
+				.build();
 	}
 }
 
