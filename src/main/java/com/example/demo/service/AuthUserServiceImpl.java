@@ -52,7 +52,7 @@ public class AuthUserServiceImpl implements AuthUserService {
             if (authUserRepository.existsAuthUserByPhoneAndEmail(dto.phone, dto.email)) {
                 throw new BadParamException();
             }
-            Role role=null;
+            Role role;
             try {
                 role = roleRepository.findById(DemoApplication.customerId)
                         .orElseThrow(NotFoundException::new);

@@ -44,7 +44,7 @@ public class OrderServiceImpl implements OrderService {
                     paymentTypeRepository,
                     goodRepository,
                     dto);
-            Status startStatus=null;
+            Status startStatus;
             try {
                 startStatus = statusRepository.findById(DemoApplication.statusId)
                         .orElseThrow(RuntimeException::new);
