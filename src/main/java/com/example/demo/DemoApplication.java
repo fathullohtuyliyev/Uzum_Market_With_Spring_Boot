@@ -21,6 +21,7 @@ import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +34,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import java.util.HashSet;
 import java.util.List;
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -43,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 @SpringBootApplication
 @RequiredArgsConstructor
 public class DemoApplication {
-
+    private final CacheManager cacheManager;
 	private final ActivateCodesRepository activateCodesRepository;
 	private final RoleRepository roleRepository;
 
@@ -104,6 +106,17 @@ public class DemoApplication {
 					authUserRepository.save(adminUser);
 				}catch (Exception ignore){}
 		};
+	}
+	@Scheduled(fixedDelay = 5,initialDelay = 5,timeUnit = TimeUnit.MINUTES)
+	public void deleteCaches(){
+		try {
+			cacheManager.getCacheNames()
+					.forEach(s -> Objects.requireNonNull(cacheManager.
+							getCache(Objects.requireNonNullElse(s, ""))).clear());
+		}catch (Exception e){
+			log.error("Error while deleting caches",e);
+			throw new RuntimeException();
+		}
 	}
 	@Scheduled(fixedDelay = 1, initialDelay = 1,timeUnit = TimeUnit.DAYS)
 	public void dailyCycle(){

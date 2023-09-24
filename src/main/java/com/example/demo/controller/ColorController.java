@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.service.ColorService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ public class ColorController {
         return new ResponseEntity<>(colorService.save(name), HttpStatus.CREATED);
     }
     @PutMapping("/update")
+    @CachePut(key = "#id",value = "colors")
     public ResponseEntity<Map<Long, String>> update(@RequestParam String id,
                                                     @RequestParam String name){
         return new ResponseEntity<>(colorService.update
@@ -28,6 +31,7 @@ public class ColorController {
     }
     @GetMapping("/get/{id}")
     @PreAuthorize("isAuthenticated()")
+    @Cacheable(key = "#id",value = "colors")
     public ResponseEntity<Map<Long, String>> get(@PathVariable Long id){
         return ResponseEntity.ok(colorService.get(id));
     }

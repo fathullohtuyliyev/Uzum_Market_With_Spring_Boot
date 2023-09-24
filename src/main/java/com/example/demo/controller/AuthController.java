@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -48,11 +50,13 @@ public class AuthController {
         authUserService.logout(request, response);
     }
     @PutMapping("/update")
+    @CachePut(key = "#dto.id",value = "users")
     public ResponseEntity<AuthUserGetDto> update(@RequestBody @Valid AuthUserUpdateDto dto){
         AuthUserGetDto update = authUserService.update(dto);
         return new ResponseEntity<>(update, HttpStatus.NO_CONTENT);
     }
     @GetMapping("/get-self-data")
+    @Cacheable(key = "#id",value = "users")
     public ResponseEntity<AuthUserGetDto> get(@RequestParam String id, HttpServletRequest request){
         try {
             AuthUserGetDto getDto = authUserService.get(UUID.fromString(id), request);
@@ -78,10 +82,12 @@ public class AuthController {
         }
     }
     @GetMapping("/exist-email/{email}")
+    @Cacheable(key = "#email",value = "check")
     public ResponseEntity<Boolean> existEmail(@PathVariable String email){
         return ResponseEntity.ok(authUserService.existEmail(email));
     }
     @GetMapping("/exist-phone/{phone}")
+    @Cacheable(key = "#phone",value = "check")
     public ResponseEntity<Boolean> existPhone(@PathVariable String phone){
         return ResponseEntity.ok(authUserService.existPhone(phone));
     }

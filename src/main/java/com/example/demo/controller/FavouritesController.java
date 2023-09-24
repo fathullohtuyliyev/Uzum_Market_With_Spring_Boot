@@ -5,6 +5,8 @@ import com.example.demo.dto.favourites_dto.FavouritesGetDto;
 import com.example.demo.service.FavouritesService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ import java.util.UUID;
 public class FavouritesController {
     private final FavouritesService favouritesService;
     @PostMapping("/save")
+    @Cacheable(key = "#dto.userId",value = "favourites")
     public ResponseEntity<Page<FavouritesGetDto>> save(@RequestBody @Valid FavouritesCreateDto dto){
         return new ResponseEntity<>(favouritesService.save(dto), HttpStatus.CREATED);
     }

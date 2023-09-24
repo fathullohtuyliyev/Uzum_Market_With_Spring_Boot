@@ -6,6 +6,8 @@ import com.example.demo.dto.order_dto.OrderUpdateDto;
 import com.example.demo.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -28,11 +30,13 @@ public class OrderController {
         return new ResponseEntity<>(orderService.save(dto), HttpStatus.CREATED);
     }
     @PutMapping("/update")
+    @CachePut(key = "#dto.id",value = "orders")
     @PreAuthorize("hasAnyRole('SELLER','ADMIN','SUPER_ADMIN')")
     public ResponseEntity<OrderGetDto> update(@RequestBody @Valid OrderUpdateDto dto){
         return new ResponseEntity<>(orderService.update(dto),HttpStatus.NO_CONTENT);
     }
     @PutMapping("/update-status")
+    @CachePut(key = "#id",value = "orders")
     public ResponseEntity<OrderGetDto> updateStatus(@RequestParam String id,
                                                     @RequestParam String name){
         try {
@@ -43,6 +47,7 @@ public class OrderController {
         }
     }
     @GetMapping("/get")
+    @Cacheable(key = "#param.get('userId')",value = "orders")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<OrderGetDto>> get(@RequestParam Map<String, String> param){
         try {

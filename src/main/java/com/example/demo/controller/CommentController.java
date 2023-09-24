@@ -4,6 +4,8 @@ import com.example.demo.nosql.Comment;
 import com.example.demo.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -24,15 +26,18 @@ public class CommentController {
         return new ResponseEntity<>(commentService.save(comment), HttpStatus.CREATED);
     }
     @GetMapping("/get")
+    @Cacheable(key = "#id",value = "comments")
     public ResponseEntity<Comment> get(@RequestParam String id){
         return ResponseEntity.ok(commentService.get(UUID.fromString(id)));
     }
     @DeleteMapping("/delete")
+    @CacheEvict(key = "#id",value = "comments")
     public ResponseEntity<Void> delete(@RequestParam String id){
         commentService.delete(UUID.fromString(id));
         return ResponseEntity.noContent().build();
     }
     @GetMapping("/get-by-good")
+    @Cacheable(key = "#param",value = "comments")
     public ResponseEntity<Page<Comment>> getByGood(@RequestParam Map<String, String> param){
         try {
             UUID goodId = UUID.fromString(param.get("goodId"));

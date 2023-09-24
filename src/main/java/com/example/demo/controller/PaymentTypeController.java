@@ -5,6 +5,9 @@ import com.example.demo.dto.payment_dto.PaymentUpdateDto;
 import com.example.demo.service.PaymentTypeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -23,14 +26,17 @@ public class PaymentTypeController {
         return new ResponseEntity<>(paymentTypeService.save(name), HttpStatus.CREATED);
     }
     @PutMapping("/update")
+    @CachePut(key = "#dto.id",value = "paymentTypes")
     public ResponseEntity<PaymentGetDto> update(@RequestBody @Valid PaymentUpdateDto dto){
         return new ResponseEntity<>(paymentTypeService.update(dto),HttpStatus.NO_CONTENT);
     }
+    @CacheEvict(key = "#id",value = "paymentTypes")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id){
         paymentTypeService.delete(id);
         return ResponseEntity.noContent().build();
     }
+    @Cacheable(key = "#id",value = "paymentTypes")
     @GetMapping("/get/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<PaymentGetDto> get(@PathVariable Integer id){

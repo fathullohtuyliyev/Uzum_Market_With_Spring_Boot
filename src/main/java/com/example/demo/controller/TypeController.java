@@ -6,6 +6,8 @@ import com.example.demo.dto.type_dto.TypeUpdateDto;
 import com.example.demo.service.TypeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -27,17 +29,20 @@ public class TypeController {
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
     @PutMapping("/update")
+    @CachePut(key = "#dto.id",value = "types")
     public ResponseEntity<TypeGetDto> update(@RequestBody @Valid TypeUpdateDto dto){
         TypeGetDto updated = typeService.update(dto);
         return new ResponseEntity<>(updated,HttpStatus.NO_CONTENT);
     }
     @GetMapping("/get-type/{id}")
     @PreAuthorize("isAuthenticated()")
+    @Cacheable(key = "#id",value = "types")
     public ResponseEntity<TypeGetDto> getOnlyOneType(@PathVariable Long id){
         TypeGetDto getDto = typeService.get(id);
         return ResponseEntity.ok(getDto);
     }
     @GetMapping("/get-many-types")
+    @Cacheable(key = "#ids",value = "types")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<TypeGetDto>> getManyTypes(@RequestBody Collection<Long> ids){
         List<TypeGetDto> allByIds = typeService.getAllByIds(ids);
@@ -45,6 +50,7 @@ public class TypeController {
     }
 
     @GetMapping("/get-sub-types")
+    @Cacheable(key = "root.methodName",value = "types")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<TypeGetDto>> getSubTypes(){
         return ResponseEntity.ok(typeService.allSubTypes());

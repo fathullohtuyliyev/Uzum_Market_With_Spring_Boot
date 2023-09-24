@@ -5,6 +5,8 @@ import com.example.demo.dto.basket_dto.BasketGetDto;
 import com.example.demo.service.BasketService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -35,6 +37,7 @@ public class BasketController {
         }
     }
     @GetMapping("/get")
+    @Cacheable(key = "#param.get('id')",value = "baskets")
     public ResponseEntity<Page<BasketGetDto>> get(@RequestParam Map<String, String> param){
         try {
             UUID userId = UUID.fromString(param.get("id"));

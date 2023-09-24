@@ -1,6 +1,8 @@
 package com.example.demo.repository;
 
 import com.example.demo.entity.Favourites;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
@@ -21,9 +23,11 @@ public interface FavouritesRepository extends JpaRepository<Favourites, UUID>, J
 
     @Modifying
     @Transactional
+    @CacheEvict(key = "#userId",value = "favourites")
     @Query(nativeQuery = true,value = "delete from favourites f where f.user_id=?1 and f.good_id=?2")
     void removeFromFavourites(UUID userId,UUID goodId);
 
+    @Cacheable(key = "#userId",value = "favourites")
     @Query(nativeQuery = true, value = "select * from favourites f where f.user_id=:userId")
     Page<Favourites> findAllByUserId(UUID userId, Pageable of);
 

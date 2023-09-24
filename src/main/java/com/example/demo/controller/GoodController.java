@@ -9,6 +9,9 @@ import com.example.demo.service.GoodService;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -30,10 +33,12 @@ public class GoodController {
         return new ResponseEntity<>(goodService.save(dto), HttpStatus.CREATED);
     }
     @PutMapping("/update")
+    @CachePut(key = "#dto.id",value = "goods")
     public ResponseEntity<GoodGetDto> update(@RequestBody @Valid GoodUpdateDto dto){
         return new ResponseEntity<>(goodService.update(dto),HttpStatus.NO_CONTENT);
     }
     @GetMapping("/get")
+    @Cacheable(key = "#id",value = "goods")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<GoodGetDto> get(@RequestParam String id){
         try {
@@ -42,6 +47,8 @@ public class GoodController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @CacheEvict(key = "#id",value = "goods")
     @DeleteMapping("/delete")
     @PreAuthorize("hasAnyRole('ADMIN','SELLER','SUPER_ADMIN')")
     public ResponseEntity<Void> delete(@RequestParam String id){
@@ -53,6 +60,7 @@ public class GoodController {
         }
     }
     @GetMapping("/get-all")
+    @Cacheable(key = "#root.methodName",value = "goods")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<GoodGetDto>> getAll(@RequestParam String page,
                                                    @RequestParam String size){
@@ -65,6 +73,7 @@ public class GoodController {
         }
     }
     @GetMapping("/get-all-by-name")
+    @Cacheable(key = "#param.get('name')",value = "goods")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<GoodGetDto>> getAllByName(@RequestParam Map<String, String> param){
         try {

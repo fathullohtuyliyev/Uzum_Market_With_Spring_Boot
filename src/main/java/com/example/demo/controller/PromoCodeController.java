@@ -6,6 +6,9 @@ import com.example.demo.dto.promo_code_dto.PromoCodeUpdateDto;
 import com.example.demo.service.PromoCodeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -27,10 +30,12 @@ public class PromoCodeController {
         return new ResponseEntity<>(promoCodeService.save(dto), HttpStatus.CREATED);
     }
     @PutMapping("/update")
+    @CachePut(key = "dto.id",value = "promoCodes")
     public ResponseEntity<PromoCodeGetDto> update(@RequestBody @Valid PromoCodeUpdateDto dto){
         return new ResponseEntity<>(promoCodeService.update(dto),HttpStatus.NO_CONTENT);
     }
     @GetMapping("/get")
+    @Cacheable(key = "#id",value = "promoCodes")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<PromoCodeGetDto> get(@RequestParam String id){
         try {
@@ -39,6 +44,7 @@ public class PromoCodeController {
             return ResponseEntity.badRequest().build();
         }
     }
+    @CacheEvict(key = "#id",value = "promoCodes")
     @DeleteMapping("/delete")
     public ResponseEntity<Void> delete(@RequestParam String id){
         try {

@@ -6,6 +6,9 @@ import com.example.demo.dto.delivery_dto.DeliveryUpdateDto;
 import com.example.demo.service.DeliveryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -24,10 +27,12 @@ public class DeliveryController {
         return new ResponseEntity<>(deliveryService.save(dto), HttpStatus.CREATED);
     }
     @PutMapping("/update")
+    @CachePut(key = "#dto.id",value = "deliveryPoints")
     public ResponseEntity<DeliveryGetDto> update(@RequestBody @Valid DeliveryUpdateDto dto){
         return new ResponseEntity<>(deliveryService.update(dto),HttpStatus.NO_CONTENT);
     }
     @GetMapping("/get/{id}")
+    @Cacheable(key = "#id",value = "deliveryPoints")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<DeliveryGetDto> get(@PathVariable Long id){
         return ResponseEntity.ok(deliveryService.get(id));
