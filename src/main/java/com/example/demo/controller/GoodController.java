@@ -34,6 +34,7 @@ public class GoodController {
         return new ResponseEntity<>(goodService.update(dto),HttpStatus.NO_CONTENT);
     }
     @GetMapping("/get")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<GoodGetDto> get(@RequestParam String id){
         try {
             return ResponseEntity.ok(goodService.get(UUID.fromString(id)));
@@ -42,6 +43,7 @@ public class GoodController {
         }
     }
     @DeleteMapping("/delete")
+    @PreAuthorize("hasAnyRole('ADMIN','SELLER','SUPER_ADMIN')")
     public ResponseEntity<Void> delete(@RequestParam String id){
         try {
             goodService.delete(UUID.fromString(id));
@@ -51,6 +53,7 @@ public class GoodController {
         }
     }
     @GetMapping("/get-all")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<GoodGetDto>> getAll(@RequestParam String page,
                                                    @RequestParam String size){
         try {
@@ -62,6 +65,7 @@ public class GoodController {
         }
     }
     @GetMapping("/get-all-by-name")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<GoodGetDto>> getAllByName(@RequestParam Map<String, String> param){
         try {
             int page = Integer.parseInt(param.get("page"));
@@ -77,6 +81,7 @@ public class GoodController {
         }
     }
     @GetMapping("/get-all-by-criteria")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<GoodGetDto>> getAllByCriteria(@RequestParam String page,
                                                              @RequestParam String size,
                                                              @RequestBody @Valid GoodCriteria criteria){

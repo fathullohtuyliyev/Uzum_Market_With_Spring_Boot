@@ -19,4 +19,5 @@ public interface TypeService {
     TypeGetDto get(Long id);
     List<TypeGetDto> getAllByIds(Collection<Long> ids);
     Page<TypeGetDto> types(Pageable pageable);
+    List<TypeGetDto> allSubTypes();
 }

@@ -18,4 +18,7 @@ public interface TypeRepository extends JpaRepository<Type, Long>, JpaSpecificat
 
     @Query(value = "select count (t.id) from type t")
     int size();
+
+    @Query(value = "from type t where t.sub is null")
+    List<Type> allSubTypes();
 }

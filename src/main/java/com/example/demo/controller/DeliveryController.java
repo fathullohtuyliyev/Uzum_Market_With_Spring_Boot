@@ -27,10 +27,12 @@ public class DeliveryController {
         return new ResponseEntity<>(deliveryService.update(dto),HttpStatus.NO_CONTENT);
     }
     @GetMapping("/get/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<DeliveryGetDto> get(@PathVariable Long id){
         return ResponseEntity.ok(deliveryService.get(id));
     }
     @GetMapping("/get")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<DeliveryGetDto>> getAll(@RequestParam String page,
                                                        @RequestParam String size){
         try {

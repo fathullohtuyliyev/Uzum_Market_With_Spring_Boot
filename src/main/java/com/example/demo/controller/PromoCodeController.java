@@ -30,6 +30,7 @@ public class PromoCodeController {
         return new ResponseEntity<>(promoCodeService.update(dto),HttpStatus.NO_CONTENT);
     }
     @GetMapping("/get")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<PromoCodeGetDto> get(@RequestParam String id){
         try {
             return ResponseEntity.ok(promoCodeService.get(UUID.fromString(id)));
@@ -59,6 +60,7 @@ public class PromoCodeController {
         }
     }
     @GetMapping("/get-by-name/{name}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<PromoCodeGetDto> getByName(@PathVariable String name){
             PromoCodeGetDto byName = promoCodeService.getByName(name);
             return ResponseEntity.ok(byName);

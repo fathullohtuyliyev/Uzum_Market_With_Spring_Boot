@@ -36,6 +36,7 @@ public class PaymentTypeController {
         return ResponseEntity.ok(paymentTypeService.get(id));
     }
     @GetMapping("/get-all")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<PaymentGetDto>> getAll(@RequestParam String page,
                                                       @RequestParam String size){
         try {

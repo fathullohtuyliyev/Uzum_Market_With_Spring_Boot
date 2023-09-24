@@ -42,6 +42,12 @@ public class TypeController {
         List<TypeGetDto> allByIds = typeService.getAllByIds(ids);
         return ResponseEntity.ok(allByIds);
     }
+
+    @GetMapping("/get-sub-types")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<TypeGetDto>> getSubTypes(){
+        return ResponseEntity.ok(typeService.allSubTypes());
+    }
     @GetMapping("/get-all-types")
     public ResponseEntity<Page<TypeGetDto>> getAllTypes(@RequestParam String page,
                                                         @RequestParam String size){

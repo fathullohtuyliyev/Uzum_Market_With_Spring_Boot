@@ -23,6 +23,7 @@ import java.util.UUID;
 public class OrderController {
     private final OrderService orderService;
     @PostMapping("/save")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<OrderGetDto> save(@RequestBody OrderCreateDto dto){
         return new ResponseEntity<>(orderService.save(dto), HttpStatus.CREATED);
     }
@@ -42,6 +43,7 @@ public class OrderController {
         }
     }
     @GetMapping("/get")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<OrderGetDto>> get(@RequestParam Map<String, String> param){
         try {
             UUID userId = UUID.fromString(param.get("userId"));

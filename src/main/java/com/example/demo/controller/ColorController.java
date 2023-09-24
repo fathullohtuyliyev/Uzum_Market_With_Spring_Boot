@@ -13,7 +13,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api.color")
-@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN','SELLER')")
 public class ColorController {
     private final ColorService colorService;
     @PostMapping("/save/{name}")
@@ -27,6 +27,7 @@ public class ColorController {
                 (Map.of(Long.parseLong(id),name)),HttpStatus.NO_CONTENT);
     }
     @GetMapping("/get/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<Long, String>> get(@PathVariable Long id){
         return ResponseEntity.ok(colorService.get(id));
     }

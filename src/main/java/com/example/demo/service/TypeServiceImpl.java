@@ -104,4 +104,18 @@ public class TypeServiceImpl implements TypeService {
             throw new RuntimeException();
         }
     }
+
+    @Override
+    public List<TypeGetDto> allSubTypes() {
+        try {
+            List<Type> types = typeRepository.allSubTypes();
+            return types.stream()
+                    .map(TYPE_MAPPER::toDto)
+                    .toList();
+        }catch (Exception e){
+            Arrays.stream(e.getStackTrace())
+                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
+            throw new RuntimeException();
+        }
+    }
 }
