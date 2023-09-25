@@ -12,19 +12,11 @@ import lombok.*;
 @Builder
 @ToString
 public class GoodCriteria {
-    @NotNull
-    @Positive
     public Long color_id;
 
-    @NotNull
-    @Positive
     public Long type_id;
 
-    @PositiveOrZero
-    @NotNull
     public Double startPrice;
 
-    @PositiveOrZero
-    @NotNull
     public Double endPrice;
 }
