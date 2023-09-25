@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Status;
+import com.example.demo.exception.BadParamException;
+import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.StatusRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,8 @@ public class StatusServiceImpl implements StatusService {
         try {
             Status status = statusRepository.save(Status.builder().name(name.toUpperCase()).build());
             return status.getName();
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -38,6 +42,8 @@ public class StatusServiceImpl implements StatusService {
             statusRepository.updateByName(newName.toUpperCase(), oldName.toUpperCase());
             return statusRepository.findByName(newName.toUpperCase())
                     .orElseThrow(NotFoundException::new).getName();
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -58,6 +64,8 @@ public class StatusServiceImpl implements StatusService {
                     .map(Status::getName)
                     .toList();
             return new PageImpl<>(list,all.getPageable(),list.size());
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())

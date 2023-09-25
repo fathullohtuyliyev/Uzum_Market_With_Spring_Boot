@@ -3,6 +3,7 @@ package com.example.demo.dto.good_dto;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -31,7 +32,7 @@ public class GoodCreateDto {
     public Double price;
 
     @NotNull
-    public String images;
+    public List<String> images;
 
     public String videoPath;
 

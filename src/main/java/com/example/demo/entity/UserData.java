@@ -22,7 +22,8 @@ public class UserData {
     private UUID id;
 
     @ToString.Exclude
-    @OneToOne(optional = false,mappedBy = "data")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(unique = true,name = "user_id", referencedColumnName = "id")
     private AuthUser user;
 
     @NotNull

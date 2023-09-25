@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api.role")
-@PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
+@PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
 public class RoleController {
     private final RoleService roleService;
     @PostMapping("/save/{name}")

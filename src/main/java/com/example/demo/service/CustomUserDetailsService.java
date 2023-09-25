@@ -13,11 +13,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,7 +40,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                     || collected.contains("ADMIN")) {
                 LocalTime now = LocalTime.now(ZoneId.of("Asia/Tashkent"));
                 if (9>now.getHour() || 18< now.getHour()) {
-//                    throw new ForbiddenAccessException();
+                    throw new ForbiddenAccessException();
                 }
             }
 

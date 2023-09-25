@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api.payment.type")
-@PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
+@PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
 public class PaymentTypeController {
     private final PaymentTypeService paymentTypeService;
     @PostMapping("/save/{name}")

@@ -3,6 +3,9 @@ package com.example.demo.service;
 import com.example.demo.dto.favourites_dto.FavouritesCreateDto;
 import com.example.demo.dto.favourites_dto.FavouritesGetDto;
 import com.example.demo.entity.Favourites;
+import com.example.demo.exception.BadParamException;
+import com.example.demo.exception.ForbiddenAccessException;
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.FavouritesRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +45,8 @@ public class FavouritesServiceImpl implements FavouritesService {
                             .build()
                     ).toList();
             return new PageImpl<>(list,all.getPageable(),list.size());
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -67,6 +72,8 @@ public class FavouritesServiceImpl implements FavouritesService {
                             .build())
                     .toList();
             return new PageImpl<>(list,allByUserId.getPageable(),list.size());
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -91,6 +98,8 @@ public class FavouritesServiceImpl implements FavouritesService {
                             .build())
                     .toList();
             return new PageImpl<>(list,allByUserId.getPageable(),list.size());
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())

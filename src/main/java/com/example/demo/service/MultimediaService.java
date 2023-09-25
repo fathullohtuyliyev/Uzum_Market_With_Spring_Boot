@@ -12,6 +12,7 @@ public interface MultimediaService {
     * The String is image's absolute path
     * */
     String save(MultipartFile multipartFile);
-    @ResponseBody byte[] image(String path);
-    ResponseEntity<Resource> video(String path);
+    @ResponseBody byte[] image(String filename);
+    ResponseEntity<Resource> video(String filename);
+    void delete(String filename);
 }

@@ -4,6 +4,8 @@ import com.example.demo.dto.type_dto.TypeCreateDto;
 import com.example.demo.dto.type_dto.TypeGetDto;
 import com.example.demo.dto.type_dto.TypeUpdateDto;
 import com.example.demo.entity.Type;
+import com.example.demo.exception.BadParamException;
+import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.TypeRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,8 @@ public class TypeServiceImpl implements TypeService {
             TypeGetDto dto1 = TYPE_MAPPER.toDto(saved);
             log.info("{} created",dto1);
             return dto1;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -49,6 +53,8 @@ public class TypeServiceImpl implements TypeService {
             TypeGetDto dto1 = TYPE_MAPPER.toDto(found);
             log.info("{} updated", dto1);
             return dto1;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -65,6 +71,8 @@ public class TypeServiceImpl implements TypeService {
             TypeGetDto dto = TYPE_MAPPER.toDto(type);
             log.info("{} gave",dto);
             return dto;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -80,6 +88,8 @@ public class TypeServiceImpl implements TypeService {
                     .stream()
                     .map(TYPE_MAPPER::toDto)
                     .toList();
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -97,6 +107,8 @@ public class TypeServiceImpl implements TypeService {
                 all = new PageImpl<>(typeRepository.findAll(), PageRequest.of(0,size),size);
             }
             return TYPE_MAPPER.toDto(all);
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -112,6 +124,8 @@ public class TypeServiceImpl implements TypeService {
             return types.stream()
                     .map(TYPE_MAPPER::toDto)
                     .toList();
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             Arrays.stream(e.getStackTrace())
                     .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));

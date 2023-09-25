@@ -3,6 +3,8 @@ package com.example.demo.dto.good_dto;
 import com.example.demo.nosql.Comment;
 import lombok.*;
 import org.springframework.data.domain.Page;
+
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -30,7 +32,7 @@ public class GoodGetDto {
     @Builder.Default
     public Double discountPrice=0d;
 
-    public String images;
+    public List<String> images;
 
     public String videoPath;
 

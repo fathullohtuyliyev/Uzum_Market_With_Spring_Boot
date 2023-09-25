@@ -7,6 +7,8 @@ import com.example.demo.dto.promo_code_dto.PromoCodeGetDto;
 import com.example.demo.dto.promo_code_dto.PromoCodeUpdateDto;
 import com.example.demo.entity.Good;
 import com.example.demo.entity.PromoCode;
+import com.example.demo.exception.BadParamException;
+import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.PromoCodeRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +42,8 @@ public class PromoCodeServiceImpl implements PromoCodeService {
             PromoCodeGetDto dto1 = PROMO_CODE_MAPPER.toDto(saved);
             method2(dto1,saved);
             return dto1;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -61,6 +65,8 @@ public class PromoCodeServiceImpl implements PromoCodeService {
                     .stream()
                     .map(USER_MAPPER::toDto)
                     .toList();
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception ignore){}
         dto.setUsers(users);
     }
@@ -91,6 +97,8 @@ public class PromoCodeServiceImpl implements PromoCodeService {
             PromoCodeGetDto dto1 = PROMO_CODE_MAPPER.toDto(found);
             method2(dto1,found);
             return dto1;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -103,6 +111,8 @@ public class PromoCodeServiceImpl implements PromoCodeService {
     public void delete(UUID id) {
          try {
              promoCodeRepository.deleteWithId(id);
+         }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+             throw e;
          }catch (Exception e){
              e.printStackTrace();
              Arrays.stream(e.getStackTrace())
@@ -118,6 +128,8 @@ public class PromoCodeServiceImpl implements PromoCodeService {
             PromoCodeGetDto dto = PROMO_CODE_MAPPER.toDto(promoCode);
             method2(dto,promoCode);
             return dto;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -138,6 +150,8 @@ public class PromoCodeServiceImpl implements PromoCodeService {
             Page<PromoCodeGetDto> dto = PROMO_CODE_MAPPER.toDto(result);
             methodList(result, dto);
             return dto;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -162,6 +176,8 @@ public class PromoCodeServiceImpl implements PromoCodeService {
             PromoCodeGetDto dto = PROMO_CODE_MAPPER.toDto(promoCode);
             method2(dto,promoCode);
             return dto;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())

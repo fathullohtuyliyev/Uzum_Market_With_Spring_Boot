@@ -4,18 +4,22 @@ import com.example.demo.nosql.Comment;
 import com.example.demo.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
 @RestController
+@Slf4j
 @RequestMapping("/comments")
 @RequiredArgsConstructor
 public class CommentController {
@@ -45,7 +49,32 @@ public class CommentController {
             int size = Integer.parseInt(param.get("size"));
             Page<Comment> comments = commentService.comments(goodId, PageRequest.of(page, size));
             return ResponseEntity.ok(comments);
-        }catch (Exception e){
+        }catch (IllegalArgumentException e){
+            log.error("Error while getting comments",e);
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    @PreAuthorize("hasAuthority('SELLER')")
+    @PostMapping("/response")
+    public ResponseEntity<Comment> response(@RequestParam String id,
+                                            @RequestParam String message){
+        try {
+            Comment comment = commentService
+                    .responseToComment(UUID.fromString(id), message);
+            return ResponseEntity.ok(comment);
+        }catch (IllegalArgumentException e){
+            log.error("Error while getting comments",e);
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    @PutMapping("/spam")
+    public ResponseEntity<Void> spam(@RequestParam String id,
+                                     @RequestParam String userId){
+        try {
+            commentService.spam(UUID.fromString(id),UUID.fromString(userId));
+            return ResponseEntity.noContent().build();
+        }catch (IllegalArgumentException e){
+            log.error("Error while spamming",e);
             return ResponseEntity.badRequest().build();
         }
     }

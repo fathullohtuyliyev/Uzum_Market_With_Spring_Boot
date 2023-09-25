@@ -6,6 +6,8 @@ import com.example.demo.dto.order_dto.OrderCreateDto;
 import com.example.demo.dto.order_dto.OrderGetDto;
 import com.example.demo.dto.order_dto.OrderUpdateDto;
 import com.example.demo.entity.*;
+import com.example.demo.exception.BadParamException;
+import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -88,6 +90,8 @@ public class OrderServiceImpl implements OrderService {
             method2(dto1,saved);
 
             return dto1;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -150,6 +154,8 @@ public class OrderServiceImpl implements OrderService {
             method2(dto1, order);
 
             return dto1;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -170,6 +176,8 @@ public class OrderServiceImpl implements OrderService {
             log.info("{} updated",dto);
             method2(dto,order);
             return dto;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             Arrays.stream(e.getStackTrace())
                     .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
@@ -184,6 +192,8 @@ public class OrderServiceImpl implements OrderService {
             OrderGetDto dto = ORDER_MAPPER.toDto(order);
             method2(dto, order);
             return dto;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -209,6 +219,8 @@ public class OrderServiceImpl implements OrderService {
                 method2(dto.getContent().get(i),result.getContent().get(i));
             }
             return dto;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())

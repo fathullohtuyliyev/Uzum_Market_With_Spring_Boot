@@ -15,7 +15,6 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.PersistentObjectException;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -52,7 +51,7 @@ public class DemoApplication {
 	public static void stop(){
 		System.out.println("Application Failed");
 	}
-//	@Bean
+	@Bean
 	public CommandLineRunner runner1(){
 		return args -> {
 			try {
@@ -75,7 +74,10 @@ public class DemoApplication {
 					.name("SUPER_ADMIN")
 					.build();
 			roleRepository.save(superAdmin);
-			}catch (Exception ignore){}
+			}catch (Exception e){
+				System.out.println(e.getMessage());
+				System.out.println(e.getLocalizedMessage());
+			}
 		};
 	}
 	@Bean
@@ -104,7 +106,8 @@ public class DemoApplication {
 					Status status = Status.builder().name("ORDER IS PREPARING").build();
 					statusRepository.save(status);
 				}catch (Exception e){
-					e.printStackTrace();
+					System.out.println(e.getMessage());
+					System.out.println(e.getLocalizedMessage());
 				}
 		};
 	}
@@ -206,9 +209,13 @@ public class DemoApplication {
 						"/api.order/**",
 						"/api.payment.type/get/**",
 						"/api.promo-code/**",
+						"/api.multimedia/save/**",
+						"/api.multimedia/video/**",
+						"/api.multimedia/image/**",
 						"/api.role/get/**",
 						"/api.status/get/**",
 						"/api.type/get/**")
+				.pathsToMatch("/api.multimedia/**")
 				.build();
 	}
 	@Bean
@@ -227,9 +234,14 @@ public class DemoApplication {
 						"/api.payment.type/get/**",
 						"/api.promo-code/get/**",
 						"/api.role/get/**",
+						"/api.multimedia/save/**",
+						"/api.multimedia/video/**",
+						"/api.multimedia/image/**",
 						"/api.status/get/**",
 						"/api.type/get/**")
 				.build();
 	}
+
+
 }
 

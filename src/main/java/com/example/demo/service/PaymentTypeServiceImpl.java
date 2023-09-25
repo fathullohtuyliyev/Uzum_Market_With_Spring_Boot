@@ -3,6 +3,8 @@ package com.example.demo.service;
 import com.example.demo.dto.payment_dto.PaymentGetDto;
 import com.example.demo.dto.payment_dto.PaymentUpdateDto;
 import com.example.demo.entity.PaymentType;
+import com.example.demo.exception.BadParamException;
+import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.PaymentTypeRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,8 @@ public class PaymentTypeServiceImpl implements PaymentTypeService {
             PaymentGetDto dto = PAYMENT_MAPPER.toDto(saved);
             log.info("{} saved",dto);
             return dto;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -49,6 +53,8 @@ public class PaymentTypeServiceImpl implements PaymentTypeService {
             PaymentGetDto dto1 = PAYMENT_MAPPER.toDto(found);
             log.info("{} updated",dto1);
             return dto1;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -61,6 +67,8 @@ public class PaymentTypeServiceImpl implements PaymentTypeService {
     public void delete(Integer id) {
         try {
             paymentTypeRepository.deleteWithId(id);
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -76,6 +84,8 @@ public class PaymentTypeServiceImpl implements PaymentTypeService {
             PaymentGetDto dto = PAYMENT_MAPPER.toDto(paymentType);
             log.info("{} gave",dto);
             return dto;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -93,6 +103,8 @@ public class PaymentTypeServiceImpl implements PaymentTypeService {
                     .toList();
             log.info("{} gave",list);
             return PAYMENT_MAPPER.toDto(all);
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())

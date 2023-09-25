@@ -13,4 +13,6 @@ public interface CommentService {
     Comment get(UUID id);
     void delete(UUID id);
     Page<Comment> comments(UUID goodId, Pageable pageable);
+    Comment responseToComment(UUID id, String response);
+    void spam(UUID id, UUID userId);
 }

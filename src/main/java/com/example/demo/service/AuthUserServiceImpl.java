@@ -52,15 +52,9 @@ public class AuthUserServiceImpl implements AuthUserService {
             if (authUserRepository.existsAuthUserByPhoneAndEmail(dto.phone, dto.email)) {
                 throw new BadParamException();
             }
-            Role role;
-            try {
-                role = roleRepository.findByName("CUSTOMER")
+            Role role = roleRepository.findByName("CUSTOMER")
                         .orElseThrow(NotFoundException::new);
-            }catch (Exception e){
-                e.printStackTrace();
-                DemoApplication.stop();
-                return;
-            }
+
             AuthUser authUser = USER_MAPPER.toEntity(dto);
             ActivateCodes activateCodes = ActivateCodes.builder()
                     .authUser(authUser)
@@ -80,6 +74,8 @@ public class AuthUserServiceImpl implements AuthUserService {
             String encodedEmail = textEncodeWithJwt(dto1.email);
             response.setHeader("email",encodedEmail);
             response.setStatus(201);
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -102,20 +98,17 @@ public class AuthUserServiceImpl implements AuthUserService {
             AuthUser foundedUser = authUserRepository.findByEmail(email)
                     .orElseThrow(NotFoundException::new);
             AuthUser authUser;
-            try {
                 ActivateCodes activateCodes = activateCodesRepository.findByCode(code)
                         .orElseThrow(BadParamException::new);
                 authUser = activateCodes.getAuthUser();
-            }catch (Exception e){
-                activateCodesRepository.deleteByAuthUser(foundedUser.getId());
-                log.error("Error while activating user",e);
-                throw new RuntimeException();
-            }
+
             if (authUser.getEmail().equals(email)) {
                 authUserRepository.updateAuthUserActiveById(authUser.getId(),true);
             }else {
                 throw new BadParamException();
             }
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -151,6 +144,8 @@ public class AuthUserServiceImpl implements AuthUserService {
                 System.out.println("Encoded email " + email);
                 response.setHeader("email",email);
             }
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -195,7 +190,7 @@ public class AuthUserServiceImpl implements AuthUserService {
 
             if (collect.contains("ADMIN") || collect.contains("SUPER_ADMIN")) {
                 if (!request.getHeader("User-Agent").contains("Windows")) {
-//                    throw new ForbiddenAccessException();
+                    throw new ForbiddenAccessException();
                 }
                 UserData userData = UserData.builder()
                         .user(authUser)
@@ -223,6 +218,8 @@ public class AuthUserServiceImpl implements AuthUserService {
 
                 authUserRepository.updatePassword(email,null);
                 return dto;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -236,6 +233,8 @@ public class AuthUserServiceImpl implements AuthUserService {
         try {
             String remoteAddr = request.getRemoteAddr();
             userDataRepository.deleteByUserData(remoteAddr);
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -247,7 +246,6 @@ public class AuthUserServiceImpl implements AuthUserService {
     @Override
     public AuthUserGetDto update(AuthUserUpdateDto dto) {
         try {
-
             authUserRepository.updateAuthUser(dto.firstName,dto.lastName,
                     dto.images,dto.gender,dto.birthdate,dto.id);
             AuthUser authUser = authUserRepository.findAuthUserByIdAndActiveTrue(dto.id)
@@ -257,6 +255,8 @@ public class AuthUserServiceImpl implements AuthUserService {
             log.info("{} updated",dto1);
 
             return dto1;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -278,6 +278,8 @@ public class AuthUserServiceImpl implements AuthUserService {
             method2(dto, authUser);
             log.info("{} gave",dto);
             return dto;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -318,6 +320,8 @@ public class AuthUserServiceImpl implements AuthUserService {
                 dto = new PageImpl<>(dtoContent,dto.getPageable(),dtoContent.size());
             }
             return dto;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -342,6 +346,8 @@ public class AuthUserServiceImpl implements AuthUserService {
     public void offline(UUID userId) {
         try {
             authUserRepository.updateAuthUserOnlineFalseById(userId);
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -354,6 +360,8 @@ public class AuthUserServiceImpl implements AuthUserService {
     public boolean existEmail(String email) {
         try {
             return authUserRepository.existsAuthUserByEmail(email);
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -366,6 +374,8 @@ public class AuthUserServiceImpl implements AuthUserService {
     public boolean existPhone(String phone) {
         try {
             return authUserRepository.existsAuthUserByPhone(phone);
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())

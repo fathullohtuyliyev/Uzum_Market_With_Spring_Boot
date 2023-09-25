@@ -21,7 +21,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api.order")
-@PreAuthorize("hasRole('SELLER')")
+@PreAuthorize("hasAuthority('SELLER')")
 public class OrderController {
     private final OrderService orderService;
     @PostMapping("/save")
@@ -31,7 +31,7 @@ public class OrderController {
     }
     @PutMapping("/update")
     @CachePut(key = "#dto.id",value = "orders")
-    @PreAuthorize("hasAnyRole('SELLER','ADMIN','SUPER_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SELLER','ADMIN','SUPER_ADMIN')")
     public ResponseEntity<OrderGetDto> update(@RequestBody @Valid OrderUpdateDto dto){
         return new ResponseEntity<>(orderService.update(dto),HttpStatus.NO_CONTENT);
     }

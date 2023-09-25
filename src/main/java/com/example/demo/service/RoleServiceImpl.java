@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.entity.Role;
 import com.example.demo.exception.BadParamException;
+import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,8 @@ public class RoleServiceImpl implements RoleService {
             }
             Role saved = roleRepository.save(Role.builder().name(name.toUpperCase()).build());
             return saved.getName();
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -45,6 +48,8 @@ public class RoleServiceImpl implements RoleService {
             }
             roleRepository.updateRole(newName.toUpperCase(), oldName.toUpperCase());
             return roleRepository.findByName(newName.toUpperCase()).orElseThrow(NotFoundException::new).getName();
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())

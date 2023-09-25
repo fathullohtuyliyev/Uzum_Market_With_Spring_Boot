@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api.delivery")
-@PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
+@PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
 public class DeliveryController {
     private final DeliveryService deliveryService;
     @PostMapping("/save")

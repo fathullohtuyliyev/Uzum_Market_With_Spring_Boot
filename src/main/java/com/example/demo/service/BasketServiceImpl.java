@@ -3,7 +3,9 @@ package com.example.demo.service;
 import com.example.demo.dto.basket_dto.BasketCreateDto;
 import com.example.demo.dto.basket_dto.BasketGetDto;
 import com.example.demo.entity.Basket;
+import com.example.demo.exception.BadParamException;
 import com.example.demo.exception.ForbiddenAccessException;
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.AuthUserRepository;
 import com.example.demo.repository.BasketRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,8 @@ public class BasketServiceImpl implements BasketService {
             basketRepository.saveNewBasket(dto.userId,dto.goodId);
             Page<Basket> baskets = basketRepository.findAllByUserId(dto.userId, PageRequest.of(0,20));
             return BASKET_MAPPER.toDto(baskets);
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -48,6 +52,8 @@ public class BasketServiceImpl implements BasketService {
             basketRepository.deleteByGoodIdAndUserId(goodId,userId);
             Page<Basket> allByUserId = basketRepository.findAllByUserId(userId, PageRequest.of(0, 20));
             return BASKET_MAPPER.toDto(allByUserId);
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -72,6 +78,8 @@ public class BasketServiceImpl implements BasketService {
                         PageRequest.of(0,allSize),allSize);
             }
             return BASKET_MAPPER.toDto(allByUserId);
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())

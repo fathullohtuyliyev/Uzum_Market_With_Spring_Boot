@@ -26,12 +26,14 @@ import java.util.UUID;
 public class AuthController {
     private final AuthUserService authUserService;
     @PostMapping("/register")
-    public void register(@RequestBody @Valid AuthUserCreateDto dto, HttpServletResponse response){
+    public ResponseEntity<String> register(@RequestBody @Valid AuthUserCreateDto dto, HttpServletResponse response){
         authUserService.save(dto, response);
+        return new ResponseEntity<>("",HttpStatus.CREATED);
     }
     @PutMapping("/activation")
-    public void activation(@RequestParam String code, HttpServletRequest request){
+    public ResponseEntity<Void> activation(@RequestParam String code, HttpServletRequest request){
         authUserService.activate(code, request);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/login-1")
@@ -43,7 +45,7 @@ public class AuthController {
                                                 HttpServletRequest request,
                                                 HttpServletResponse response){
         AuthUserGetDto dto = authUserService.login(password, request, response);
-        return new ResponseEntity<>(dto, HttpStatus.CREATED);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
     @PostMapping("/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response){
@@ -86,12 +88,10 @@ public class AuthController {
         }
     }
     @GetMapping("/exist-email/{email}")
-    @Cacheable(key = "#email",value = "check")
     public ResponseEntity<Boolean> existEmail(@PathVariable String email){
         return ResponseEntity.ok(authUserService.existEmail(email));
     }
     @GetMapping("/exist-phone/{phone}")
-    @Cacheable(key = "#phone",value = "check")
     public ResponseEntity<Boolean> existPhone(@PathVariable String phone){
         return ResponseEntity.ok(authUserService.existPhone(phone));
     }

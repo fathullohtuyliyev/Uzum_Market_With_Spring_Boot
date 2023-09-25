@@ -25,7 +25,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api.good")
-@PreAuthorize("hasRole('SELLER')")
+@PreAuthorize("hasAuthority('SELLER')")
 public class GoodController {
     private final GoodService goodService;
     @PostMapping("/save")
@@ -50,7 +50,7 @@ public class GoodController {
 
     @CacheEvict(key = "#id",value = "goods")
     @DeleteMapping("/delete")
-    @PreAuthorize("hasAnyRole('ADMIN','SELLER','SUPER_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','SELLER','SUPER_ADMIN')")
     public ResponseEntity<Void> delete(@RequestParam String id){
         try {
             goodService.delete(UUID.fromString(id));

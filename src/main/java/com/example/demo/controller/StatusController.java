@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api.status")
-@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+@PreAuthorize("hasAnyAuthority('ADMIN','SUPER_ADMIN')")
 public class StatusController {
     private final StatusService statusService;
     @PostMapping("/save/{name}")
@@ -26,7 +26,7 @@ public class StatusController {
         return new ResponseEntity<>(statusService.update(oldName,newName),HttpStatus.NO_CONTENT);
     }
     @GetMapping("/get-all")
-    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN','SELLER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','SUPER_ADMIN','SELLER')")
     public ResponseEntity<Page<String>> getAll(@RequestParam String page,
                                                @RequestParam String size){
         try {

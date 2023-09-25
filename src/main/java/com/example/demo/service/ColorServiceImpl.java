@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Color;
+import com.example.demo.exception.BadParamException;
+import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.ColorRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,8 @@ public class ColorServiceImpl implements ColorService {
             Color color = colorRepository.save(Color.builder().name(name).build());
             log.info("{} {} saved",color.getId(),color.getName());
             return Map.of(color.getId(),color.getName());
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -43,6 +47,8 @@ public class ColorServiceImpl implements ColorService {
             Color saved = colorRepository.save(Color.builder().id(id).name(name).build());
             log.info("{} updated to {}",saved.getId(),saved.getName());
             return Map.of(saved.getId(),saved.getName());
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -57,6 +63,8 @@ public class ColorServiceImpl implements ColorService {
             Color color = colorRepository.findById(id).orElseThrow(NotFoundException::new);
             log.info("{} gave",color);
             return Map.of(color.getId(),color.getName());
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -78,6 +86,8 @@ public class ColorServiceImpl implements ColorService {
                     .map(color -> Map.of(color.getId(), color.getName()))
                     .toList();
             return new PageImpl<>(list,pageable,list.size());
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())

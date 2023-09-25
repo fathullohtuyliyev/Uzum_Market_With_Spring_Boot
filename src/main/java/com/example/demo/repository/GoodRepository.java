@@ -22,7 +22,7 @@ public interface GoodRepository extends JpaRepository<Good, UUID>, JpaSpecificat
     @Modifying
     @Transactional
     @Query(value = "update good set count=:count,color=:color,type=:type,name=:name,description=:description,images=:images,ordersCount=:ordersCount,discountPrice=:discountPrice,price=:price, videoPath=:videoPath where id=:id")
-    void updateGood(UUID id, Color color, String name, Type type, Integer count, String description, String images, Double price, Integer ordersCount, Double discountPrice, String videoPath);
+    void updateGood(UUID id, Color color, String name, Type type, Integer count, String description, List<String> images, Double price, Integer ordersCount, Double discountPrice, String videoPath);
 
     @Modifying
     @Transactional

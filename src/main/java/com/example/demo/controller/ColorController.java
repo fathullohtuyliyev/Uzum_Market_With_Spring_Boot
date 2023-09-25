@@ -15,7 +15,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api.color")
-@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN','SELLER')")
+@PreAuthorize("hasAnyAuthority('ADMIN','SUPER_ADMIN','SELLER')")
 public class ColorController {
     private final ColorService colorService;
     @PostMapping("/save/{name}")

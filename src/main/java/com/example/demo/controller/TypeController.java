@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api.type")
-@PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
+@PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
 public class TypeController {
     private final TypeService typeService;
     @PostMapping("/save")

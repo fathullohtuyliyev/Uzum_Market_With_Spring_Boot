@@ -54,8 +54,9 @@ public class Good {
     private Double discountPrice=0d;
 
     @NotNull
-    @Column(nullable = false,name = "images_id")
-    private String images;
+    @ElementCollection
+    @Column(nullable = false,name = "images")
+    private List<String> images;
 
     @Column(name = "video_name")
     private String videoPath;

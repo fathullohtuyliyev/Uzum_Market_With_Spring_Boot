@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -29,7 +30,6 @@ public class GoodUpdateDto{
     @NotBlank
     public String name;
 
-    public String videoPath;
 
     @NotBlank
     public String description;
@@ -50,7 +50,9 @@ public class GoodUpdateDto{
     public Double discountPrice=0d;
 
     @NotNull
-    public String images;
+    public List<String> images;
+
+    public String videoPath;
 
     public Integer ordersCount;
 }

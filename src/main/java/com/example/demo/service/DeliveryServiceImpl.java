@@ -5,6 +5,8 @@ import com.example.demo.dto.delivery_dto.DeliveryCreateDto;
 import com.example.demo.dto.delivery_dto.DeliveryGetDto;
 import com.example.demo.dto.delivery_dto.DeliveryUpdateDto;
 import com.example.demo.entity.DeliveryPoint;
+import com.example.demo.exception.BadParamException;
+import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.DeliveryPointRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,8 @@ public class DeliveryServiceImpl implements DeliveryService {
             DeliveryGetDto dto1 = DELIVERY_MAPPER.toDto(saved);
             method2(dto1,saved);
             return dto1;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -71,6 +75,8 @@ public class DeliveryServiceImpl implements DeliveryService {
             DeliveryGetDto dto1 = DELIVERY_MAPPER.toDto(saved);
             method2(dto1,saved);
             return dto1;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -88,6 +94,8 @@ public class DeliveryServiceImpl implements DeliveryService {
             DeliveryGetDto dto = DELIVERY_MAPPER.toDto(deliveryPoint);
             method2(dto,deliveryPoint);
             return dto;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -105,6 +113,8 @@ public class DeliveryServiceImpl implements DeliveryService {
                 all = new PageImpl<>(all.getContent(), PageRequest.of(0, allSize), allSize);
             }
             return DELIVERY_MAPPER.toDto(all);
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())

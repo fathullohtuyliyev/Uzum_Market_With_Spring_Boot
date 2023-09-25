@@ -18,7 +18,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api.admin")
-@PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
+@PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
 public class AdminController {
     private final AdminService adminService;
     private final AuthUserService authUserService;
@@ -42,7 +42,7 @@ public class AdminController {
         }
     }
     @GetMapping("/get-all-users-data")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     public ResponseEntity<Page<AuthUserGetDto>> getUsers(@RequestParam String page,
                                                          @RequestParam String size){
         try {
@@ -53,7 +53,7 @@ public class AdminController {
             return ResponseEntity.badRequest().build();
         }
     }
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @PutMapping("/update-for-special")
     public void updateRoleToSuperAdmin(@RequestParam String userId,
                            @RequestParam String role){

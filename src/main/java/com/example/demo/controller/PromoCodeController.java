@@ -22,7 +22,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/api.promo-code")
-@PreAuthorize("hasAnyRole('SELLER','ADMIN','SUPER_ADMIN')")
+@PreAuthorize("hasAnyAuthority('SELLER','ADMIN','SUPER_ADMIN')")
 public class PromoCodeController {
     private final PromoCodeService promoCodeService;
     @PostMapping("/save")

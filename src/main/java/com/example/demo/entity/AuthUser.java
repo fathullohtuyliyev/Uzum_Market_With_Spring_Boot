@@ -74,8 +74,7 @@ public class AuthUser {
     private List<ActivateCodes> activateCodes;
 
     @ToString.Exclude
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "data_id", referencedColumnName = "id")
+    @OneToOne(mappedBy = "user")
     private UserData data;
 
     private String temporaryPassword;

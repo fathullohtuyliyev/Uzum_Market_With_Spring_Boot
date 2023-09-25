@@ -6,6 +6,8 @@ import com.example.demo.dto.good_dto.GoodGetDto;
 import com.example.demo.dto.good_dto.GoodUpdateDto;
 import com.example.demo.entity.Good;
 import com.example.demo.entity.Type;
+import com.example.demo.exception.BadParamException;
+import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.ColorRepository;
 import com.example.demo.repository.GoodRepository;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.*;
 
 import static com.example.demo.mapper.GoodMapper.GOOD_MAPPER;
@@ -29,16 +32,31 @@ public class GoodServiceImpl implements GoodService {
     private final ColorRepository colorRepository;
     private final TypeRepository typeRepository;
     private final GoodRepository goodRepository;
+    private final MultimediaService multimediaService;
 
     @Override
     public GoodGetDto save(GoodCreateDto dto) {
         try {
+            dto.images.forEach(s -> {
+                String file = MultimediaServiceImpl.root + "/" + s;
+                if (!new File(file).exists()) {
+                   throw new BadParamException();
+                }
+            });
+            if (dto.videoPath!=null) {
+                String video = MultimediaServiceImpl.root + "/" + dto.videoPath;
+                if (!new File(video).exists()) {
+                    throw new BadParamException();
+                }
+            }
             Good good = GOOD_MAPPER.toEntity(dto);
             method1(dto,good,typeRepository,colorRepository);
             Good saved = goodRepository.save(good);
             GoodGetDto dto1 = GOOD_MAPPER.toDto(saved);
             method2(dto1,good);
             return dto1;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -81,6 +99,18 @@ public class GoodServiceImpl implements GoodService {
     @Override
     public GoodGetDto update(GoodUpdateDto dto) {
         try {
+            dto.images.forEach(s -> {
+                String file = MultimediaServiceImpl.root + "/" + s;
+                if (!new File(file).exists()) {
+                    throw new BadParamException();
+                }
+            });
+            if (dto.videoPath!=null) {
+                String video = MultimediaServiceImpl.root + "/" + dto.videoPath;
+                if (!new File(video).exists()) {
+                    throw new BadParamException();
+                }
+            }
             Good good = GOOD_MAPPER.toEntity(dto);
             method1(dto,good,typeRepository,colorRepository);
             goodRepository.updateGood(good.getId(),good.getColor(),good.getName(),good.getType(),
@@ -91,6 +121,8 @@ public class GoodServiceImpl implements GoodService {
             GoodGetDto dto1 = GOOD_MAPPER.toDto(updatedGood);
             method2(dto1,updatedGood);
             return dto1;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -106,6 +138,8 @@ public class GoodServiceImpl implements GoodService {
             GoodGetDto dto = GOOD_MAPPER.toDto(good);
             method2(dto,good);
             return dto;
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -117,7 +151,19 @@ public class GoodServiceImpl implements GoodService {
     @Override
     public void delete(UUID id) {
         try {
+            Good good = goodRepository.findById(id)
+                    .orElseThrow(NotFoundException::new);
+            List<String> images = good.getImages();
+            String videoPath = good.getVideoPath();
+            if (images!=null) {
+                images.forEach(s -> multimediaService.delete(videoPath));
+            }
+            if (videoPath!=null) {
+                multimediaService.delete(videoPath);
+            }
             goodRepository.updateGoodBlockedById(true,id);
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -132,6 +178,8 @@ public class GoodServiceImpl implements GoodService {
             Page<Good> all = goodRepository.findAllByBlockedFalse(pageable);
             Page<GoodGetDto> dto = GOOD_MAPPER.toDto(all);
             return methodForList(all, dto);
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -162,6 +210,8 @@ public class GoodServiceImpl implements GoodService {
             Page<GoodGetDto> dto = GOOD_MAPPER.toDto(result);
 
             return methodForList(result, dto);
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -191,6 +241,8 @@ public class GoodServiceImpl implements GoodService {
             }
             Page<GoodGetDto> dto = GOOD_MAPPER.toDto(result);
             return methodForList(result, dto);
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())

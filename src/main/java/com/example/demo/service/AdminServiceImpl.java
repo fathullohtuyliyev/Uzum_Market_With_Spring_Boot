@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.entity.AuthUser;
 import com.example.demo.entity.Role;
 import com.example.demo.exception.BadParamException;
+import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.AuthUserRepository;
 import com.example.demo.repository.RoleRepository;
@@ -30,6 +31,8 @@ public class AdminServiceImpl implements AdminService {
                 throw new BadParamException();
             }
             authUserRepository.updateEmailForAdmin(oldEmail, newEmail);
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -51,6 +54,8 @@ public class AdminServiceImpl implements AdminService {
              roles.add(foundedRole);
              authUser.setRoles(roles);
              authUserRepository.save(authUser);
+         }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+             throw e;
          }catch (Exception e){
              e.printStackTrace();
              Arrays.stream(e.getStackTrace())
@@ -63,6 +68,8 @@ public class AdminServiceImpl implements AdminService {
     public void updateActivity(UUID userId, boolean active) {
         try {
             authUserRepository.updateAuthUserActiveById(userId, active);
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
