@@ -46,7 +46,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 }
             }
 
-            adfs
+//            adfs
             Set<SimpleGrantedAuthority> authoritySet = collected.stream()
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toSet());
