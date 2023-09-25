@@ -7,10 +7,10 @@ import org.springframework.http.HttpStatus;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(value = Exception.class)
+    /*@ExceptionHandler(value = Exception.class)
     public ResponseEntity<Object> handleException(Exception e) {
         return new ResponseEntity<>("Exception has appeared: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    }*/
     @ExceptionHandler(value = BadParamException.class)
     public ResponseEntity<Object> handleException(BadParamException e) {
         return new ResponseEntity<>("Bad Request: " + e.getMessage(), HttpStatus.BAD_REQUEST);

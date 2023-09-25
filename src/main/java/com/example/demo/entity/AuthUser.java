@@ -40,7 +40,8 @@ public class AuthUser {
     private Gender gender;
 
     @ToString.Exclude
-    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @ManyToMany(fetch = FetchType.EAGER,
+            cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(
             name = "auth_user_role",
             joinColumns = @JoinColumn(name = "authuser_id"),
@@ -74,7 +75,7 @@ public class AuthUser {
 
     @ToString.Exclude
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "auth_user_id", referencedColumnName = "id")
+    @JoinColumn(name = "data_id", referencedColumnName = "id")
     private UserData data;
 
     private String temporaryPassword;

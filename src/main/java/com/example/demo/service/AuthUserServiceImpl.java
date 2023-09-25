@@ -62,7 +62,6 @@ public class AuthUserServiceImpl implements AuthUserService {
                 return;
             }
             AuthUser authUser = USER_MAPPER.toEntity(dto);
-            authUser.setRoles(Set.of(role));
             ActivateCodes activateCodes = ActivateCodes.builder()
                     .authUser(authUser)
                     .build();
@@ -74,10 +73,13 @@ public class AuthUserServiceImpl implements AuthUserService {
             javaMailSenderService.send(activateCodes,text);
             authUser.setActive(false);
             AuthUser save = authUserRepository.save(authUser);
+            save.setRoles(Set.of(role));
+            authUserRepository.save(save);
             AuthUserGetDto dto1 = USER_MAPPER.toDto(save);
             log.info("{} saved",dto1);
             String encodedEmail = textEncodeWithJwt(dto1.email);
             response.setHeader("email",encodedEmail);
+            response.setStatus(201);
         }catch (Exception e){
             e.printStackTrace();
             Arrays.stream(e.getStackTrace())
@@ -97,11 +99,19 @@ public class AuthUserServiceImpl implements AuthUserService {
                 stringBuilder.append((char)b);
             }
             Integer code = Integer.valueOf(stringBuilder.toString());
-            ActivateCodes activateCodes = activateCodesRepository.findByCode(code)
-                    .orElseThrow(BadParamException::new);
-            AuthUser authUser = activateCodes.getAuthUser();
+            AuthUser foundedUser = authUserRepository.findByEmail(email)
+                    .orElseThrow(NotFoundException::new);
+            AuthUser authUser;
+            try {
+                ActivateCodes activateCodes = activateCodesRepository.findByCode(code)
+                        .orElseThrow(BadParamException::new);
+                authUser = activateCodes.getAuthUser();
+            }catch (Exception e){
+                activateCodesRepository.deleteByAuthUser(foundedUser.getId());
+                log.error("Error while activating user",e);
+                throw new RuntimeException();
+            }
             if (authUser.getEmail().equals(email)) {
-                authUser.setActive(true);
                 authUserRepository.updateAuthUserActiveById(authUser.getId(),true);
             }else {
                 throw new BadParamException();
@@ -162,6 +172,12 @@ public class AuthUserServiceImpl implements AuthUserService {
                 throw new BadParamException();
             }
 
+            byte[] decode = Decoders.BASE64.decode(password);
+            StringBuilder stringBuilder = new StringBuilder();
+            for (byte b : decode) {
+                stringBuilder.append((char) b);
+            }
+            password = stringBuilder.toString();
             String userDate = request.getRemoteAddr();
             String token = jwtTokenUtil.generateToken(email, password, userDate);
 
@@ -177,13 +193,14 @@ public class AuthUserServiceImpl implements AuthUserService {
                     .map(Role::getName)
                     .collect(Collectors.toSet());
 
-            if (collect.containsAll(List.of("ADMIN","SUPER_ADMIN"))) {
+            if (collect.contains("ADMIN") || collect.contains("SUPER_ADMIN")) {
                 if (!request.getHeader("User-Agent").contains("Windows")) {
-                    throw new ForbiddenAccessException();
+//                    throw new ForbiddenAccessException();
                 }
                 UserData userData = UserData.builder()
                         .user(authUser)
                         .data(userDate)
+                        .expireTime(LocalDateTime.now().plusMinutes(30))
                         .build();
                 userDataRepository.save(userData);
             }
@@ -195,7 +212,7 @@ public class AuthUserServiceImpl implements AuthUserService {
                     .map(Role::getName)
                     .toList();
             dto.setRoles(roles);
-                response.setHeader("Authorization","Bearer "+token);
+                response.setHeader("Authorization",token);
 
                 String text = String.format("""
                         Hurmatli foydalanuvchi\s

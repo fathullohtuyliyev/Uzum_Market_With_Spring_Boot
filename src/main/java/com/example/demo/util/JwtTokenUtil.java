@@ -32,7 +32,7 @@ public class JwtTokenUtil {
     public static String textEncodeWithJwt(@NonNull String text){
 
         Date expiration = new Date(System.currentTimeMillis()
-                + 1000 * 60 * 3);
+                + 1000 * 60 * 30);
         String compact = Jwts.builder()
                 .setSubject(text)
                 .setIssuedAt(new Date())
@@ -81,7 +81,7 @@ public class JwtTokenUtil {
             return expiration.before(new Date());
         }catch (Exception e){
             e.printStackTrace();
-            return true;
+            return false;
         }
     }
     private static boolean isValidForCustom(@NonNull String encoded){
@@ -111,7 +111,7 @@ public class JwtTokenUtil {
                     .getBody();
 
             if (isValidForLogin(token)) {
-                return null;
+                throw new BadParamException();
             }
 
             System.out.println("claims = " + claims);
@@ -133,8 +133,8 @@ public class JwtTokenUtil {
                     .parseClaimsJws(substring)
                     .getBody();
 
-            if (!isValidForLogin(authorization)) {
-                return null;
+            if (isValidForLogin(authorization)) {
+                throw new BadParamException();
             }
 
             System.out.println("claims = " + claims);
@@ -154,16 +154,16 @@ public class JwtTokenUtil {
                     .build()
                     .parseClaimsJws(encoded)
                     .getBody();
-
-            if (!isValidForCustom(encoded)) {
-                return null;
+            if (isValidForCustom(encoded)) {
+                throw new BadParamException();
             }
 
             System.out.println("claims = " + claims);
             return claims.getSubject();
         }catch (Exception e){
             e.printStackTrace();
-            return null;
+            log.error("Error ",e);
+            throw new RuntimeException();
         }
     }
 }

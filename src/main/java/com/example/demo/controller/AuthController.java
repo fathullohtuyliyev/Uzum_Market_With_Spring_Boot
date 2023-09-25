@@ -22,7 +22,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api.auth")
-@PreAuthorize("isAuthenticated()")
+@PreAuthorize("permitAll()")
 public class AuthController {
     private final AuthUserService authUserService;
     @PostMapping("/register")
@@ -50,12 +50,14 @@ public class AuthController {
         authUserService.logout(request, response);
     }
     @PutMapping("/update")
+    @PreAuthorize("isAuthenticated()")
     @CachePut(key = "#dto.id",value = "users")
     public ResponseEntity<AuthUserGetDto> update(@RequestBody @Valid AuthUserUpdateDto dto){
         AuthUserGetDto update = authUserService.update(dto);
         return new ResponseEntity<>(update, HttpStatus.NO_CONTENT);
     }
     @GetMapping("/get-self-data")
+    @PreAuthorize("isAuthenticated()")
     @Cacheable(key = "#id",value = "users")
     public ResponseEntity<AuthUserGetDto> get(@RequestParam String id, HttpServletRequest request){
         try {
@@ -66,6 +68,7 @@ public class AuthController {
         }
     }
     @PutMapping("/online")
+    @PreAuthorize("isAuthenticated()")
     public void online(@RequestParam String id){
         try {
             authUserService.online(UUID.fromString(id));
@@ -74,6 +77,7 @@ public class AuthController {
         }
     }
     @PutMapping("/offline")
+    @PreAuthorize("isAuthenticated()")
     public void offline(@RequestParam String id){
         try {
             authUserService.offline(UUID.fromString(id));

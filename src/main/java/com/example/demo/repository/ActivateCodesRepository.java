@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface ActivateCodesRepository extends JpaRepository<ActivateCodes, Integer>, JpaSpecificationExecutor<ActivateCodes> {
@@ -19,6 +20,12 @@ public interface ActivateCodesRepository extends JpaRepository<ActivateCodes, In
     @Modifying
     @Transactional
     @Async
-    @Query(value = "delete from activate_codes c where c.valid<=now()")
+    @Query(nativeQuery = true,value = "delete from activate_codes c where c.valid<=now()")
     void deleteOldCodes();
+
+    @Modifying
+    @Transactional
+    @Async
+    @Query(nativeQuery = true,value = "delete from activate_codes c where c.auth_user_id=?1")
+    void deleteByAuthUser(UUID id);
 }

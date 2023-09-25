@@ -25,6 +25,7 @@ public class Role {
     private String name;
 
     @ToString.Exclude
-    @ManyToMany(mappedBy = "roles")
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY,
+            cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Set<AuthUser> authUsers;
 }

@@ -82,4 +82,6 @@ public interface AuthUserRepository extends JpaRepository<AuthUser, UUID>, JpaSp
     @Async
     @Query(value = "update auth_user set active=:active where id=:id")
     void updateAuthUserActiveById(UUID id, boolean active);
+
+    Optional<AuthUser> findByEmail(String email);
 }

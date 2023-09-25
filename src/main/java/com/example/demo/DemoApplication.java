@@ -15,6 +15,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.PersistentObjectException;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -51,7 +52,7 @@ public class DemoApplication {
 	public static void stop(){
 		System.out.println("Application Failed");
 	}
-	@Bean
+//	@Bean
 	public CommandLineRunner runner1(){
 		return args -> {
 			try {
@@ -84,9 +85,8 @@ public class DemoApplication {
 
 			//status creating process
                 try {
-					Status status = Status.builder().name("ORDER IS PREPARING").build();
-					statusRepository.save(status);
 					HashSet<Role> roles = new HashSet<>(roleRepository.findAll());
+					roles.forEach(System.out::println);
 					AuthUser adminUser = AuthUser.builder()
 							.email("admin123@mail.com")
 							.active(true)
@@ -97,10 +97,15 @@ public class DemoApplication {
 							.firstName("Admin")
 							.lastName("Root")
 							.phone("+998999067760")
-							.roles(roles)
 							.build();
-					authUserRepository.save(adminUser);
-				}catch (Exception ignore){}
+					AuthUser save = authUserRepository.save(adminUser);
+					save.setRoles(roles);
+					authUserRepository.save(save);
+					Status status = Status.builder().name("ORDER IS PREPARING").build();
+					statusRepository.save(status);
+				}catch (Exception e){
+					e.printStackTrace();
+				}
 		};
 	}
 	@Scheduled(cron = "0 0 12 * * 1-6")

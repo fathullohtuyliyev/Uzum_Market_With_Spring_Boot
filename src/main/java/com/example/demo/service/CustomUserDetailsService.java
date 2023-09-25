@@ -7,6 +7,7 @@ import com.example.demo.repository.AuthUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.example.demo.entity.AuthUser;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Component;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,14 +42,20 @@ public class CustomUserDetailsService implements UserDetailsService {
                     || collected.contains("ADMIN")) {
                 LocalTime now = LocalTime.now(ZoneId.of("Asia/Tashkent"));
                 if (9>now.getHour() || 18< now.getHour()) {
-                    throw new ForbiddenAccessException();
+//                    throw new ForbiddenAccessException();
                 }
             }
+
+            adfs
+            Set<SimpleGrantedAuthority> authoritySet = collected.stream()
+                    .map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toSet());
             return User.builder()
                     .username(authUser.getEmail())
                     .accountLocked(authUser.isActive())
-                    .password(authUser.getTemporaryPassword())
+                    .password(Objects.requireNonNullElse(authUser.getTemporaryPassword(),""))
                     .roles(String.join(",", collected))
+                    .authorities(authoritySet)
                     .credentialsExpired(false)
                     .disabled(false)
                     .build();
