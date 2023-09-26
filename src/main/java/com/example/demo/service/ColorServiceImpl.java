@@ -1,19 +1,15 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Color;
-import com.example.demo.exception.BadParamException;
-import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.ColorRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
