@@ -28,11 +28,8 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.*;
 import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -91,8 +88,6 @@ public class DemoApplication {
 	public CommandLineRunner runner(StatusRepository statusRepository,
 									AuthUserRepository authUserRepository){
 		return args -> {
-
-			//status creating process
                 try {
 					HashSet<Role> roles = new HashSet<>(roleRepository.findAll());
 					roles.forEach(System.out::println);
@@ -110,6 +105,7 @@ public class DemoApplication {
 					Set<Long> collect = roles.stream()
 							.map(Role::getId)
 							.collect(Collectors.toSet());
+					collect.forEach(System.out::println);
 					try {
 						adminUser = authUserRepository.save(adminUser);
 						adminUser.setRoles(roles);
@@ -117,7 +113,7 @@ public class DemoApplication {
 							role.setAuthUsers(Set.of(adminUser));
 						    roleRepository.save(role);
 						}
-					}catch (Exception e){
+					}catch (RuntimeException e){
 						adminUser = authUserRepository.findByEmail(adminUser.getEmail())
 								.orElseThrow(NotFoundException::new);
 						adminUser.setRoles(roles);
@@ -128,40 +124,20 @@ public class DemoApplication {
 						Status status = Status.builder().name("ORDER IS PREPARING").build();
 						statusRepository.save(status);
 					}
-				}catch (Exception e){
+				}catch (RuntimeException e){
 					System.out.println(e.getMessage());
 					System.out.println(e.getLocalizedMessage());
 				}
 		};
 	}
-	@Scheduled(cron = "0 0 12 * * 1-6")
+	@Scheduled(cron = "0 0 * * * 1-6")
 	public void deleteUserData(){
 		try {
 			userDataRepository.deleteExpireData();
 			log.info("deleted old user infos");
-		}catch (Exception e){
+		}catch (RuntimeException e){
 			log.error("Error while deleting caches",e);
-			throw new RuntimeException();
-		}
-	}
-	@Scheduled(cron = "0 0 16 * * 1-6")
-	public void deleteUserData2(){
-		try {
-			userDataRepository.deleteExpireData();
-			log.info("deleted old user infos");
-		}catch (Exception e){
-			log.error("Error while deleting caches",e);
-			throw new RuntimeException();
-		}
-	}
-	@Scheduled(cron = "0 0 19 * * 1-6")
-	public void deleteUserData3(){
-		try {
-			userDataRepository.deleteExpireData();
-			log.info("deleted old user infos");
-		}catch (Exception e){
-			log.error("Error while deleting caches",e);
-			throw new RuntimeException();
+			throw e;
 		}
 	}
 	@Scheduled(cron = "0 0,5,10,15,20,25,30,35,40,45,50,55 * * * *")
@@ -171,9 +147,9 @@ public class DemoApplication {
 					.forEach(s -> Objects.requireNonNull(cacheManager.
 							getCache(Objects.requireNonNullElse(s, ""))).clear());
 			log.info("deleted all caches");
-		}catch (Exception e){
+		}catch (RuntimeException e){
 			log.error("Error while deleting caches",e);
-			throw new RuntimeException();
+			throw e;
 		}
 	}
 	@Scheduled(cron = "0 0 23 * * *")
@@ -181,10 +157,10 @@ public class DemoApplication {
 		try {
 			activateCodesRepository.deleteOldCodes();
 			log.info("deleted old activation codes");
-		}catch (Exception e){
+		}catch (RuntimeException e){
 			String message = "Error processing the while deleting old activation codes method";
 			log.error(message, e);
-			throw new RuntimeException(message, e);
+			throw e;
 		}
 	}
 	@Bean
