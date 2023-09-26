@@ -58,7 +58,7 @@ public class MultimediaController {
     @PreAuthorize("permitAll()")
     @GetMapping("/video/{filename}")
     public void downloadVideo(@PathVariable String filename,
-                                                  HttpServletResponse response) throws IOException {
+                                                  HttpServletResponse response) {
         multimediaService.video2(response,filename);
     }
 
@@ -66,7 +66,7 @@ public class MultimediaController {
 
     @PreAuthorize("permitAll()")
     @GetMapping(value = "/image/{filename}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public @ResponseBody byte[] getImageWithMediaType(@PathVariable String filename) throws IOException {
+    public @ResponseBody byte[] getImageWithMediaType(@PathVariable String filename)  {
         return multimediaService.image(filename);
     }
     @DeleteMapping("/delete/{filename}")
