@@ -57,8 +57,8 @@ public class MultimediaServiceImpl implements MultimediaService {
                         throw new BadParamException();
                 }
                 case "mp4" -> {
-//                    if (megabyte>20)
-//                        throw new BadParamException();
+                    if (megabyte>20)
+                        throw new BadParamException();
                 }
                 default -> throw new BadParamException();
             }

@@ -13,6 +13,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Arrays;
@@ -37,17 +40,17 @@ public class CustomUserDetailsService implements UserDetailsService {
                     .map(Role::getName)
                     .collect(Collectors.toSet());
             System.out.println("login process...");
-            Set<String> collected1 = collected;
-            System.out.println(collected1);
+            collected.forEach(System.out::println);
             if (collected.contains("SUPER_ADMIN")
                     || collected.contains("ADMIN")) {
                 LocalTime now = LocalTime.now(ZoneId.of("Asia/Tashkent"));
-                if (9>now.getHour() || 18< now.getHour()) {
-//                    throw new ForbiddenAccessException();
+                DayOfWeek nowDay = LocalDate.now().getDayOfWeek();
+                Set<DayOfWeek> holidays = Set.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY);
+                if (9>now.getHour() || 18< now.getHour() ||
+                        holidays.contains(nowDay)) {
+                    throw new ForbiddenAccessException();
                 }
             }
-
-//            adfs
             Set<SimpleGrantedAuthority> authoritySet = collected.stream()
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toSet());

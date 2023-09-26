@@ -194,13 +194,10 @@ public class AuthUserServiceImpl implements AuthUserService {
                     .collect(Collectors.toSet());
 
             if (collect.contains("ADMIN") || collect.contains("SUPER_ADMIN")) {
-                if (!request.getHeader("User-Agent").contains("Windows")) {
-//                    throw new ForbiddenAccessException();
-                }
                 UserData userData = UserData.builder()
                         .user(authUser)
                         .data(userDate)
-                        .expireTime(LocalDateTime.now().plusMinutes(30))
+                        .expireTime(LocalDateTime.now().plusHours(3))
                         .build();
                 userDataRepository.save(userData);
             }
