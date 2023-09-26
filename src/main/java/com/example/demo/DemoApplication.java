@@ -126,8 +126,10 @@ public class DemoApplication {
 					System.out.println(e.getMessage());
 					System.out.println(e.getLocalizedMessage());
 				}
-			Status status = Status.builder().name("ORDER IS PREPARING").build();
-			statusRepository.save(status);
+				try {
+					Status status = Status.builder().name("ORDER IS PREPARING").build();
+					statusRepository.save(status);
+				}catch (Exception ignore){}
 		};
 	}
 	@Scheduled(cron = "0 0 * * * 1-6")
