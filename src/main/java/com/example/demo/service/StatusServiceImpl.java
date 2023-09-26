@@ -58,7 +58,7 @@ public class StatusServiceImpl implements StatusService {
             Page<Status> all = statusRepository.findAll(pageable);
             int size = statusRepository.size();
             if (size < pageable.getPageSize()) {
-                all = new PageImpl<>(statusRepository.findAll(), PageRequest.of(0,size),size);
+//                all = new PageImpl<>(statusRepository.findAll(), PageRequest.of(0,size),size);
             }
             List<String> list = all.stream()
                     .map(Status::getName)

@@ -8,8 +8,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,8 +19,10 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collection;
 
 @Configuration
+@Slf4j
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
     public final CustomUserDetailsService service;
@@ -38,6 +42,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         authorization=authorization.substring(7);
         String email = JwtTokenUtil.getEmail(response, authorization);
         UserDetails userDetails = service.loadUserByUsername(email);
+        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+
+        authorities.forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
+
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(email,null,userDetails.getAuthorities());
         WebAuthenticationDetails details = new WebAuthenticationDetails(request);

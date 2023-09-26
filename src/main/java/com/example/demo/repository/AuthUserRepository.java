@@ -33,12 +33,6 @@ public interface AuthUserRepository extends JpaRepository<AuthUser, UUID>, JpaSp
     @Query(value = "update auth_user set online=true where id=?1")
     void updateAuthUserOnlineTrueById(UUID id);
 
-    @Transactional
-    @Modifying
-    @Async
-    @Query(value = "update auth_user set active=:active where email=:email")
-    void updateAuthUserActiveByEmail(boolean active, String email);
-
 
     @Modifying
     @Transactional
@@ -68,9 +62,6 @@ public interface AuthUserRepository extends JpaRepository<AuthUser, UUID>, JpaSp
 
     @Query(value = "select exists (select u.email from auth_user u where u.email=:email and u.active=true)")
     Boolean existsAuthUserByEmailAndActiveTrue(String email);
-
-    /*@Query(value = "select exists (select u.email from auth_user u join u.roles r where u.email=?1 and u.active=true and 'SUPER_ADMIN' in r.name)")
-    Boolean isAdmin(String adminEmail);*/
 
     @Modifying
     @Transactional

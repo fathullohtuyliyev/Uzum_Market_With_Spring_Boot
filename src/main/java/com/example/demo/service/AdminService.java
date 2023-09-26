@@ -6,6 +6,7 @@ import java.util.UUID;
 @Service
 public interface AdminService {
     void updateEmail(String adminEmail,String oldEmail, String newEmail);
-    void updateRole(UUID userId, String role);
+    void addRole(UUID userId, String role);
+    void removeRole(UUID userId, String role);
     void updateActivity(UUID userID,boolean active);
 }

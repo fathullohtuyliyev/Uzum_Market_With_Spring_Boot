@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import com.example.demo.DemoApplication;
 import com.example.demo.dto.auth_user_dto.AuthUserCreateDto;
 import com.example.demo.dto.auth_user_dto.AuthUserGetDto;
 import com.example.demo.dto.auth_user_dto.AuthUserUpdateDto;
@@ -45,11 +44,15 @@ public class AuthUserServiceImpl implements AuthUserService {
     private final JavaMailSenderService javaMailSenderService;
     private final JwtTokenUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder;
+    private final MultimediaService multimediaService;
 
     @Override
     public void save(AuthUserCreateDto dto, HttpServletResponse response) {
         try {
             if (authUserRepository.existsAuthUserByPhoneAndEmail(dto.phone, dto.email)) {
+                throw new BadParamException();
+            }
+            if (dto.images!=null && !multimediaService.isExist(dto.images)) {
                 throw new BadParamException();
             }
             Role role = roleRepository.findByName("CUSTOMER")
@@ -64,11 +67,11 @@ public class AuthUserServiceImpl implements AuthUserService {
                     ushbu kod akkauntingizni faollashtirish uchun tasdiqlash kodi.
                     Uni hech kimga bermang !!!
                     """, activateCodes.getCode());
-            javaMailSenderService.send(activateCodes,text);
             authUser.setActive(false);
             AuthUser save = authUserRepository.save(authUser);
             save.setRoles(Set.of(role));
             authUserRepository.save(save);
+            javaMailSenderService.send(activateCodes,text);
             AuthUserGetDto dto1 = USER_MAPPER.toDto(save);
             log.info("{} saved",dto1);
             String encodedEmail = textEncodeWithJwt(dto1.email);
@@ -88,19 +91,21 @@ public class AuthUserServiceImpl implements AuthUserService {
     public void activate(String codeBase64, HttpServletRequest request) {
         try {
             byte[] decode = Decoders.BASE64.decode(codeBase64);
-            String encodedEmail = request.getHeader("email");
-            String email = getText(encodedEmail);
             StringBuilder stringBuilder = new StringBuilder();
             for (byte b : decode) {
                 stringBuilder.append((char)b);
             }
+
+            String encodedEmail = request.getHeader("email");
+            String email = getText(encodedEmail);
             Integer code = Integer.valueOf(stringBuilder.toString());
-            AuthUser foundedUser = authUserRepository.findByEmail(email)
+
+            authUserRepository.findByEmail(email)
                     .orElseThrow(NotFoundException::new);
-            AuthUser authUser;
+
                 ActivateCodes activateCodes = activateCodesRepository.findByCode(code)
                         .orElseThrow(BadParamException::new);
-                authUser = activateCodes.getAuthUser();
+                AuthUser authUser = activateCodes.getAuthUser();
 
             if (authUser.getEmail().equals(email)) {
                 authUserRepository.updateAuthUserActiveById(authUser.getId(),true);
@@ -190,7 +195,7 @@ public class AuthUserServiceImpl implements AuthUserService {
 
             if (collect.contains("ADMIN") || collect.contains("SUPER_ADMIN")) {
                 if (!request.getHeader("User-Agent").contains("Windows")) {
-                    throw new ForbiddenAccessException();
+//                    throw new ForbiddenAccessException();
                 }
                 UserData userData = UserData.builder()
                         .user(authUser)
@@ -246,6 +251,9 @@ public class AuthUserServiceImpl implements AuthUserService {
     @Override
     public AuthUserGetDto update(AuthUserUpdateDto dto) {
         try {
+            if (dto.images!=null && !multimediaService.isExist(dto.images)) {
+                throw new BadParamException();
+            }
             authUserRepository.updateAuthUser(dto.firstName,dto.lastName,
                     dto.images,dto.gender,dto.birthdate,dto.id);
             AuthUser authUser = authUserRepository.findAuthUserByIdAndActiveTrue(dto.id)

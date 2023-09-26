@@ -18,7 +18,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -144,8 +143,8 @@ public class PromoCodeServiceImpl implements PromoCodeService {
             Page<PromoCode> result = promoCodeRepository.findAllByGoodId(goodId,pageable);
             int size = promoCodeRepository.findAllByGoodIdSize(goodId);
             if (size<pageable.getPageSize()) {
-                List<PromoCode> allByGoodId = promoCodeRepository.findAllByGoodId(goodId);
-                result = new PageImpl<>(allByGoodId, PageRequest.of(0,size),size);
+//                List<PromoCode> allByGoodId = promoCodeRepository.findAllByGoodId(goodId);
+//                result = new PageImpl<>(allByGoodId, PageRequest.of(0,size),size);
             }
             Page<PromoCodeGetDto> dto = PROMO_CODE_MAPPER.toDto(result);
             methodList(result, dto);

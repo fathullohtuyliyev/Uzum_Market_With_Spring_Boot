@@ -16,10 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 @Repository
 public interface FavouritesRepository extends JpaRepository<Favourites, UUID>, JpaSpecificationExecutor<Favourites> {
-    @Modifying
-    @Transactional
-    @Query(nativeQuery = true,value = "insert into favourites(id,user_id,good_id) values(default,?1,?2)")
-    void saveToFavourites(UUID userId,UUID goodId);
 
     @Modifying
     @Transactional
@@ -31,9 +27,9 @@ public interface FavouritesRepository extends JpaRepository<Favourites, UUID>, J
     @Query(nativeQuery = true, value = "select * from favourites f where f.user_id=:userId")
     Page<Favourites> findAllByUserId(UUID userId, Pageable of);
 
-    @Query(nativeQuery = true,value = "select count (f.id) from favourites f where f.user_id=?1")
+    @Query(value = "select count (f.id) from favourites f where f.user.id=?1")
     Integer findSizeByUserId(UUID userId);
 
-    @Query(nativeQuery = true,value = "select * from favourites f where f.user_id=:userId")
+    @Query(value = "from favourites f where f.user.id=:userId")
     List<Favourites> findAllByUserId(UUID userId);
 }

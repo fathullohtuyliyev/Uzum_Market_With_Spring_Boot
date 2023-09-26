@@ -9,13 +9,15 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long>, JpaSpecificationExecutor<Role> {
+
     @Modifying
     @Transactional
-    @Query(value = "update role r set r.name=:newName where r.name=:oldName")
-    void updateRole(String newName, String oldName);
+    @Query(nativeQuery = true,value = "delete from auth_user_role ar where ar.role_id=?1 and ar.role_id=?2")
+    void removeRoleAuthUser(Long roleId, UUID userId);
 
     @Query(value = "select exists(select r.name from role r where r.name=:name)")
     Boolean existsRoleByName(String name);

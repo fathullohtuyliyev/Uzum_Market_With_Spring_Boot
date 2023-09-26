@@ -79,8 +79,8 @@ public class ColorServiceImpl implements ColorService {
             Page<Color> all = colorRepository.findAll(pageable);
             int allSize = colorRepository.findAllSize();
             if (allSize <all.getContent().size()) {
-                List<Color> colors = colorRepository.findAll();
-                all=new PageImpl<>(colors, PageRequest.of(0,allSize),allSize);
+//                List<Color> colors = colorRepository.findAll();
+//                all=new PageImpl<>(colors, PageRequest.of(0,allSize),allSize);
             }
             List<Map<Long, String>> list = all.getContent().stream()
                     .map(color -> Map.of(color.getId(), color.getName()))

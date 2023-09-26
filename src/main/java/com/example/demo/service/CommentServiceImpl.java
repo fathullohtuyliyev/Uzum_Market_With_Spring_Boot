@@ -67,7 +67,7 @@ public class CommentServiceImpl implements CommentService {
             Integer size = commentRepository.findAllSizeByGoodId(goodId);
             Page<Comment> comments = commentRepository.findByGoodId(goodId, pageable);
             if (pageable.getPageSize()>size) {
-                comments = new PageImpl<>(comments.getContent(), PageRequest.of(0,size),size);
+//                comments = new PageImpl<>(comments.getContent(), PageRequest.of(0,size),size);
             }
             return comments;
         }catch (Exception e){

@@ -110,7 +110,7 @@ public class DeliveryServiceImpl implements DeliveryService {
             Page<DeliveryPoint> all = deliveryPointRepository.findAll(pageable);
             int allSize = deliveryPointRepository.findAllSize();
             if (allSize <pageable.getPageSize()) {
-                all = new PageImpl<>(all.getContent(), PageRequest.of(0, allSize), allSize);
+//                all = new PageImpl<>(all.getContent(), PageRequest.of(0, allSize), allSize);
             }
             return DELIVERY_MAPPER.toDto(all);
         }catch (NotFoundException | ForbiddenAccessException | BadParamException e){

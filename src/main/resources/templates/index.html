@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Video</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<!--<img src="http://localhost:8080/get-image" alt="Error" height="500px">-->
+<form id="videoForm">
+    <label>
+        <input id="videoName" type="text" placeholder="video name" required>
+    </label>
+    <input type="submit" value="Submit">
+</form>
+
+<video id="myVideo" width="1280" height="720" controls>
+    <source id="videoSource" src="" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+
+<script>
+    document.getElementById('videoForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var videoName = document.getElementById('videoName').value;
+        var videoSource = document.getElementById('videoSource');
+        videoSource.src = "http://localhost:8090/video/" + videoName;
+        document.getElementById('myVideo').load();
+    });
+</script>
+
+</body>
+</html>

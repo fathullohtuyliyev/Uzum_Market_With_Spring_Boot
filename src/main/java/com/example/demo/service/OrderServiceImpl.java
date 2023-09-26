@@ -208,8 +208,8 @@ public class OrderServiceImpl implements OrderService {
             Page<Order> result = orderRepository.findAllByUserId(userId,pageable);
             int allByUserId = orderRepository.sizeAllByUserId(userId);
             if (allByUserId <pageable.getPageSize()) {
-                result = new PageImpl<>(orderRepository.findAllByUserId(userId),
-                        PageRequest.of(0,allByUserId),allByUserId);
+//                result = new PageImpl<>(orderRepository.findAllByUserId(userId),
+//                        PageRequest.of(0,allByUserId),allByUserId);
             }
             Page<OrderGetDto> dto = ORDER_MAPPER.toDto(result);
             if (dto.isEmpty()) {

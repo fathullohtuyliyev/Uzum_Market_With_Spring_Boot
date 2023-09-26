@@ -3,32 +3,37 @@ package com.example.demo.service;
 import com.example.demo.exception.BadParamException;
 import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.UUID;
+import java.io.File;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class MultimediaServiceImpl implements MultimediaService {
-    public static final Path root = Path.of(System.getProperty("user.desktop")+"/files");
+    public static final Path root = Path.of(System.getProperty("user.home")+"/Desktop/files");
+//    private final Path path = Path.of(System.getProperty("user.home")+"/Desktop/files");
     static {
         if (!root.toFile().exists()) {
             System.out.println("root.toFile().mkdirs() = " + root.toFile().mkdirs());
@@ -52,16 +57,15 @@ public class MultimediaServiceImpl implements MultimediaService {
                         throw new BadParamException();
                 }
                 case "mp4" -> {
-                    if (megabyte>20)
-                        throw new BadParamException();
+//                    if (megabyte>20)
+//                        throw new BadParamException();
                 }
                 default -> throw new BadParamException();
             }
-            extension = ".".concat(extension);
-            String generatedName = "/" + UUID.randomUUID() + extension;
-            Path path = Path.of(root + generatedName);
+            String generatedName = UUID.randomUUID()  + "." + extension;
+            Path path = Path.of(root + "/" + generatedName);
             Files.copy(inputStream,path, StandardCopyOption.REPLACE_EXISTING);
-            return filename+"."+extension;
+            return generatedName;
         }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
             throw e;
         }catch (Exception e){
@@ -82,6 +86,9 @@ public class MultimediaServiceImpl implements MultimediaService {
     public @ResponseBody byte[] image(String filename) {
         try {
             Path path = Path.of(root  + "/" + filename);
+            if (path.toFile().exists()) {
+                return Files.readAllBytes(path);
+            }
             check(filename);
             if (!FilenameUtils.getExtension(path.toString()).equals("jpg")) {
                 throw new BadParamException();
@@ -103,21 +110,52 @@ public class MultimediaServiceImpl implements MultimediaService {
         }
     }
 
+
+
     @Override
-    public ResponseEntity<Resource> video(String filename) {
+    public File video(String filename) {
         try {
             check(filename);
-            Path path = Path.of(root + "/" + filename);
-            if (FilenameUtils.getExtension(path.toString()).equals("mp4")) {
-                throw new BadParamException();
+            Path path = Paths.get(root + "/" + filename);
+            if (path.toFile().exists()) {
+                return path.toFile();
             }
-            Resource resource = new UrlResource(path.toUri());
-                return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                        .body(resource);
-        }catch (MalformedURLException e){
-            throw new NotFoundException();
+//            if (FilenameUtils.getExtension(path.toString()).equals("mp4")) {
+                throw new NotFoundException();
+//            }
         }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
+        }catch (Exception e){
+            Arrays.stream(e.getStackTrace())
+                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public Boolean isExist(String filename) {
+        return new File(root+"/"+filename).exists();
+    }
+
+    @Override
+    public void video2(HttpServletResponse response, String filename) {
+        try {
+            // Get the video file from the filesystem.
+            File videoFile = new File(root+"/"+filename);
+            if (!videoFile.exists()) {
+                throw new NotFoundException();
+            }
+            // Set the content type of the response.
+            response.setContentType("video/mp4");
+
+            // Set the content length of the response.
+            response.setContentLength((int) videoFile.length());
+
+            // Stream the video file to the response.
+            Files.copy(videoFile.toPath(), response.getOutputStream());
+        }catch (IllegalArgumentException e){
+            throw new BadParamException();
+        }catch (BadParamException | NotFoundException | ForbiddenAccessException e){
             throw e;
         }catch (Exception e){
             Arrays.stream(e.getStackTrace())

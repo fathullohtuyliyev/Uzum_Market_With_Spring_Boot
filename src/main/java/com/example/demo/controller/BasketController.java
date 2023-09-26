@@ -19,6 +19,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api.basket")
 @PreAuthorize("isAuthenticated()")
 public class BasketController {
     private final BasketService basketService;

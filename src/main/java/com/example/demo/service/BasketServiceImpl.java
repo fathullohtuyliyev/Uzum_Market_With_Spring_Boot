@@ -2,12 +2,15 @@ package com.example.demo.service;
 
 import com.example.demo.dto.basket_dto.BasketCreateDto;
 import com.example.demo.dto.basket_dto.BasketGetDto;
+import com.example.demo.entity.AuthUser;
 import com.example.demo.entity.Basket;
+import com.example.demo.entity.Good;
 import com.example.demo.exception.BadParamException;
 import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.AuthUserRepository;
 import com.example.demo.repository.BasketRepository;
+import com.example.demo.repository.GoodRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,6 +28,7 @@ import static com.example.demo.mapper.BasketMapper.BASKET_MAPPER;
 @Service
 @RequiredArgsConstructor
 public class BasketServiceImpl implements BasketService {
+    private final GoodRepository goodRepository;
     private final AuthUserRepository authUserRepository;
     private final BasketRepository basketRepository;
 
@@ -32,8 +36,16 @@ public class BasketServiceImpl implements BasketService {
     public Page<BasketGetDto> save(BasketCreateDto dto) {
         try {
             checkMethod(dto.userId,authUserRepository);
-            basketRepository.saveNewBasket(dto.userId,dto.goodId);
-            Page<Basket> baskets = basketRepository.findAllByUserId(dto.userId, PageRequest.of(0,20));
+            Good good = goodRepository.findById(dto.goodId)
+                    .orElseThrow(NotFoundException::new);
+            AuthUser authUser = authUserRepository.findById(dto.userId)
+                    .orElseThrow(NotFoundException::new);
+            Basket basket = Basket.builder()
+                    .user(authUser)
+                    .good(good)
+                    .build();
+            basketRepository.save(basket);
+            Page<Basket> baskets = basketRepository.findAllByUserId(authUser, PageRequest.of(0,20));
             return BASKET_MAPPER.toDto(baskets);
         }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
             throw e;
@@ -50,7 +62,9 @@ public class BasketServiceImpl implements BasketService {
         try {
             checkMethod(userId,authUserRepository);
             basketRepository.deleteByGoodIdAndUserId(goodId,userId);
-            Page<Basket> allByUserId = basketRepository.findAllByUserId(userId, PageRequest.of(0, 20));
+            AuthUser authUser = authUserRepository.findById(userId)
+                    .orElseThrow(NotFoundException::new);
+            Page<Basket> allByUserId = basketRepository.findAllByUserId(authUser, PageRequest.of(0, 20));
             return BASKET_MAPPER.toDto(allByUserId);
         }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
             throw e;
@@ -71,11 +85,13 @@ public class BasketServiceImpl implements BasketService {
     public Page<BasketGetDto> get(UUID userId,Pageable pageable) {
         try {
             checkMethod(userId,authUserRepository);
-            Page<Basket> allByUserId = basketRepository.findAllByUserId(userId, pageable);
-            int allSize = basketRepository.findAllSize(userId);
+            AuthUser authUser = authUserRepository.findById(userId)
+                    .orElseThrow(NotFoundException::new);
+            Page<Basket> allByUserId = basketRepository.findAllByUserId(authUser, pageable);
+            int allSize = basketRepository.findAllSize(authUser);
             if (allSize <allByUserId.getContent().size()) {
-                allByUserId = new PageImpl<>(basketRepository.findAllByUserId(userId),
-                        PageRequest.of(0,allSize),allSize);
+//                allByUserId = new PageImpl<>(basketRepository.findAllByUserId(authUser),
+//                        PageRequest.of(0,allSize),allSize);
             }
             return BASKET_MAPPER.toDto(allByUserId);
         }catch (NotFoundException | ForbiddenAccessException | BadParamException e){

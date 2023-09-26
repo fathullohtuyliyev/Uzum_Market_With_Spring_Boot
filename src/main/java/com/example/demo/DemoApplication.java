@@ -4,6 +4,7 @@ import com.example.demo.entity.AuthUser;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.Status;
 import com.example.demo.enums.Gender;
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.*;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -22,11 +23,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.FileSystemResourceLoader;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.*;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
 
 @Slf4j
 @EnableScheduling
@@ -100,11 +107,27 @@ public class DemoApplication {
 							.lastName("Root")
 							.phone("+998999067760")
 							.build();
-					AuthUser save = authUserRepository.save(adminUser);
-					save.setRoles(roles);
-					authUserRepository.save(save);
-					Status status = Status.builder().name("ORDER IS PREPARING").build();
-					statusRepository.save(status);
+					Set<Long> collect = roles.stream()
+							.map(Role::getId)
+							.collect(Collectors.toSet());
+					try {
+						adminUser = authUserRepository.save(adminUser);
+						adminUser.setRoles(roles);
+						for (Role role : new ArrayList<>(roles)) {
+							role.setAuthUsers(Set.of(adminUser));
+						    roleRepository.save(role);
+						}
+					}catch (Exception e){
+						adminUser = authUserRepository.findByEmail(adminUser.getEmail())
+								.orElseThrow(NotFoundException::new);
+						adminUser.setRoles(roles);
+						for (Role role : new ArrayList<>(roles)) {
+							role.setAuthUsers(Set.of(adminUser));
+							roleRepository.save(role);
+						}
+						Status status = Status.builder().name("ORDER IS PREPARING").build();
+						statusRepository.save(status);
+					}
 				}catch (Exception e){
 					System.out.println(e.getMessage());
 					System.out.println(e.getLocalizedMessage());
@@ -209,13 +232,10 @@ public class DemoApplication {
 						"/api.order/**",
 						"/api.payment.type/get/**",
 						"/api.promo-code/**",
-						"/api.multimedia/save/**",
-						"/api.multimedia/video/**",
-						"/api.multimedia/image/**",
+						"/api.multimedia/**",
 						"/api.role/get/**",
 						"/api.status/get/**",
 						"/api.type/get/**")
-				.pathsToMatch("/api.multimedia/**")
 				.build();
 	}
 	@Bean
@@ -234,14 +254,14 @@ public class DemoApplication {
 						"/api.payment.type/get/**",
 						"/api.promo-code/get/**",
 						"/api.role/get/**",
-						"/api.multimedia/save/**",
-						"/api.multimedia/video/**",
-						"/api.multimedia/image/**",
+						"/api.multimedia/**",
 						"/api.status/get/**",
 						"/api.type/get/**")
 				.build();
 	}
-
-
+	@Bean
+	public ResourceLoader resourceLoader(){
+		return new FileSystemResourceLoader();
+	}
 }
 

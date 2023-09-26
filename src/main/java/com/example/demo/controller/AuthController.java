@@ -47,6 +47,7 @@ public class AuthController {
         AuthUserGetDto dto = authUserService.login(password, request, response);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response){
         authUserService.logout(request, response);

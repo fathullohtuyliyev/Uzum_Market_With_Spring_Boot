@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Video</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<!--<img src="http://localhost:8080/get-image" alt="Error" height="500px">-->
+<video id="myVideo" width="1280" height="720" controls>
+    <source src="http://localhost:8090/api.multimedia/videos" type="video/mp4">
+    download <!--Brauzeringiz video tegini qo'llab-quvvatlamaydi.-->
+</video>
+<script>
+    $(document).ready(function () {
+        $('#myVideo').bind('contextmenu', function () {
+            return false;
+        });
+    });
+</script>
+
+</body>
+</html>

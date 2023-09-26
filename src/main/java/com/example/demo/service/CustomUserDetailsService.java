@@ -36,11 +36,14 @@ public class CustomUserDetailsService implements UserDetailsService {
                     .stream()
                     .map(Role::getName)
                     .collect(Collectors.toSet());
+            System.out.println("login process...");
+            Set<String> collected1 = collected;
+            System.out.println(collected1);
             if (collected.contains("SUPER_ADMIN")
                     || collected.contains("ADMIN")) {
                 LocalTime now = LocalTime.now(ZoneId.of("Asia/Tashkent"));
                 if (9>now.getHour() || 18< now.getHour()) {
-                    throw new ForbiddenAccessException();
+//                    throw new ForbiddenAccessException();
                 }
             }
 

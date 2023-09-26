@@ -4,6 +4,7 @@ import com.example.demo.dto.good_dto.GoodCreateDto;
 import com.example.demo.dto.good_dto.GoodCriteria;
 import com.example.demo.dto.good_dto.GoodGetDto;
 import com.example.demo.dto.good_dto.GoodUpdateDto;
+import com.example.demo.entity.Color;
 import com.example.demo.entity.Good;
 import com.example.demo.entity.Type;
 import com.example.demo.exception.BadParamException;
@@ -16,10 +17,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.io.File;
 import java.util.*;
 
@@ -38,16 +37,12 @@ public class GoodServiceImpl implements GoodService {
     public GoodGetDto save(GoodCreateDto dto) {
         try {
             dto.images.forEach(s -> {
-                String file = MultimediaServiceImpl.root + "/" + s;
-                if (!new File(file).exists()) {
-                   throw new BadParamException();
-                }
-            });
-            if (dto.videoPath!=null) {
-                String video = MultimediaServiceImpl.root + "/" + dto.videoPath;
-                if (!new File(video).exists()) {
+                if (!multimediaService.isExist(s)) {
                     throw new BadParamException();
                 }
+            });
+            if (dto.videoPath!=null && !multimediaService.isExist(dto.videoPath)) {
+                throw new BadParamException();
             }
             Good good = GOOD_MAPPER.toEntity(dto);
             method1(dto,good,typeRepository,colorRepository);
@@ -69,7 +64,8 @@ public class GoodServiceImpl implements GoodService {
                                 TypeRepository typeRepository,
                                 ColorRepository colorRepository){
         Long typeId = dto.getType_id();
-        Type type = typeRepository.findById(typeId).orElseThrow(NotFoundException::new);
+        Type type = typeRepository.findById(typeId)
+                .orElseThrow(NotFoundException::new);
         good.setType(type);
         Long colorId = dto.getColor_id();
         if (colorId !=null) {
@@ -80,7 +76,8 @@ public class GoodServiceImpl implements GoodService {
                                 TypeRepository typeRepository,
                                 ColorRepository colorRepository){
         Long typeId = dto.getType_id();
-        Type type = typeRepository.findById(typeId).orElseThrow(NotFoundException::new);
+        Type type = typeRepository
+                .findById(typeId).orElseThrow(NotFoundException::new);
         good.setType(type);
         Long colorId = dto.getColor_id();
         if (colorId !=null) {
@@ -100,16 +97,12 @@ public class GoodServiceImpl implements GoodService {
     public GoodGetDto update(GoodUpdateDto dto) {
         try {
             dto.images.forEach(s -> {
-                String file = MultimediaServiceImpl.root + "/" + s;
-                if (!new File(file).exists()) {
+                if (!multimediaService.isExist(s)) {
                     throw new BadParamException();
                 }
             });
-            if (dto.videoPath!=null) {
-                String video = MultimediaServiceImpl.root + "/" + dto.videoPath;
-                if (!new File(video).exists()) {
-                    throw new BadParamException();
-                }
+            if (dto.videoPath!=null && !multimediaService.isExist(dto.videoPath)) {
+                throw new BadParamException();
             }
             Good good = GOOD_MAPPER.toEntity(dto);
             method1(dto,good,typeRepository,colorRepository);
@@ -205,7 +198,7 @@ public class GoodServiceImpl implements GoodService {
                 result = goodRepository.findAllByName(list,doubles,pageable);
 
             if (pageable.getPageSize()>result.getContent().size()) {
-                result = new PageImpl<>(result.getContent(),PageRequest.of(0,result.getContent().size()),result.getContent().size());
+//                result = new PageImpl<>(result.getContent(),PageRequest.of(0,result.getContent().size()),result.getContent().size());
             }
             Page<GoodGetDto> dto = GOOD_MAPPER.toDto(result);
 
@@ -233,11 +226,15 @@ public class GoodServiceImpl implements GoodService {
     @Override
     public Page<GoodGetDto> find(Pageable pageable, GoodCriteria criteria) {
         try {
-            Page<Good> result = goodRepository.findByCriteria(criteria.color_id,
-                    criteria.startPrice,criteria.endPrice,criteria.type_id,pageable);
+            Type type = typeRepository.findById(criteria.type_id)
+                    .orElseThrow(NotFoundException::new);
+            Color color = colorRepository.findById(criteria.color_id)
+                    .orElseThrow(NotFoundException::new);
+            Page<Good> result = goodRepository.findByCriteria(color,
+                    criteria.startPrice,criteria.endPrice,type,pageable);
             int size = result.getContent().size();
             if (pageable.getPageSize()> size) {
-                result = new PageImpl<>(result.getContent(),PageRequest.of(0,size),size);
+//                result = new PageImpl<>(result.getContent(),PageRequest.of(0,size),size);
             }
             Page<GoodGetDto> dto = GOOD_MAPPER.toDto(result);
             return methodForList(result, dto);

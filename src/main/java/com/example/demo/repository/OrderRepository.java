@@ -22,13 +22,13 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
     @Query(value = "update order o set o.update=?1, o.deliveryPoint=?2, o.paymentType=?3 where o.id=?4")
     void updateOrder(LocalDateTime update, DeliveryPoint deliveryPoint, PaymentType paymentType, UUID id);
 
-    @Query(nativeQuery = true, value = "select * from public.order o where o.auth_user_id=?1")
+    @Query(value = "from order o where o.authUser.id=?1")
     Page<Order> findAllByUserId(UUID userId, Pageable pageable);
 
-    @Query(nativeQuery = true,value = "select count (o.id) from public.order o where o.auth_user_id=?1")
+    @Query(value = "select count (o.id) from order o where o.authUser.id=?1")
     Integer sizeAllByUserId(UUID userId);
 
-    @Query(nativeQuery = true, value = "select * from public.order o where o.auth_user_id=?1")
+    @Query(value = "from order o where o.authUser.id=?1")
     List<Order> findAllByUserId(UUID userId);
 
     @Modifying

@@ -46,8 +46,10 @@ public class RoleServiceImpl implements RoleService {
             if (!roleRepository.existsRoleByName(oldName.toUpperCase())) {
                 throw new BadParamException();
             }
-            roleRepository.updateRole(newName.toUpperCase(), oldName.toUpperCase());
-            return roleRepository.findByName(newName.toUpperCase()).orElseThrow(NotFoundException::new).getName();
+            Role role = roleRepository.findByName(oldName)
+                    .orElseThrow(NotFoundException::new);
+            role.setName(newName);
+            return roleRepository.save(role).getName();
         }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
             throw e;
         }catch (Exception e){
@@ -64,7 +66,7 @@ public class RoleServiceImpl implements RoleService {
             Page<Role> all = roleRepository.findAll(pageable);
             int size = roleRepository.allSize();
             if (size <pageable.getPageSize()) {
-                all = new PageImpl<>(roleRepository.findAll(), PageRequest.of(0,size),size);
+//                all = new PageImpl<>(roleRepository.findAll(), PageRequest.of(0,size),size);
             }
             List<String> list = all.stream()
                     .map(Role::getName)

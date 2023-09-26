@@ -104,9 +104,12 @@ public class TypeServiceImpl implements TypeService {
             int size = typeRepository.size();
             Page<Type> all = typeRepository.findAll(pageable);
             if (size<pageable.getPageSize()) {
-                all = new PageImpl<>(typeRepository.findAll(), PageRequest.of(0,size),size);
+//                all = new PageImpl<>(typeRepository.findAll(), PageRequest.of(1,size),size);
             }
             return TYPE_MAPPER.toDto(all);
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+            throw new BadParamException();
         }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
             throw e;
         }catch (Exception e){

@@ -29,14 +29,26 @@ public class AdminController {
         String newEmail = param.get("new");
         adminService.updateEmail(adminEmail,oldEmail,newEmail);
     }
-    @PutMapping("/update-role")
-    public void updateRole(@RequestParam String userId,
+    @PutMapping("/add-role")
+    public void addRole(@RequestParam String userId,
                            @RequestParam String role){
         if (role.equals("SUPER_ADMIN")) {
             throw new ForbiddenAccessException();
         }
         try {
-            adminService.updateRole(UUID.fromString(userId),role);
+            adminService.addRole(UUID.fromString(userId),role);
+        }catch (IllegalArgumentException e){
+            throw new BadParamException();
+        }
+    }
+    @PutMapping("/remove-role")
+    public void removeRole(@RequestParam String userId,
+                           @RequestParam String role){
+        if (role.equals("SUPER_ADMIN")) {
+            throw new ForbiddenAccessException();
+        }
+        try {
+            adminService.removeRole(UUID.fromString(userId),role);
         }catch (IllegalArgumentException e){
             throw new BadParamException();
         }
@@ -51,16 +63,6 @@ public class AdminController {
             return ResponseEntity.ok(users);
         }catch (IllegalArgumentException e){
             return ResponseEntity.badRequest().build();
-        }
-    }
-    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
-    @PutMapping("/update-for-special")
-    public void updateRoleToSuperAdmin(@RequestParam String userId,
-                           @RequestParam String role){
-        try {
-            adminService.updateRole(UUID.fromString(userId), role);
-        }catch (IllegalArgumentException e){
-            throw new BadParamException();
         }
     }
     @PutMapping("/update-activity")

@@ -24,12 +24,8 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void updateEmail(String adminEmail, String oldEmail, String newEmail) {
         try {
-            /*if(!authUserRepository.isAdmin(adminEmail)){
-                throw new ForbiddenAccessException();
-            }*/
-            if (!authUserRepository.existsAuthUserByEmail(oldEmail)) {
-                throw new BadParamException();
-            }
+            authUserRepository.findByEmail(oldEmail)
+                            .orElseThrow(NotFoundException::new);
             authUserRepository.updateEmailForAdmin(oldEmail, newEmail);
         }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
             throw e;
@@ -42,32 +38,61 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void updateRole(UUID userId, String role) {
-         try {
-             if (!roleRepository.existsRoleByName(role)) {
-                 throw new NotFoundException();
-             }
-             Role foundedRole = roleRepository.findByName(role).orElseThrow(NotFoundException::new);
-             AuthUser authUser = authUserRepository.findAuthUserByIdAndActiveTrue(userId)
-                     .orElseThrow(NotFoundException::new);
-             Set<Role> roles = authUser.getRoles();
-             roles.add(foundedRole);
-             authUser.setRoles(roles);
-             authUserRepository.save(authUser);
-         }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-             throw e;
-         }catch (Exception e){
-             e.printStackTrace();
-             Arrays.stream(e.getStackTrace())
-                     .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-             throw new RuntimeException();
-         }
+    public void addRole(UUID userId, String role) {
+        try {
+            Role foundedRole = roleRepository.findByName(role)
+                    .orElseThrow(NotFoundException::new);
+            AuthUser authUser = authUserRepository.findById(userId)
+                    .orElseThrow(NotFoundException::new);
+            Set<Role> roles = authUser.getRoles();
+            roles.add(foundedRole);
+            authUser.setRoles(roles);
+
+            Set<AuthUser> authUsers = foundedRole.getAuthUsers();
+            authUsers.add(authUser);
+            foundedRole.setAuthUsers(authUsers);
+            roleRepository.save(foundedRole);
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
+        }catch (Exception e){
+            e.printStackTrace();
+            Arrays.stream(e.getStackTrace())
+                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
+            throw new RuntimeException();
+        }
     }
+    @Override
+    public void removeRole(UUID userId, String role) {
+        try {
+            Role foundedRole = roleRepository.findByName(role)
+                    .orElseThrow(NotFoundException::new);
+            AuthUser authUser = authUserRepository.findById(userId)
+                    .orElseThrow(NotFoundException::new);
+            Set<Role> roles = authUser.getRoles();
+            roles.remove(foundedRole);
+            authUser.setRoles(roles);
+
+            Set<AuthUser> authUsers = foundedRole.getAuthUsers();
+            authUsers.remove(authUser);
+            foundedRole.setAuthUsers(authUsers);
+            roleRepository.save(foundedRole);
+        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
+            throw e;
+        }catch (Exception e){
+            e.printStackTrace();
+            Arrays.stream(e.getStackTrace())
+                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
+            throw new RuntimeException();
+        }
+    }
+
 
     @Override
     public void updateActivity(UUID userId, boolean active) {
         try {
-            authUserRepository.updateAuthUserActiveById(userId, active);
+            AuthUser authUser = authUserRepository.findById(userId)
+                    .orElseThrow(NotFoundException::new);
+            authUserRepository.updateAuthUserActiveById(authUser.getId(), active);
         }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
             throw e;
         }catch (Exception e){
