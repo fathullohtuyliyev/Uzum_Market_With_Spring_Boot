@@ -17,6 +17,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleException(BadParamException e) {
         return new ResponseEntity<>("Bad Request: " + e.getMessage(), HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ResponseEntity<Object> handleException(IllegalArgumentException e) {
+        return new ResponseEntity<>("Bad Request: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
     @ExceptionHandler(value = ForbiddenAccessException.class)
     public ResponseEntity<Object> handleException(ForbiddenAccessException e) {
         return new ResponseEntity<>("Forbidden Access: " + e.getMessage(), HttpStatus.FORBIDDEN);

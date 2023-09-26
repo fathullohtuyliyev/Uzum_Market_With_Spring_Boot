@@ -6,7 +6,6 @@ import com.example.demo.dto.delivery_dto.DeliveryUpdateDto;
 import com.example.demo.service.DeliveryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -41,12 +40,8 @@ public class DeliveryController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<DeliveryGetDto>> getAll(@RequestParam String page,
                                                        @RequestParam String size){
-        try {
             Page<DeliveryGetDto> deliveryGetDtoList = deliveryService.deliveryPoints
                     (PageRequest.of(Integer.parseInt(page), Integer.parseInt(size)));
             return ResponseEntity.ok(deliveryGetDtoList);
-        }catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().build();
-        }
     }
 }

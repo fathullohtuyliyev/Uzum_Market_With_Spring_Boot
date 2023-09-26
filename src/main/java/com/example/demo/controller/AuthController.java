@@ -3,7 +3,6 @@ package com.example.demo.controller;
 import com.example.demo.dto.auth_user_dto.AuthUserCreateDto;
 import com.example.demo.dto.auth_user_dto.AuthUserGetDto;
 import com.example.demo.dto.auth_user_dto.AuthUserUpdateDto;
-import com.example.demo.exception.BadParamException;
 import com.example.demo.service.AuthUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,12 +10,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.UUID;
 
 @RestController
@@ -63,30 +61,18 @@ public class AuthController {
     @PreAuthorize("isAuthenticated()")
     @Cacheable(key = "#id",value = "users")
     public ResponseEntity<AuthUserGetDto> get(@RequestParam String id, HttpServletRequest request){
-        try {
             AuthUserGetDto getDto = authUserService.get(UUID.fromString(id), request);
             return ResponseEntity.ok(getDto);
-        }catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().build();
-        }
     }
     @PutMapping("/online")
     @PreAuthorize("isAuthenticated()")
     public void online(@RequestParam String id){
-        try {
             authUserService.online(UUID.fromString(id));
-        }catch (IllegalArgumentException e){
-            throw new BadParamException();
-        }
     }
     @PutMapping("/offline")
     @PreAuthorize("isAuthenticated()")
     public void offline(@RequestParam String id){
-        try {
             authUserService.offline(UUID.fromString(id));
-        }catch (IllegalArgumentException e){
-            throw new BadParamException();
-        }
     }
     @GetMapping("/exist-email/{email}")
     public ResponseEntity<Boolean> existEmail(@PathVariable String email){

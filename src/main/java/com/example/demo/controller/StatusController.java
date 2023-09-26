@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,11 +28,7 @@ public class StatusController {
     @PreAuthorize("hasAnyAuthority('ADMIN','SUPER_ADMIN','SELLER')")
     public ResponseEntity<Page<String>> getAll(@RequestParam String page,
                                                @RequestParam String size){
-        try {
             return ResponseEntity.ok(statusService.statuses
                     (PageRequest.of(Integer.parseInt(page), Integer.parseInt(size))));
-        }catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().build();
-        }
     }
 }

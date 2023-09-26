@@ -22,10 +22,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,7 +48,6 @@ public class AuthUserServiceImpl implements AuthUserService {
 
     @Override
     public void save(AuthUserCreateDto dto, HttpServletResponse response) {
-        try {
             if (authUserRepository.existsAuthUserByPhoneAndEmail(dto.phone, dto.email)) {
                 throw new BadParamException();
             }
@@ -77,19 +76,10 @@ public class AuthUserServiceImpl implements AuthUserService {
             String encodedEmail = textEncodeWithJwt(dto1.email);
             response.setHeader("email",encodedEmail);
             response.setStatus(201);
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                            .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     @Override
     public void activate(String codeBase64, HttpServletRequest request) {
-        try {
             byte[] decode = Decoders.BASE64.decode(codeBase64);
             StringBuilder stringBuilder = new StringBuilder();
             for (byte b : decode) {
@@ -112,20 +102,11 @@ public class AuthUserServiceImpl implements AuthUserService {
             }else {
                 throw new BadParamException();
             }
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
 
     @Override
     public void checkAndSendPasswordToEmail(String email, HttpServletResponse response) {
-        try {
             StringBuilder stringBuilder = new StringBuilder();
             byte[] decode = Decoders.BASE64.decode(email);
 
@@ -149,21 +130,12 @@ public class AuthUserServiceImpl implements AuthUserService {
                 System.out.println("Encoded email " + email);
                 response.setHeader("email",email);
             }
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     @Override
     public AuthUserGetDto login(String password,
                                 HttpServletRequest request,
                                 HttpServletResponse response) {
-        try {
 
             String email = request.getHeader("email");
             email = getText(email);
@@ -220,34 +192,16 @@ public class AuthUserServiceImpl implements AuthUserService {
 
                 authUserRepository.updatePassword(email,null);
                 return dto;
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response) {
-        try {
             String remoteAddr = request.getRemoteAddr();
             userDataRepository.deleteByUserData(remoteAddr);
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     @Override
     public AuthUserGetDto update(AuthUserUpdateDto dto) {
-        try {
             if (dto.images!=null && !multimediaService.isExist(dto.images)) {
                 throw new BadParamException();
             }
@@ -260,19 +214,10 @@ public class AuthUserServiceImpl implements AuthUserService {
             log.info("{} updated",dto1);
 
             return dto1;
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     @Override
     public AuthUserGetDto get(UUID id, HttpServletRequest request) {
-        try {
             AuthUser authUser = authUserRepository.findAuthUserByIdAndActiveTrue(id)
                     .orElseThrow(NotFoundException::new);
             if (!Objects.requireNonNullElse(getEmail(request),"").
@@ -283,14 +228,6 @@ public class AuthUserServiceImpl implements AuthUserService {
             method2(dto, authUser);
             log.info("{} gave",dto);
             return dto;
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     private static void method2(AuthUserGetDto dto, AuthUser authUser){
@@ -303,13 +240,7 @@ public class AuthUserServiceImpl implements AuthUserService {
 
     @Override
     public Page<AuthUserGetDto> users(Pageable pageable) {
-        try {
             Page<AuthUser> all = authUserRepository.findAll(pageable);
-            int allSize = authUserRepository.findAllSize();
-            if (all.getContent().size()< allSize) {
-                all = new PageImpl<>(authUserRepository.findAll(),
-                        PageRequest.of(0,allSize),allSize);
-            }
             List<UUID> uuidList = all.getContent()
                     .stream()
                     .map(AuthUser::getId)
@@ -325,67 +256,25 @@ public class AuthUserServiceImpl implements AuthUserService {
                 dto = new PageImpl<>(dtoContent,dto.getPageable(),dtoContent.size());
             }
             return dto;
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     @Override
     public void online(UUID userId) {
-        try {
             authUserRepository.updateAuthUserOnlineTrueById(userId);
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     @Override
     public void offline(UUID userId) {
-        try {
             authUserRepository.updateAuthUserOnlineFalseById(userId);
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     @Override
     public boolean existEmail(String email) {
-        try {
             return authUserRepository.existsAuthUserByEmail(email);
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     @Override
     public boolean existPhone(String phone) {
-        try {
             return authUserRepository.existsAuthUserByPhone(phone);
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 }

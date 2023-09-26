@@ -38,33 +38,21 @@ public class PromoCodeController {
     @Cacheable(key = "#id",value = "promoCodes")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<PromoCodeGetDto> get(@RequestParam String id){
-        try {
             return ResponseEntity.ok(promoCodeService.get(UUID.fromString(id)));
-        }catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().build();
-        }
     }
     @CacheEvict(key = "#id",value = "promoCodes")
     @DeleteMapping("/delete")
     public ResponseEntity<Void> delete(@RequestParam String id){
-        try {
             promoCodeService.delete(UUID.fromString(id));
             return ResponseEntity.noContent().build();
-        }catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().build();
-        }
     }
     @GetMapping("/get-all-by-good")
     public ResponseEntity<Page<PromoCodeGetDto>> getByGood(@RequestParam Map<String, String> param){
-        try {
             UUID goodId = UUID.fromString(param.get("id"));
             int page = Integer.parseInt(param.get("page"));
             int size = Integer.parseInt(param.get("size"));
             Page<PromoCodeGetDto> promoCodeGetDtoList = promoCodeService.promoCodes(goodId, PageRequest.of(page, size));
             return ResponseEntity.ok(promoCodeGetDtoList);
-        }catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().build();
-        }
     }
     @GetMapping("/get-by-name/{name}")
     @PreAuthorize("isAuthenticated()")

@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -58,13 +59,9 @@ public class TypeController {
     @GetMapping("/get-all-types")
     public ResponseEntity<Page<TypeGetDto>> getAllTypes(@RequestParam String page,
                                                         @RequestParam String size){
-        try {
             Page<TypeGetDto> types = typeService.types
                     (PageRequest.of(Integer.parseInt(page), Integer.parseInt(size)));
             return ResponseEntity.ok(types);
-        }catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().build();
-        }
     }
 
 }

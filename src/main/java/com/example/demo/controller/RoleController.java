@@ -29,11 +29,7 @@ public class RoleController {
     @GetMapping("/get-roles")
     public ResponseEntity<Page<String>> getRoles(@RequestParam String page,
                                                  @RequestParam String size){
-        try {
             return ResponseEntity.ok(roleService.roles
                     (PageRequest.of(Integer.parseInt(page), Integer.parseInt(size))));
-        }catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().build();
-        }
     }
 }

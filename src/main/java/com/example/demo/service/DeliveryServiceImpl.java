@@ -5,19 +5,13 @@ import com.example.demo.dto.delivery_dto.DeliveryCreateDto;
 import com.example.demo.dto.delivery_dto.DeliveryGetDto;
 import com.example.demo.dto.delivery_dto.DeliveryUpdateDto;
 import com.example.demo.entity.DeliveryPoint;
-import com.example.demo.exception.BadParamException;
-import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.DeliveryPointRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
 
 import static com.example.demo.mapper.DeliveryMapper.DELIVERY_MAPPER;
 
@@ -29,21 +23,12 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public DeliveryGetDto save(DeliveryCreateDto dto) {
-        try {
             DeliveryPoint deliveryPoint = DELIVERY_MAPPER.toEntity(dto);
             method1(deliveryPoint,dto);
             DeliveryPoint saved = deliveryPointRepository.save(deliveryPoint);
             DeliveryGetDto dto1 = DELIVERY_MAPPER.toDto(saved);
             method2(dto1,saved);
             return dto1;
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     private static void method1(DeliveryPoint deliveryPoint, DeliveryCreateDto dto){
@@ -65,7 +50,6 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public DeliveryGetDto update(DeliveryUpdateDto dto) {
-        try {
             DeliveryPoint deliveryPoint = DELIVERY_MAPPER.toEntity(dto);
             method1(deliveryPoint,dto);
             DeliveryPoint elseThrow = deliveryPointRepository.findById(deliveryPoint.getId())
@@ -75,51 +59,21 @@ public class DeliveryServiceImpl implements DeliveryService {
             DeliveryGetDto dto1 = DELIVERY_MAPPER.toDto(saved);
             method2(dto1,saved);
             return dto1;
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
 
     @Override
     public DeliveryGetDto get(Long id) {
-        try {
             DeliveryPoint deliveryPoint = deliveryPointRepository.findById(id)
                     .orElseThrow(NotFoundException::new);
             DeliveryGetDto dto = DELIVERY_MAPPER.toDto(deliveryPoint);
             method2(dto,deliveryPoint);
             return dto;
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     @Override
     public Page<DeliveryGetDto> deliveryPoints(Pageable pageable) {
-        try {
             Page<DeliveryPoint> all = deliveryPointRepository.findAll(pageable);
-            int allSize = deliveryPointRepository.findAllSize();
-            if (allSize <pageable.getPageSize()) {
-//                all = new PageImpl<>(all.getContent(), PageRequest.of(0, allSize), allSize);
-            }
             return DELIVERY_MAPPER.toDto(all);
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 }

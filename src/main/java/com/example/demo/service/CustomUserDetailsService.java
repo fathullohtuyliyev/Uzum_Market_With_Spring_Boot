@@ -1,24 +1,22 @@
 package com.example.demo.service;
 
+import com.example.demo.entity.AuthUser;
 import com.example.demo.entity.Role;
 import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.AuthUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import com.example.demo.entity.AuthUser;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,7 +30,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        try {
             AuthUser authUser = authUserRepository.findByEmailAndActiveTrue(email)
                     .orElseThrow(NotFoundException::new);
             Set<String> collected = authUser.getRoles()
@@ -63,10 +60,5 @@ public class CustomUserDetailsService implements UserDetailsService {
                     .credentialsExpired(false)
                     .disabled(false)
                     .build();
-            }catch (Exception e){
-                e.printStackTrace();
-            log.info("{}", Arrays.toString(e.getStackTrace()));
-                throw new RuntimeException();
-            }
         }
 }

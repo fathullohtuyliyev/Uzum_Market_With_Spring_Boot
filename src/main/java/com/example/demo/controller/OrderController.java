@@ -39,26 +39,18 @@ public class OrderController {
     @CachePut(key = "#id",value = "orders")
     public ResponseEntity<OrderGetDto> updateStatus(@RequestParam String id,
                                                     @RequestParam String name){
-        try {
             return new ResponseEntity<>(orderService.updateStatus
                     (UUID.fromString(id), name), HttpStatus.NO_CONTENT);
-        }catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().build();
-        }
     }
     @GetMapping("/get")
     @Cacheable(key = "#param.get('userId')",value = "orders")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<OrderGetDto>> get(@RequestParam Map<String, String> param){
-        try {
             UUID userId = UUID.fromString(param.get("userId"));
             int page = Integer.parseInt(param.get("page"));
             int size = Integer.parseInt(param.get("size"));
             Page<OrderGetDto> orders = orderService.orders
                     (userId, PageRequest.of(page, size));
             return ResponseEntity.ok(orders);
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().build();
-        }
     }
 }

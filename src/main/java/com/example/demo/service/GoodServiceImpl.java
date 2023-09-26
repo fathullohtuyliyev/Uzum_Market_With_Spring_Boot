@@ -8,7 +8,6 @@ import com.example.demo.entity.Color;
 import com.example.demo.entity.Good;
 import com.example.demo.entity.Type;
 import com.example.demo.exception.BadParamException;
-import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.ColorRepository;
 import com.example.demo.repository.GoodRepository;
@@ -19,7 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import java.io.File;
+
 import java.util.*;
 
 import static com.example.demo.mapper.GoodMapper.GOOD_MAPPER;
@@ -35,7 +34,6 @@ public class GoodServiceImpl implements GoodService {
 
     @Override
     public GoodGetDto save(GoodCreateDto dto) {
-        try {
             dto.images.forEach(s -> {
                 if (!multimediaService.isExist(s)) {
                     throw new BadParamException();
@@ -50,14 +48,6 @@ public class GoodServiceImpl implements GoodService {
             GoodGetDto dto1 = GOOD_MAPPER.toDto(saved);
             method2(dto1,good);
             return dto1;
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     private static void method1(GoodCreateDto dto,Good good,
@@ -95,7 +85,6 @@ public class GoodServiceImpl implements GoodService {
 
     @Override
     public GoodGetDto update(GoodUpdateDto dto) {
-        try {
             dto.images.forEach(s -> {
                 if (!multimediaService.isExist(s)) {
                     throw new BadParamException();
@@ -114,36 +103,18 @@ public class GoodServiceImpl implements GoodService {
             GoodGetDto dto1 = GOOD_MAPPER.toDto(updatedGood);
             method2(dto1,updatedGood);
             return dto1;
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     @Override
     public GoodGetDto get(UUID id) {
-        try {
             Good good = goodRepository.findById(id).orElseThrow(NotFoundException::new);
             GoodGetDto dto = GOOD_MAPPER.toDto(good);
             method2(dto,good);
             return dto;
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     @Override
     public void delete(UUID id) {
-        try {
             Good good = goodRepository.findById(id)
                     .orElseThrow(NotFoundException::new);
             List<String> images = good.getImages();
@@ -155,35 +126,17 @@ public class GoodServiceImpl implements GoodService {
                 multimediaService.delete(videoPath);
             }
             goodRepository.updateGoodBlockedById(true,id);
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     @Override
     public Page<GoodGetDto> find(Pageable pageable) {
-        try {
             Page<Good> all = goodRepository.findAllByBlockedFalse(pageable);
             Page<GoodGetDto> dto = GOOD_MAPPER.toDto(all);
             return methodForList(all, dto);
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     @Override
     public Page<GoodGetDto> find(Pageable pageable, String name) {
-        try {
             String[] split = name.split("\\s+");
             List<Double> doubles = Arrays.stream(split)
                     .filter(s -> s.matches("[0-9]"))
@@ -194,23 +147,10 @@ public class GoodServiceImpl implements GoodService {
             list = list.stream()
                     .map(String::toLowerCase)
                     .toList();
-
-                result = goodRepository.findAllByName(list,doubles,pageable);
-
-            if (pageable.getPageSize()>result.getContent().size()) {
-//                result = new PageImpl<>(result.getContent(),PageRequest.of(0,result.getContent().size()),result.getContent().size());
-            }
+            result = goodRepository.findAllByName(list,doubles,pageable);
             Page<GoodGetDto> dto = GOOD_MAPPER.toDto(result);
 
             return methodForList(result, dto);
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
     private static Page<GoodGetDto> methodForList(Page<Good> result,Page<GoodGetDto> dto){
         List<GoodGetDto> contentDto = dto.getContent();
@@ -225,26 +165,13 @@ public class GoodServiceImpl implements GoodService {
 
     @Override
     public Page<GoodGetDto> find(Pageable pageable, GoodCriteria criteria) {
-        try {
             Type type = typeRepository.findById(criteria.type_id)
                     .orElseThrow(NotFoundException::new);
             Color color = colorRepository.findById(criteria.color_id)
                     .orElseThrow(NotFoundException::new);
             Page<Good> result = goodRepository.findByCriteria(color,
                     criteria.startPrice,criteria.endPrice,type,pageable);
-            int size = result.getContent().size();
-            if (pageable.getPageSize()> size) {
-//                result = new PageImpl<>(result.getContent(),PageRequest.of(0,size),size);
-            }
             Page<GoodGetDto> dto = GOOD_MAPPER.toDto(result);
             return methodForList(result, dto);
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 }

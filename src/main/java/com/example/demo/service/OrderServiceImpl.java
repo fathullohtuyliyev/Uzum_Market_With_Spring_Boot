@@ -6,19 +6,15 @@ import com.example.demo.dto.order_dto.OrderCreateDto;
 import com.example.demo.dto.order_dto.OrderGetDto;
 import com.example.demo.dto.order_dto.OrderUpdateDto;
 import com.example.demo.entity.*;
-import com.example.demo.exception.BadParamException;
-import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -42,7 +38,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderGetDto save(OrderCreateDto dto) {
-        try {
             Order order = ORDER_MAPPER.toEntity(dto);
 
             method1(deliveryPointRepository,
@@ -90,14 +85,6 @@ public class OrderServiceImpl implements OrderService {
             method2(dto1,saved);
 
             return dto1;
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     private static void method2(OrderGetDto dto, Order order) {
@@ -137,7 +124,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderGetDto update(OrderUpdateDto dto) {
-        try {
             LocalDateTime update = dto.update;
 
             DeliveryPoint deliveryPoint = DELIVERY_MAPPER.toEntity(dto.deliveryGetDto);
@@ -154,19 +140,10 @@ public class OrderServiceImpl implements OrderService {
             method2(dto1, order);
 
             return dto1;
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     @Override
     public OrderGetDto updateStatus(UUID id, String statusName) {
-        try {
             Status status = statusRepository.findByName(statusName)
                     .orElseThrow(NotFoundException::new);
             orderRepository.updateOrder(LocalDateTime.now(),status,id);
@@ -176,41 +153,19 @@ public class OrderServiceImpl implements OrderService {
             log.info("{} updated",dto);
             method2(dto,order);
             return dto;
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     @Override
     public OrderGetDto get(UUID id) {
-        try {
             Order order = orderRepository.findById(id).orElseThrow(NotFoundException::new);
             OrderGetDto dto = ORDER_MAPPER.toDto(order);
             method2(dto, order);
             return dto;
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     @Override
     public Page<OrderGetDto> orders(UUID userId, Pageable pageable) {
-        try {
             Page<Order> result = orderRepository.findAllByUserId(userId,pageable);
-            int allByUserId = orderRepository.sizeAllByUserId(userId);
-            if (allByUserId <pageable.getPageSize()) {
-//                result = new PageImpl<>(orderRepository.findAllByUserId(userId),
-//                        PageRequest.of(0,allByUserId),allByUserId);
-            }
             Page<OrderGetDto> dto = ORDER_MAPPER.toDto(result);
             if (dto.isEmpty()) {
                 return dto;
@@ -219,13 +174,5 @@ public class OrderServiceImpl implements OrderService {
                 method2(dto.getContent().get(i),result.getContent().get(i));
             }
             return dto;
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 }

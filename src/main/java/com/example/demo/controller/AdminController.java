@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.auth_user_dto.AuthUserGetDto;
-import com.example.demo.exception.BadParamException;
 import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.service.AdminService;
 import com.example.demo.service.AuthUserService;
@@ -35,11 +34,13 @@ public class AdminController {
         if (role.equals("SUPER_ADMIN")) {
             throw new ForbiddenAccessException();
         }
-        try {
             adminService.addRole(UUID.fromString(userId),role);
-        }catch (IllegalArgumentException e){
-            throw new BadParamException();
-        }
+    }
+    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    @PutMapping("/add-role-special")
+    public void addRole2(@RequestParam String userId,
+                        @RequestParam String role){
+        adminService.addRole(UUID.fromString(userId),role);
     }
     @PutMapping("/remove-role")
     public void removeRole(@RequestParam String userId,
@@ -47,31 +48,19 @@ public class AdminController {
         if (role.equals("SUPER_ADMIN")) {
             throw new ForbiddenAccessException();
         }
-        try {
             adminService.removeRole(UUID.fromString(userId),role);
-        }catch (IllegalArgumentException e){
-            throw new BadParamException();
-        }
     }
     @GetMapping("/get-all-users-data")
     @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     public ResponseEntity<Page<AuthUserGetDto>> getUsers(@RequestParam String page,
                                                          @RequestParam String size){
-        try {
             Page<AuthUserGetDto> users = authUserService
                     .users(PageRequest.of(Integer.parseInt(page), Integer.parseInt(size)));
             return ResponseEntity.ok(users);
-        }catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().build();
-        }
     }
     @PutMapping("/update-activity")
     public void updateActivity(@RequestParam String userId,
                                @RequestParam Boolean activity){
-        try {
             adminService.updateActivity(UUID.fromString(userId),activity);
-        }catch (IllegalArgumentException e){
-            throw new BadParamException();
-        }
     }
 }

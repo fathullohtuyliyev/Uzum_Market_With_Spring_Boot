@@ -46,11 +46,7 @@ public class PaymentTypeController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<PaymentGetDto>> getAll(@RequestParam String page,
                                                       @RequestParam String size){
-        try {
             return ResponseEntity.ok(paymentTypeService
                     .paymentTypes(PageRequest.of(Integer.parseInt(page), Integer.parseInt(size))));
-        }catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().build();
-        }
     }
 }

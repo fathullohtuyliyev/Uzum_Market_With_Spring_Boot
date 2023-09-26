@@ -1,10 +1,10 @@
 package com.example.demo.service;
 
 import com.example.demo.exception.BadParamException;
-import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
 import java.util.UUID;
 
 @Slf4j
@@ -25,15 +24,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MultimediaServiceImpl implements MultimediaService {
     public static final Path root = Path.of(System.getProperty("user.home")+"/Desktop/files");
-//    private final Path path = Path.of(System.getProperty("user.home")+"/Desktop/files");
     static {
         if (!root.toFile().exists()) {
             System.out.println("root.toFile().mkdirs() = " + root.toFile().mkdirs());
         }
     }
+    @SneakyThrows
     @Override
     public String save(MultipartFile multipartFile) {
-        try {
             InputStream inputStream = multipartFile.getInputStream();
             String filename = multipartFile.getOriginalFilename();
             String extension = FilenameUtils.getExtension(filename);
@@ -58,14 +56,6 @@ public class MultimediaServiceImpl implements MultimediaService {
             Path path = Path.of(root + "/" + generatedName);
             Files.copy(inputStream,path, StandardCopyOption.REPLACE_EXISTING);
             return generatedName;
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     private static void check(String filename){
@@ -74,9 +64,9 @@ public class MultimediaServiceImpl implements MultimediaService {
         }
     }
 
+    @SneakyThrows
     @Override
     public @ResponseBody byte[] image(String filename) {
-        try {
             Path path = Path.of(root  + "/" + filename);
             if (path.toFile().exists()) {
                 return Files.readAllBytes(path);
@@ -86,23 +76,12 @@ public class MultimediaServiceImpl implements MultimediaService {
                 throw new BadParamException();
             }
             return Files.readAllBytes(path);
-//            InputStream in = new FileInputStream(path.toFile());
-//            return IOUtils.toByteArray(in);
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            e.printStackTrace();
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
 
 
     @Override
     public File video(String filename) {
-        try {
             check(filename);
             Path path = Paths.get(root + "/" + filename);
             if (path.toFile().exists()) {
@@ -112,13 +91,6 @@ public class MultimediaServiceImpl implements MultimediaService {
                 throw new BadParamException();
             }
             return path.toFile();
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
     @Override
@@ -126,9 +98,9 @@ public class MultimediaServiceImpl implements MultimediaService {
         return new File(root+"/"+filename).exists();
     }
 
+    @SneakyThrows
     @Override
     public void video2(HttpServletResponse response, String filename) {
-        try {
             // Get the video file from the filesystem.
             File videoFile = new File(root+"/"+filename);
             if (!videoFile.exists()) {
@@ -142,28 +114,12 @@ public class MultimediaServiceImpl implements MultimediaService {
 
             // Stream the video file to the response.
             Files.copy(videoFile.toPath(), response.getOutputStream());
-        }catch (IllegalArgumentException e){
-            throw new BadParamException();
-        }catch (BadParamException | NotFoundException | ForbiddenAccessException e){
-            throw e;
-        }catch (Exception e){
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 
+    @SneakyThrows
     @Override
     public void delete(String filename) {
-        try {
             Path path = Path.of(root + "/" + filename);
             Files.deleteIfExists(path);
-        }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
-            throw e;
-        }catch (Exception e){
-            Arrays.stream(e.getStackTrace())
-                    .forEach(stackTraceElement -> log.warn("{}",stackTraceElement));
-            throw new RuntimeException();
-        }
     }
 }

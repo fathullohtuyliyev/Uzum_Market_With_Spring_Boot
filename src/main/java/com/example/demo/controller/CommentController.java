@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
@@ -43,39 +42,24 @@ public class CommentController {
     @GetMapping("/get-by-good")
     @Cacheable(key = "#param",value = "comments")
     public ResponseEntity<Page<Comment>> getByGood(@RequestParam Map<String, String> param){
-        try {
             UUID goodId = UUID.fromString(param.get("goodId"));
             int page = Integer.parseInt(param.get("page"));
             int size = Integer.parseInt(param.get("size"));
             Page<Comment> comments = commentService.comments(goodId, PageRequest.of(page, size));
             return ResponseEntity.ok(comments);
-        }catch (IllegalArgumentException e){
-            log.error("Error while getting comments",e);
-            return ResponseEntity.badRequest().build();
-        }
     }
     @PreAuthorize("hasAuthority('SELLER')")
     @PostMapping("/response")
     public ResponseEntity<Comment> response(@RequestParam String id,
                                             @RequestParam String message){
-        try {
             Comment comment = commentService
                     .responseToComment(UUID.fromString(id), message);
             return ResponseEntity.ok(comment);
-        }catch (IllegalArgumentException e){
-            log.error("Error while getting comments",e);
-            return ResponseEntity.badRequest().build();
-        }
     }
     @PutMapping("/spam")
     public ResponseEntity<Void> spam(@RequestParam String id,
                                      @RequestParam String userId){
-        try {
             commentService.spam(UUID.fromString(id),UUID.fromString(userId));
             return ResponseEntity.noContent().build();
-        }catch (IllegalArgumentException e){
-            log.error("Error while spamming",e);
-            return ResponseEntity.badRequest().build();
-        }
     }
 }
