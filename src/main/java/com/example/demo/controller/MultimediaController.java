@@ -55,7 +55,7 @@ public class MultimediaController {
     public Mono<Resource> getVideos(@PathVariable String title) throws MalformedURLException {
         String s = MultimediaServiceImpl.root + "\\" + title;
         if (new File(s).exists()) {
-            System.out.println("Exist :"+s);
+            System.out.println("Exist : "+s);
         }else {
             System.out.println("Exist not:"+s);
         }
