@@ -7,26 +7,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.UUID;
-import java.io.File;
 
 @Slf4j
 @Service
@@ -93,11 +86,7 @@ public class MultimediaServiceImpl implements MultimediaService {
             if (!FilenameUtils.getExtension(path.toString()).equals("jpg")) {
                 throw new BadParamException();
             }
-            try {
-                return Files.readAllBytes(path);
-            }catch (FileNotFoundException e){
-                throw new NotFoundException();
-            }
+            return Files.readAllBytes(path);
 //            InputStream in = new FileInputStream(path.toFile());
 //            return IOUtils.toByteArray(in);
         }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
@@ -120,9 +109,10 @@ public class MultimediaServiceImpl implements MultimediaService {
             if (path.toFile().exists()) {
                 return path.toFile();
             }
-//            if (FilenameUtils.getExtension(path.toString()).equals("mp4")) {
-                throw new NotFoundException();
-//            }
+            if (FilenameUtils.getExtension(path.toString()).equals("mp4")) {
+                throw new BadParamException();
+            }
+            return path.toFile();
         }catch (NotFoundException | ForbiddenAccessException | BadParamException e){
             throw e;
         }catch (Exception e){
