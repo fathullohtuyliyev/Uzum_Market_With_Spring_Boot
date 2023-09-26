@@ -121,13 +121,13 @@ public class DemoApplication {
 							role.setAuthUsers(Set.of(adminUser));
 							roleRepository.save(role);
 						}
-						Status status = Status.builder().name("ORDER IS PREPARING").build();
-						statusRepository.save(status);
 					}
 				}catch (RuntimeException e){
 					System.out.println(e.getMessage());
 					System.out.println(e.getLocalizedMessage());
 				}
+			Status status = Status.builder().name("ORDER IS PREPARING").build();
+			statusRepository.save(status);
 		};
 	}
 	@Scheduled(cron = "0 0 * * * 1-6")
