@@ -1,17 +1,14 @@
 package com.example.demo.mapper;
 
-import com.example.demo.dto.auth_user_dto.AuthUserGetDto;
 import com.example.demo.dto.promo_code_dto.PromoCodeCreateDto;
 import com.example.demo.dto.promo_code_dto.PromoCodeGetDto;
 import com.example.demo.dto.promo_code_dto.PromoCodeUpdateDto;
-import com.example.demo.entity.AuthUser;
 import com.example.demo.entity.PromoCode;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-
 import java.util.List;
 
 @Mapper

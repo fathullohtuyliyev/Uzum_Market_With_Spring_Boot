@@ -1,16 +1,13 @@
 package com.example.demo.mapper;
 
-import com.example.demo.dto.auth_user_dto.AuthUserGetDto;
 import com.example.demo.dto.payment_dto.PaymentGetDto;
 import com.example.demo.dto.payment_dto.PaymentUpdateDto;
-import com.example.demo.entity.AuthUser;
 import com.example.demo.entity.PaymentType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-
 import java.util.List;
 
 @Mapper
