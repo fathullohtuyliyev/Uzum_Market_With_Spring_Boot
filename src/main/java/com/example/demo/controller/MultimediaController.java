@@ -3,28 +3,25 @@ package com.example.demo.controller;
 import com.example.demo.service.MultimediaService;
 import com.example.demo.service.MultimediaServiceImpl;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.UrlResource;
-import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DataBufferUtils;
-import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 
 
 @RestController
@@ -58,21 +55,23 @@ public class MultimediaController {
         return Mono.fromSupplier(() -> resource);
     }
     @PreAuthorize("permitAll()")
+    @Async
     @GetMapping(value = "video/{title}",produces = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Resource> getVideosWithFlux(@PathVariable String title) throws IOException {
+    public CompletableFuture<ResponseEntity<Resource>> getVideosWithFlux(@PathVariable String title) throws IOException {
         String s = MultimediaServiceImpl.root + "\\" + title;
         if (new File(s).exists()) {
             System.out.println("Exist : "+s);
         }else {
             System.out.println("Exist not:"+s);
         }
+        log.info(Thread.currentThread().toString());
         Path path = Path.of(s);
         Resource resource = new UrlResource(path.toUri());
         System.out.println("file = " + s);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,"inline; filename = \""+
-                        resource.getFilename()+ "\"")
-                .body(resource);
+        return CompletableFuture.completedFuture(ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename = \"" +
+                        resource.getFilename() + "\"")
+                .body(resource));
     }
 
 

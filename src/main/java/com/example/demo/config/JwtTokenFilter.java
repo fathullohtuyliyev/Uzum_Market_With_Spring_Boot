@@ -34,6 +34,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         System.out.println("request.getRemoteAddr() = " + request.getRemoteAddr());
         String UserAgent = request.getHeader("User-Agent");
         System.out.println("UserAgent = " + UserAgent);
+        System.out.println("request.getRemoteUser() = " + request.getRemoteUser());
         if (authorization==null || authorization.isBlank()) {
             filterChain.doFilter(request,response);
             return;
