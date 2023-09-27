@@ -137,7 +137,7 @@ public class GoodServiceImpl implements GoodService {
 
     @Override
     public Page<GoodGetDto> find(Pageable pageable, String name) {
-            String[] split = name.split("\\s+");
+            String[] split = name.split("[+]");
             List<Double> doubles = Arrays.stream(split)
                     .filter(s -> s.matches("[0-9]"))
                     .map(Double::valueOf)

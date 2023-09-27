@@ -11,6 +11,7 @@ version = '0.0.1-SNAPSHOT'
 java {
 	sourceCompatibility = '17'
 }
+//tasks.register('prepareKotlinBuildScriptModel') {}
 
 configurations {
 	compileOnly {
@@ -51,6 +52,10 @@ dependencies {
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+//	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+//	implementation 'org.springframework.boot:spring-boot-starter-webflux-reactive-streams'
+//	implementation 'io.projectreactor:reactor-netty'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 }
 test {
 	finalizedBy jacocoTestReport

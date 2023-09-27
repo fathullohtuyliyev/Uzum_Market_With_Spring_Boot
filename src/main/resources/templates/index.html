@@ -6,26 +6,23 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-<!--<img src="http://localhost:8080/get-image" alt="Error" height="500px">-->
-<form id="videoForm">
-    <label>
-        <input id="videoName" type="text" placeholder="video name" required>
-    </label>
-    <input type="submit" value="Submit">
-</form>
+
+<input style="height: 30px" type="text" id="videoIdInput" placeholder="Video ID'ni kiriting">
+<button id="loadButton">Videoni yuklash</button>
 
 <video id="myVideo" width="1280" height="720" controls>
-    <source id="videoSource" src="" type="video/mp4">
+    <source id="videoSource" type="video/mp4">
     Your browser does not support the video tag.
 </video>
 
 <script>
-    document.getElementById('videoForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        var videoName = document.getElementById('videoName').value;
-        var videoSource = document.getElementById('videoSource');
-        videoSource.src = "http://localhost:8090/video/" + videoName;
-        document.getElementById('myVideo').load();
+    $(document).ready(function() {
+        $('#loadButton').click(function() {
+            var videoId = $('#videoIdInput').val(); // Bu yerda video ID'sini o'zgartiring
+            var videoUrl = 'http://localhost:8090/api.multimedia/video/' + videoId /*+ '.mp4'*/;
+            $('#videoSource').attr('src', videoUrl);
+            $('#myVideo')[0].load();
+        });
     });
 </script>
 
