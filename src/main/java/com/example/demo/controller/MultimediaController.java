@@ -77,7 +77,7 @@ public class MultimediaController {
 
 
     @PreAuthorize("permitAll()")
-//    @GetMapping("/video/{filename}")
+//    @GetMapping(value = "/video/{filename}",produces = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void downloadVideo(@PathVariable String filename,
                                                   HttpServletResponse response) {
         multimediaService.video2(response,filename);
