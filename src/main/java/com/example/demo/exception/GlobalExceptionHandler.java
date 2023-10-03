@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 
 import java.io.FileNotFoundException;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
     /*@ExceptionHandler(value = Exception.class)
     public ResponseEntity<Object> handleException(Exception e) {
