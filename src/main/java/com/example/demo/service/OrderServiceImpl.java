@@ -56,11 +56,11 @@ public class OrderServiceImpl implements OrderService {
                 return null;
             }
             order.setStatus(startStatus);
-            List<PromoCode> promoCodes = order.getGoods()
+            List<PromoCode> promoCodes = order.getProducts()
                     .stream()
                     .flatMap(good -> good.getPromoCodes().stream())
                     .toList();
-            double sum = order.getGoods()
+            double sum = order.getProducts()
                     .stream()
                     .mapToDouble(value -> value.getPrice() - value.getDiscountPrice())
                     .sum();
@@ -88,7 +88,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private static void method2(OrderGetDto dto, Order order) {
-        List<GoodGetDto> list = order.getGoods()
+        List<GoodGetDto> list = order.getProducts()
                 .stream()
                 .map(GOOD_MAPPER::toDto)
                 .toList();
@@ -110,8 +110,8 @@ public class OrderServiceImpl implements OrderService {
         AuthUser authUser = authUserRepository.findById(dto.authUserId).orElseThrow(NotFoundException::new);
         order.setAuthUser(authUser);
 
-        List<Good> goods = goodRepository.findAllById(dto.goodsId);
-        order.setGoods(goods);
+        List<Product> products = goodRepository.findAllById(dto.goodsId);
+        order.setProducts(products);
 
         DeliveryPoint deliveryPoint = deliveryPointRepository.findById(dto.deliveryGetDto.id).orElseThrow(NotFoundException::new);
         order.setDeliveryPoint(deliveryPoint);

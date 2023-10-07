@@ -1,7 +1,6 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
@@ -16,9 +15,9 @@ import java.util.UUID;
 @Setter
 @Builder
 @ToString
-@Entity(name = "good")
-@Table(name = "good")
-public class Good {
+@Entity(name = "product")
+@Table(name = "product")
+public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -55,19 +54,21 @@ public class Good {
 
     @NotNull
     @ElementCollection
+    @ToString.Exclude
     @Column(nullable = false,name = "images")
     private List<String> images;
 
     @Column(name = "video_name")
     private String videoPath;
 
-    @ManyToMany(mappedBy = "goods")
+    @ToString.Exclude
+    @ManyToMany(mappedBy = "products")
     private Set<Order> orders;
 
     @Builder.Default
     private boolean blocked=false;
 
-    @ManyToMany(mappedBy = "goods")
+    @ManyToMany(mappedBy = "products")
     @ToString.Exclude
     private List<PromoCode> promoCodes;
 }

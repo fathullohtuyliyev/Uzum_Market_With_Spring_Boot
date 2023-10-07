@@ -15,16 +15,16 @@ import java.util.List;
 public interface PromoCodeMapper {
     PromoCodeMapper PROMO_CODE_MAPPER = Mappers.getMapper(PromoCodeMapper.class);
     @Mapping(target = "authUsers",ignore = true)
-    @Mapping(target = "goods",ignore = true)
+    @Mapping(target = "products",ignore = true)
     @Mapping(target = "id",ignore = true)
     PromoCode toEntity(PromoCodeCreateDto dto);
 
     @Mapping(target = "authUsers",ignore = true)
-    @Mapping(target = "goods",ignore = true)
+    @Mapping(target = "products",ignore = true)
     PromoCode toEntity(PromoCodeGetDto dto);
 
     @Mapping(target = "authUsers",ignore = true)
-    @Mapping(target = "goods",ignore = true)
+    @Mapping(target = "products",ignore = true)
     PromoCode toEntity(PromoCodeUpdateDto dto);
 
     @Mapping(target = "users",ignore = true)

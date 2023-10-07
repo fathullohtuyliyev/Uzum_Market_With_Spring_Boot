@@ -2,7 +2,6 @@ package com.example.demo.repository;
 
 import com.example.demo.entity.AuthUser;
 import com.example.demo.entity.Basket;
-import com.example.demo.entity.Good;
 import org.springframework.data.domain.Page;
 import java.util.List;
 import org.springframework.data.domain.Pageable;

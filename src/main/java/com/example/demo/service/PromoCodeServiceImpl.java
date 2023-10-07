@@ -5,7 +5,7 @@ import com.example.demo.dto.good_dto.GoodGetDto;
 import com.example.demo.dto.promo_code_dto.PromoCodeCreateDto;
 import com.example.demo.dto.promo_code_dto.PromoCodeGetDto;
 import com.example.demo.dto.promo_code_dto.PromoCodeUpdateDto;
-import com.example.demo.entity.Good;
+import com.example.demo.entity.Product;
 import com.example.demo.entity.PromoCode;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.PromoCodeRepository;
@@ -39,7 +39,7 @@ public class PromoCodeServiceImpl implements PromoCodeService {
     }
 
     private static void method2(PromoCodeGetDto dto, PromoCode promoCode) {
-        List<GoodGetDto> list = promoCode.getGoods()
+        List<GoodGetDto> list = promoCode.getProducts()
                 .stream()
                 .map(GOOD_MAPPER::toDto)
                 .toList();
@@ -53,18 +53,18 @@ public class PromoCodeServiceImpl implements PromoCodeService {
     }
 
     private static void method1(PromoCodeCreateDto dto, PromoCode promoCode) {
-        List<Good> list = dto.getGoods()
+        List<Product> list = dto.getGoods()
                 .stream()
                 .map(GOOD_MAPPER::toEntity)
                 .toList();
-        promoCode.setGoods(list);
+        promoCode.setProducts(list);
     }
     private static void method1(PromoCodeUpdateDto dto, PromoCode promoCode) {
-        List<Good> list = dto.getGoods()
+        List<Product> list = dto.getGoods()
                 .stream()
                 .map(GOOD_MAPPER::toEntity)
                 .toList();
-        promoCode.setGoods(list);
+        promoCode.setProducts(list);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class PromoCodeServiceImpl implements PromoCodeService {
             PromoCode promoCode = PROMO_CODE_MAPPER.toEntity(dto);
             method1(dto,promoCode);
             promoCodeRepository.updatePromoCode(promoCode.getName(),
-                    promoCode.isActive(),promoCode.getGoods(),promoCode.getId());
+                    promoCode.isActive(),promoCode.getProducts(),promoCode.getId());
             PromoCode found = promoCodeRepository.findById(dto.id).orElseThrow(NotFoundException::new);
             PromoCodeGetDto dto1 = PROMO_CODE_MAPPER.toDto(found);
             method2(dto1,found);

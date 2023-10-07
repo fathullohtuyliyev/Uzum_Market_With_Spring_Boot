@@ -3,7 +3,7 @@ package com.example.demo.mapper;
 import com.example.demo.dto.good_dto.GoodCreateDto;
 import com.example.demo.dto.good_dto.GoodGetDto;
 import com.example.demo.dto.good_dto.GoodUpdateDto;
-import com.example.demo.entity.Good;
+import com.example.demo.entity.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -22,27 +22,27 @@ public interface GoodMapper {
     @Mapping(target = "promoCodes",ignore = true)
     @Mapping(target = "id",ignore = true)
     @Mapping(target = "ordersCount",ignore = true)
-    Good toEntity(GoodCreateDto dto);
+    Product toEntity(GoodCreateDto dto);
 
     @Mapping(target = "color",ignore = true)
     @Mapping(target = "type",ignore = true)
     @Mapping(target = "orders",ignore = true)
     @Mapping(target = "blocked",ignore = true)
     @Mapping(target = "promoCodes",ignore = true)
-    Good toEntity(GoodUpdateDto dto);
+    Product toEntity(GoodUpdateDto dto);
 
     @Mapping(target = "color",ignore = true)
     @Mapping(target = "type",ignore = true)
     @Mapping(target = "orders",ignore = true)
     @Mapping(target = "blocked",ignore = true)
     @Mapping(target = "promoCodes",ignore = true)
-    Good toEntity(GoodGetDto dto);
+    Product toEntity(GoodGetDto dto);
 
     @Mapping(target = "color",ignore = true)
     @Mapping(target = "type",ignore = true)
-    GoodGetDto toDto(Good good);
+    GoodGetDto toDto(Product product);
 
-    default Page<GoodGetDto> toDto(Page<Good> all){
+    default Page<GoodGetDto> toDto(Page<Product> all){
         if (all==null || all.isEmpty()) {
             return Page.empty();
         }

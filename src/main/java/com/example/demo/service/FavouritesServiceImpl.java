@@ -4,7 +4,7 @@ import com.example.demo.dto.favourites_dto.FavouritesCreateDto;
 import com.example.demo.dto.favourites_dto.FavouritesGetDto;
 import com.example.demo.entity.AuthUser;
 import com.example.demo.entity.Favourites;
-import com.example.demo.entity.Good;
+import com.example.demo.entity.Product;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.AuthUserRepository;
 import com.example.demo.repository.FavouritesRepository;
@@ -32,11 +32,11 @@ public class FavouritesServiceImpl implements FavouritesService {
     public Page<FavouritesGetDto> save(FavouritesCreateDto dto) {
             AuthUser authUser = authUserRepository.findAuthUserByIdAndActiveTrue(dto.userId)
                     .orElseThrow(NotFoundException::new);
-            Good good = goodRepository.findByIdAndBlockedFalse(dto.goodId)
+            Product product = goodRepository.findByIdAndBlockedFalse(dto.goodId)
                     .orElseThrow(NotFoundException::new);
             Favourites favourites = Favourites.builder()
                     .user(authUser)
-                    .good(good)
+                    .product(product)
                     .build();
             favouritesRepository.save(favourites);
             Page<Favourites> all = favouritesRepository.findAllByUserId
@@ -44,7 +44,7 @@ public class FavouritesServiceImpl implements FavouritesService {
             List<FavouritesGetDto> list = all.getContent()
                     .stream()
                     .map(favouritesLambda -> FavouritesGetDto.builder()
-                            .goodId(favouritesLambda.getGood().getId())
+                            .goodId(favouritesLambda.getProduct().getId())
                             .userId(favouritesLambda.getUser().getId())
                             .build()
                     ).toList();
@@ -58,7 +58,7 @@ public class FavouritesServiceImpl implements FavouritesService {
             List<FavouritesGetDto> list = allByUserId.stream()
                     .map(favourites -> FavouritesGetDto.builder()
                             .userId(favourites.getUser().getId())
-                            .goodId(favourites.getGood().getId())
+                            .goodId(favourites.getProduct().getId())
                             .build())
                     .toList();
             return new PageImpl<>(list,allByUserId.getPageable(),list.size());
@@ -70,7 +70,7 @@ public class FavouritesServiceImpl implements FavouritesService {
             List<FavouritesGetDto> list = allByUserId.stream()
                     .map(favourites -> FavouritesGetDto.builder()
                             .userId(favourites.getUser().getId())
-                            .goodId(favourites.getGood().getId())
+                            .goodId(favourites.getProduct().getId())
                             .build())
                     .toList();
             return new PageImpl<>(list,allByUserId.getPageable(),list.size());

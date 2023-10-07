@@ -4,7 +4,7 @@ import com.example.demo.dto.basket_dto.BasketCreateDto;
 import com.example.demo.dto.basket_dto.BasketGetDto;
 import com.example.demo.entity.AuthUser;
 import com.example.demo.entity.Basket;
-import com.example.demo.entity.Good;
+import com.example.demo.entity.Product;
 import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.AuthUserRepository;
@@ -32,13 +32,13 @@ public class BasketServiceImpl implements BasketService {
     @Override
     public Page<BasketGetDto> save(BasketCreateDto dto) {
             checkMethod(dto.userId,authUserRepository);
-            Good good = goodRepository.findById(dto.goodId)
+            Product product = goodRepository.findById(dto.goodId)
                     .orElseThrow(NotFoundException::new);
             AuthUser authUser = authUserRepository.findById(dto.userId)
                     .orElseThrow(NotFoundException::new);
             Basket basket = Basket.builder()
                     .user(authUser)
-                    .good(good)
+                    .product(product)
                     .build();
             basketRepository.save(basket);
             Page<Basket> baskets = basketRepository.findAllByUserId(authUser, PageRequest.of(0,20));

@@ -24,5 +24,5 @@ public class Basket {
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY,optional = false)
-    private Good good;
+    private Product product;
 }

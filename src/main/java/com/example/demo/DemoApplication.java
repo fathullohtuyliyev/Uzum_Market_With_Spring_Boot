@@ -199,7 +199,7 @@ public class DemoApplication {
 		return GroupedOpenApi.builder()
 				.group("seller")
 				.pathsToMatch("/api.auth/**",
-						"/api.good/**",
+						"/api.product/**",
 						"/api.delivery/get/**",
 						"/api.comment/**",
 						"/api.color/**",
@@ -221,7 +221,7 @@ public class DemoApplication {
 		return GroupedOpenApi.builder()
 				.group("customer")
 				.pathsToMatch("/api.auth/**",
-						"/api.good/get/**",
+						"/api.product/get/**",
 						"/api.delivery/get/**",
 						"/api.comment/**",
 						"/api.color/get/**",

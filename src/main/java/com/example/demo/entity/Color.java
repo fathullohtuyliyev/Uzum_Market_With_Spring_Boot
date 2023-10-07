@@ -1,6 +1,5 @@
 package com.example.demo.entity;
 
-import com.example.demo.entity.Good;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -26,5 +25,5 @@ public class Color {
 
     @ToString.Exclude
     @OneToMany(fetch = FetchType.LAZY)
-    private List<Good> goods;
+    private List<Product> products;
 }

@@ -40,7 +40,7 @@ public class PromoCode {
             name = "good_promocode",
             joinColumns = @JoinColumn(name = "promo_code_id"),
             inverseJoinColumns = @JoinColumn(name = "good_id"))
-    private List<Good> goods;
+    private List<Product> products;
 
     @NotNull
     @Positive

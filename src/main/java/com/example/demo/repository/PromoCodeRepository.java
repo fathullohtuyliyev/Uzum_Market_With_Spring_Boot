@@ -1,6 +1,6 @@
 package com.example.demo.repository;
 
-import com.example.demo.entity.Good;
+import com.example.demo.entity.Product;
 import com.example.demo.entity.PromoCode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +19,7 @@ public interface PromoCodeRepository extends JpaRepository<PromoCode, UUID>, Jpa
     @Modifying
     @Transactional
     @Query("update promo_code pc set pc.active=:active,pc.name=:name, pc.goods=:goods where pc.id=:id")
-    void updatePromoCode(String name, boolean active, List<Good> goods, UUID id);
+    void updatePromoCode(String name, boolean active, List<Product> products, UUID id);
 
     @Modifying
     @Transactional

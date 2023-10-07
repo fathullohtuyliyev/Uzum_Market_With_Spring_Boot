@@ -30,7 +30,7 @@ public class Order {
     @ToString.Exclude
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "order_good", joinColumns = @JoinColumn(name = "order_id"), inverseJoinColumns = @JoinColumn(name = "good_id"))
-    private List<Good> goods;
+    private List<Product> products;
 
     @NotNull
     @PositiveOrZero

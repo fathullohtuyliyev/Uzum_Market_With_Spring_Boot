@@ -1,6 +1,5 @@
 package com.example.demo.entity;
 
-import com.example.demo.entity.Good;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;

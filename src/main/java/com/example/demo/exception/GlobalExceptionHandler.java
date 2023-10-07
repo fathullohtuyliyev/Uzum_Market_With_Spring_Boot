@@ -1,9 +1,12 @@
 package com.example.demo.exception;
 
+import org.apache.tomcat.util.http.fileupload.impl.SizeException;
+import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.io.FileNotFoundException;
 
@@ -16,6 +19,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = BadParamException.class)
     public ResponseEntity<Object> handleException(BadParamException e) {
         return new ResponseEntity<>("Bad Request: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(value = SizeLimitExceededException.class)
+    public ResponseEntity<Object> handleException(SizeLimitExceededException e){
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(value = IllegalArgumentException.class)
     public ResponseEntity<Object> handleException(IllegalArgumentException e) {

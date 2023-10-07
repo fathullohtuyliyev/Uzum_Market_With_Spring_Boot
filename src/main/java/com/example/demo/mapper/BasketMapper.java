@@ -13,7 +13,7 @@ import java.util.List;
 public interface BasketMapper {
     BasketMapper BASKET_MAPPER = Mappers.getMapper(BasketMapper.class);
     @Mapping(target = "user",ignore = true)
-    @Mapping(target = "good",ignore = true)
+    @Mapping(target = "product",ignore = true)
     Basket toEntity(BasketGetDto dto);
 
     @Mapping(target = "user",ignore = true)

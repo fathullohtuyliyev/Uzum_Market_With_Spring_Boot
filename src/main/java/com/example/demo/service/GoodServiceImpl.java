@@ -5,7 +5,7 @@ import com.example.demo.dto.good_dto.GoodCriteria;
 import com.example.demo.dto.good_dto.GoodGetDto;
 import com.example.demo.dto.good_dto.GoodUpdateDto;
 import com.example.demo.entity.Color;
-import com.example.demo.entity.Good;
+import com.example.demo.entity.Product;
 import com.example.demo.entity.Type;
 import com.example.demo.exception.BadParamException;
 import com.example.demo.exception.NotFoundException;
@@ -42,44 +42,44 @@ public class GoodServiceImpl implements GoodService {
             if (dto.videoPath!=null && !multimediaService.isExist(dto.videoPath)) {
                 throw new BadParamException();
             }
-            Good good = GOOD_MAPPER.toEntity(dto);
-            method1(dto,good,typeRepository,colorRepository);
-            Good saved = goodRepository.save(good);
+            Product product = GOOD_MAPPER.toEntity(dto);
+            method1(dto, product,typeRepository,colorRepository);
+            Product saved = goodRepository.save(product);
             GoodGetDto dto1 = GOOD_MAPPER.toDto(saved);
-            method2(dto1,good);
+            method2(dto1, product);
             return dto1;
     }
 
-    private static void method1(GoodCreateDto dto,Good good,
+    private static void method1(GoodCreateDto dto, Product product,
                                 TypeRepository typeRepository,
                                 ColorRepository colorRepository){
         Long typeId = dto.getType_id();
         Type type = typeRepository.findById(typeId)
                 .orElseThrow(NotFoundException::new);
-        good.setType(type);
+        product.setType(type);
         Long colorId = dto.getColor_id();
         if (colorId !=null) {
-            colorRepository.findById(colorId).ifPresent(good::setColor);
+            colorRepository.findById(colorId).ifPresent(product::setColor);
         }
     }
-    private static void method1(GoodUpdateDto dto,Good good,
+    private static void method1(GoodUpdateDto dto, Product product,
                                 TypeRepository typeRepository,
                                 ColorRepository colorRepository){
         Long typeId = dto.getType_id();
         Type type = typeRepository
                 .findById(typeId).orElseThrow(NotFoundException::new);
-        good.setType(type);
+        product.setType(type);
         Long colorId = dto.getColor_id();
         if (colorId !=null) {
-            colorRepository.findById(colorId).ifPresent(good::setColor);
+            colorRepository.findById(colorId).ifPresent(product::setColor);
         }
     }
-    private static void method2(GoodGetDto dto,Good good){
-        dto.setColor(Map.of(good.getColor().getId(),good.getColor().getName()));
-        dto.setType(Map.of(good.getType().getId(), good.getName()));
+    private static void method2(GoodGetDto dto, Product product){
+        dto.setColor(Map.of(product.getColor().getId(), product.getColor().getName()));
+        dto.setType(Map.of(product.getType().getId(), product.getName()));
         dto.setColor(Objects.requireNonNullElse(
-                Map.of(good.getColor().getId()
-                        ,good.getColor().getName())
+                Map.of(product.getColor().getId()
+                        , product.getColor().getName())
                 ,null));
     }
 
@@ -93,32 +93,32 @@ public class GoodServiceImpl implements GoodService {
             if (dto.videoPath!=null && !multimediaService.isExist(dto.videoPath)) {
                 throw new BadParamException();
             }
-            Good good = GOOD_MAPPER.toEntity(dto);
-            method1(dto,good,typeRepository,colorRepository);
-            goodRepository.updateGood(good.getId(),good.getColor(),good.getName(),good.getType(),
-                    good.getCount(),good.getDescription(),good.getImages(),
-                    good.getPrice(),good.getOrdersCount(),good.getDiscountPrice(),good.getVideoPath());
-            Good updatedGood = goodRepository.findByIdAndBlockedFalse(good.getId())
+            Product product = GOOD_MAPPER.toEntity(dto);
+            method1(dto, product,typeRepository,colorRepository);
+            goodRepository.updateGood(product.getId(), product.getColor(), product.getName(), product.getType(),
+                    product.getCount(), product.getDescription(), product.getImages(),
+                    product.getPrice(), product.getOrdersCount(), product.getDiscountPrice(), product.getVideoPath());
+            Product updatedProduct = goodRepository.findByIdAndBlockedFalse(product.getId())
                     .orElseThrow(NotFoundException::new);
-            GoodGetDto dto1 = GOOD_MAPPER.toDto(updatedGood);
-            method2(dto1,updatedGood);
+            GoodGetDto dto1 = GOOD_MAPPER.toDto(updatedProduct);
+            method2(dto1, updatedProduct);
             return dto1;
     }
 
     @Override
     public GoodGetDto get(UUID id) {
-            Good good = goodRepository.findById(id).orElseThrow(NotFoundException::new);
-            GoodGetDto dto = GOOD_MAPPER.toDto(good);
-            method2(dto,good);
+            Product product = goodRepository.findById(id).orElseThrow(NotFoundException::new);
+            GoodGetDto dto = GOOD_MAPPER.toDto(product);
+            method2(dto, product);
             return dto;
     }
 
     @Override
     public void delete(UUID id) {
-            Good good = goodRepository.findById(id)
+            Product product = goodRepository.findById(id)
                     .orElseThrow(NotFoundException::new);
-            List<String> images = good.getImages();
-            String videoPath = good.getVideoPath();
+            List<String> images = product.getImages();
+            String videoPath = product.getVideoPath();
             if (images!=null) {
                 images.forEach(s -> multimediaService.delete(videoPath));
             }
@@ -130,7 +130,7 @@ public class GoodServiceImpl implements GoodService {
 
     @Override
     public Page<GoodGetDto> find(Pageable pageable) {
-            Page<Good> all = goodRepository.findAllByBlockedFalse(pageable);
+            Page<Product> all = goodRepository.findAllByBlockedFalse(pageable);
             Page<GoodGetDto> dto = GOOD_MAPPER.toDto(all);
             return methodForList(all, dto);
     }
@@ -142,7 +142,7 @@ public class GoodServiceImpl implements GoodService {
                     .filter(s -> s.matches("[0-9]"))
                     .map(Double::valueOf)
                     .toList();
-            Page<Good> result;
+            Page<Product> result;
             List<String> list = Arrays.stream(split).toList();
             list = list.stream()
                     .map(String::toLowerCase)
@@ -152,9 +152,9 @@ public class GoodServiceImpl implements GoodService {
 
             return methodForList(result, dto);
     }
-    private static Page<GoodGetDto> methodForList(Page<Good> result,Page<GoodGetDto> dto){
+    private static Page<GoodGetDto> methodForList(Page<Product> result, Page<GoodGetDto> dto){
         List<GoodGetDto> contentDto = dto.getContent();
-        List<Good> content = result.getContent();
+        List<Product> content = result.getContent();
         if (!contentDto.isEmpty()) {
             for (int i = 0; i < content.size(); i++) {
                 method2(contentDto.get(i), content.get(i));
@@ -169,7 +169,7 @@ public class GoodServiceImpl implements GoodService {
                     .orElseThrow(NotFoundException::new);
             Color color = colorRepository.findById(criteria.color_id)
                     .orElseThrow(NotFoundException::new);
-            Page<Good> result = goodRepository.findByCriteria(color,
+            Page<Product> result = goodRepository.findByCriteria(color,
                     criteria.startPrice,criteria.endPrice,type,pageable);
             Page<GoodGetDto> dto = GOOD_MAPPER.toDto(result);
             return methodForList(result, dto);
