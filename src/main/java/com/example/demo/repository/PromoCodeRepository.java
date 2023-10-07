@@ -18,7 +18,7 @@ import java.util.UUID;
 public interface PromoCodeRepository extends JpaRepository<PromoCode, UUID>, JpaSpecificationExecutor<PromoCode> {
     @Modifying
     @Transactional
-    @Query("update promo_code pc set pc.active=:active,pc.name=:name, pc.goods=:goods where pc.id=:id")
+    @Query("update promo_code pc set pc.active=:active,pc.name=:name, pc.products=:products where pc.id=:id")
     void updatePromoCode(String name, boolean active, List<Product> products, UUID id);
 
     @Modifying
@@ -26,12 +26,12 @@ public interface PromoCodeRepository extends JpaRepository<PromoCode, UUID>, Jpa
     @Query(nativeQuery = true,value = "delete from public.promo_code pc where pc.id=:id")
     void deleteWithId(UUID id);
 
-    @Query(value = "from promo_code pc inner join pc.goods g where g.id=:goodId")
+    @Query(value = "from promo_code pc inner join pc.products g where g.id=:goodId")
     Page<PromoCode> findAllByGoodId(UUID goodId, Pageable pageable);
 
-    @Query(value = "from promo_code pc inner join pc.goods g where g.id=?1")
+    @Query(value = "from promo_code pc inner join pc.products g where g.id=?1")
     List<PromoCode> findAllByGoodId(UUID goodId);
-    @Query(value = "select count(pc.id) from promo_code pc inner join pc.goods g where g.id=?1")
+    @Query(value = "select count(pc.id) from promo_code pc inner join pc.products g where g.id=?1")
     Integer findAllByGoodIdSize(UUID goodId);
 
     @Query(value = "from promo_code pc where lower(pc.name) = lower(:name)")
