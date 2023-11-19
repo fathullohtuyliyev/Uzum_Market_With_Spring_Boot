@@ -29,7 +29,7 @@ public interface GoodRepository extends JpaRepository<Product, UUID>, JpaSpecifi
     @Query(value = "update product set blocked=?1 where id=?2")
     void updateGoodBlockedById(boolean blocked, UUID id);
 
-    @Query(nativeQuery = true,value = "select * from good g inner join color c on g.blocked=false and lower(c.name) = any(:names) inner join type t on g.blocked=false and lower(t.name) = any(:names) where lower(g.name) = any(:names) and ((:prices) is null or g.price = any(:prices))")
+    @Query(nativeQuery = true,value = "select * from good g inner join color c on g.blocked=false and lower(c.name) = any(:names) inner join type t on g.blocked=false and lower(t.name) = any(:names) where lower(g.name) = any(:names) or g.price = any(:prices))")
     Page<Product> findAllByName(List<String> names, List<Double> prices, Pageable pageable);
 
     @Query(value = "from product g where g.blocked=false and (?1 is null or g.color = ?1) and(?2 is null or g.price >= ?2) and(?3 is null or g.price <= ?3) and(?4 is null or g.type = ?4)")

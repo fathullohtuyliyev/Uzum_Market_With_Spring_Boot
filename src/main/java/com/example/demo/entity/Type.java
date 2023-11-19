@@ -22,6 +22,7 @@ public class Type {
     private String name;
 
     @ManyToOne
+    @JoinColumn(name = "sub",referencedColumnName = "id")
     @ToString.Exclude
     private Type sub;
 
@@ -30,6 +31,7 @@ public class Type {
     private List<Type> roots;
 
     @ManyToOne
+    @JoinColumn(name = "root",referencedColumnName = "id")
     @ToString.Exclude
     private Type root;
 }

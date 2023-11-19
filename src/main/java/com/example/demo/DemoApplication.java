@@ -55,7 +55,7 @@ public class DemoApplication {
 	public static void stop(){
 		System.out.println("Application Failed");
 	}
-	@Bean
+//	@Bean
 	public CommandLineRunner runner1(){
 		return args -> {
 			try {
@@ -84,7 +84,7 @@ public class DemoApplication {
 			}
 		};
 	}
-	@Bean
+//	@Bean
 	public CommandLineRunner runner(StatusRepository statusRepository,
 									AuthUserRepository authUserRepository){
 		return args -> {
@@ -178,7 +178,7 @@ public class DemoApplication {
 						.addList("Bearer Authentication"))
 				.components(new Components().addSecuritySchemes(
 						"Bearer Authentication", createAPIKeyScheme()))
-				.info(new Info().title("My REST API")
+				.info(new Info().title("Uzum Market - REST API")
 						.description("Some custom description of API.")
 						.version("1.0").contact(new Contact().name("Soliyev Boburjon")
 								.email("http://localhost:8080").url("soliyevboburjon95@@gmail.com"))
