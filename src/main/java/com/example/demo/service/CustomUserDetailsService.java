@@ -29,7 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final AuthUserRepository authUserRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public CustomUserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
             AuthUser authUser = authUserRepository.findByEmailAndActiveTrue(email)
                     .orElseThrow(NotFoundException::new);
             Set<String> collected = authUser.getRoles()
@@ -48,17 +48,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                     throw new ForbiddenAccessException();
                 }
             }
-            Set<SimpleGrantedAuthority> authoritySet = collected.stream()
-                    .map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toSet());
-            return User.builder()
-                    .username(authUser.getEmail())
-                    .accountLocked(authUser.isActive())
-                    .password(Objects.requireNonNullElse(authUser.getTemporaryPassword(),""))
-                    .roles(String.join(",", collected))
-                    .authorities(authoritySet)
-                    .credentialsExpired(false)
-                    .disabled(false)
-                    .build();
+            return new CustomUserDetails(authUser);
         }
 }

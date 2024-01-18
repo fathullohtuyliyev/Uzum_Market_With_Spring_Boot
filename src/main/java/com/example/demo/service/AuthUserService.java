@@ -18,7 +18,7 @@ public interface AuthUserService {
     AuthUserGetDto login(String password, HttpServletRequest request, HttpServletResponse response);
     void logout(HttpServletRequest request, HttpServletResponse response);
     AuthUserGetDto update(AuthUserUpdateDto dto);
-    AuthUserGetDto get(UUID id, HttpServletRequest request);
+    AuthUserGetDto get(UUID id);
     Page<AuthUserGetDto> users(Pageable pageable);
     void online(UUID userId);
     void offline(UUID userId);

@@ -216,13 +216,9 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     @Override
-    public AuthUserGetDto get(UUID id, HttpServletRequest request) {
+    public AuthUserGetDto get(UUID id) {
             AuthUser authUser = authUserRepository.findAuthUserByIdAndActiveTrue(id)
                     .orElseThrow(NotFoundException::new);
-            if (!Objects.requireNonNullElse(getEmail(request),"").
-                    equals(Objects.requireNonNullElse(authUser.getEmail(),""))) {
-                throw new ForbiddenAccessException();
-            }
             AuthUserGetDto dto = USER_MAPPER.toDto(authUser);
             method2(dto, authUser);
             log.info("{} gave",dto);

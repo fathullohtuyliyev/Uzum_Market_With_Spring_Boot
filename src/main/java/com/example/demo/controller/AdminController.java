@@ -4,11 +4,14 @@ import com.example.demo.dto.auth_user_dto.AuthUserGetDto;
 import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.service.AdminService;
 import com.example.demo.service.AuthUserService;
+import com.example.demo.service.CustomUserDetails;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -27,6 +30,11 @@ public class AdminController {
         String oldEmail = param.get("old");
         String newEmail = param.get("new");
         adminService.updateEmail(adminEmail,oldEmail,newEmail);
+    }
+    @GetMapping("/get-user-data/{id}")
+    public ResponseEntity<AuthUserGetDto> get(@PathVariable String id,HttpServletRequest request){
+        AuthUserGetDto getDto = authUserService.get(UUID.fromString(id));
+        return ResponseEntity.ok(getDto);
     }
     @PutMapping("/add-role")
     public void addRole(@RequestParam String userId,

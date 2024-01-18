@@ -1,5 +1,6 @@
 package com.example.demo.config;
 
+import com.example.demo.service.CustomUserDetails;
 import com.example.demo.service.CustomUserDetailsService;
 import com.example.demo.util.JwtTokenUtil;
 import jakarta.servlet.FilterChain;
@@ -14,7 +15,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -42,13 +42,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         System.out.println("authorization = " + authorization);
         authorization=authorization.substring(7);
         String email = JwtTokenUtil.getEmail(response, authorization);
-        UserDetails userDetails = service.loadUserByUsername(email);
+        CustomUserDetails userDetails = service.loadUserByUsername(email);
         Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
 
         authorities.forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
 
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(email,null,userDetails.getAuthorities());
+                new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
         WebAuthenticationDetails details = new WebAuthenticationDetails(request);
         System.out.println(details);
         SecurityContext context = SecurityContextHolder.getContext();

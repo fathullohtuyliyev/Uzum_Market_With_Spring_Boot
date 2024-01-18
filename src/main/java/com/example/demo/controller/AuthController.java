@@ -3,7 +3,9 @@ package com.example.demo.controller;
 import com.example.demo.dto.auth_user_dto.AuthUserCreateDto;
 import com.example.demo.dto.auth_user_dto.AuthUserGetDto;
 import com.example.demo.dto.auth_user_dto.AuthUserUpdateDto;
+import com.example.demo.exception.ForbiddenAccessException;
 import com.example.demo.service.AuthUserService;
+import com.example.demo.service.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -13,6 +15,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -54,14 +57,18 @@ public class AuthController {
     @PreAuthorize("isAuthenticated()")
     @CachePut(key = "#dto.id",value = "users")
     public ResponseEntity<AuthUserGetDto> update(@RequestBody @Valid AuthUserUpdateDto dto){
+        CustomUserDetails userDetails= (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!dto.getId().equals(userDetails.authUser().getId())) {
+            throw new ForbiddenAccessException();
+        }
         AuthUserGetDto update = authUserService.update(dto);
         return new ResponseEntity<>(update, HttpStatus.NO_CONTENT);
     }
     @GetMapping("/get-self-data")
     @PreAuthorize("isAuthenticated()")
-    @Cacheable(key = "#id",value = "users")
-    public ResponseEntity<AuthUserGetDto> get(@RequestParam String id, HttpServletRequest request){
-            AuthUserGetDto getDto = authUserService.get(UUID.fromString(id), request);
+    public ResponseEntity<AuthUserGetDto> get(HttpServletRequest request){
+        CustomUserDetails userDetails= (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            AuthUserGetDto getDto = authUserService.get(userDetails.authUser().getId());
             return ResponseEntity.ok(getDto);
     }
     @PutMapping("/online")
