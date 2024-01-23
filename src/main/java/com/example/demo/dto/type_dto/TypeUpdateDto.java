@@ -26,5 +26,5 @@ public class TypeUpdateDto{
 
     @NotNull
     @Positive
-    public Set<Long> rootsId;
+    public Long rootId;
 }

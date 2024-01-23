@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 public interface TypeRepository extends JpaRepository<Type, Long>, JpaSpecificationExecutor<Type> {
     @Modifying
     @Transactional
-    @Query(value = "update type t set t.name=:name, t.id=:id, t.roots=:roots, t.sub=:sub where t.id=:id")
-    void updateType(String name, Long id, Type sub, List<Type> roots);
+    @Query(value = "update type t set t.name=:name, t.id=:id, t.root=:roots, t.sub=:sub where t.id=:id")
+    void updateType(String name, Long id, Type sub, Type root);
 
     @Query(value = "select count (t.id) from type t")
     Integer size();

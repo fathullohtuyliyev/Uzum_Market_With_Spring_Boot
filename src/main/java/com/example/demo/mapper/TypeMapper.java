@@ -4,15 +4,15 @@ import com.example.demo.dto.type_dto.TypeCreateDto;
 import com.example.demo.dto.type_dto.TypeGetDto;
 import com.example.demo.dto.type_dto.TypeUpdateDto;
 import com.example.demo.entity.Type;
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.TypeRepository;
 import lombok.NonNull;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import java.util.Collections;
+
 import java.util.List;
-import java.util.Set;
 
 @Mapper
 public interface TypeMapper {
@@ -21,18 +21,17 @@ public interface TypeMapper {
     default Type toEntity(@NonNull TypeGetDto dto, TypeRepository typeRepository){
         Type type = Type.builder().id(dto.id).name(dto.name).build();
         Long subId = dto.subId;
-        List<TypeGetDto> roots = dto.roots;
+        Type root = typeRepository.findById(dto.rootId)
+                .orElseThrow(NotFoundException::new);
         if (subId!=null) {
             typeRepository.findById(subId).ifPresent(type::setSub);
         }
-        if (roots==null || roots.isEmpty()) {
+        if (root==null) {
             return type;
         }
-        List<Long> rootsId = roots.stream()
-                .map(dto1 -> dto1.id)
-                .toList();
-        List<Type> allById = typeRepository.findAllById(rootsId);
-        type.setRoots(allById);
+        Type foundType = typeRepository.findById(root.getId())
+                .orElseThrow(NotFoundException::new);
+        type.setRoot(foundType);
         return type;
     }
 
@@ -52,33 +51,27 @@ public interface TypeMapper {
     default Type toEntity(@NonNull TypeUpdateDto dto, TypeRepository typeRepository){
         Type type = Type.builder().name(dto.name).id(dto.id).build();
         Long subId = dto.subId;
-        Set<Long> rootsId = dto.rootsId;
+        Long rootId = dto.rootId;
         if (subId!=null) {
             typeRepository.findById(subId).ifPresent(type::setSub);
         }
-        if (rootsId==null || rootsId.isEmpty()) {
+        if (rootId==null) {
             return type;
         }
-        List<Type> allById = typeRepository.findAllById(rootsId);
-        type.setRoots(allById);
+        Type foundType = typeRepository.findById(rootId)
+                .orElseThrow(NotFoundException::new);
+        type.setRoot(foundType);
         return type;
     }
 
     default TypeGetDto toDto(@NonNull Type type){
-        List<TypeGetDto> rootList = type.getRoots()
-                .stream()
-                .map(rootType -> TypeGetDto.builder()
-                        .id(rootType.getId())
-                        .name(rootType.getName())
-                        .subId(type.getId())
-                        .roots(Collections.emptyList())
-                        .build()).toList();
+        Type root = type.getRoot();
         return TypeGetDto
                 .builder()
                 .id(type.getId())
                 .name(type.getName())
                 .subId(type.getSub().getId())
-                .roots(rootList)
+                .rootId(root.getId())
                 .build();
     }
 

@@ -18,5 +18,5 @@ public class TypeGetDto {
 
     public Long subId;
 
-    public List<TypeGetDto> roots;
+    public Long rootId;
 }

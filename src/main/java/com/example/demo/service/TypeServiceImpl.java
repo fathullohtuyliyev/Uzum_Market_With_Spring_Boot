@@ -35,7 +35,7 @@ public class TypeServiceImpl implements TypeService {
     @Override
     public TypeGetDto update(TypeUpdateDto dto) {
             Type type = TYPE_MAPPER.toEntity(dto,typeRepository);
-            typeRepository.updateType(type.getName(), type.getId(), type.getSub(), type.getRoots());
+            typeRepository.updateType(type.getName(), type.getId(), type.getSub(), type.getRoot());
             Type found = typeRepository.findById(type.getId()).orElseThrow(NotFoundException::new);
             TypeGetDto dto1 = TYPE_MAPPER.toDto(found);
             log.info("{} updated", dto1);

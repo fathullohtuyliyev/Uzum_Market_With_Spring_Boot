@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import java.util.List;
+import java.util.Set;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -26,9 +28,11 @@ public class Type {
     @ToString.Exclude
     private Type sub;
 
-    @ToString.Exclude
-    @OneToMany(mappedBy = "root",fetch = FetchType.LAZY)
-    private List<Type> roots;
+    @OneToMany(mappedBy = "sub")
+    private Set<Type> subs;
+
+    @OneToMany(mappedBy = "root")
+    private Set<Type> roots;
 
     @ManyToOne
     @JoinColumn(name = "root",referencedColumnName = "id")
